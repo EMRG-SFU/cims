@@ -1,0 +1,248 @@
+archetype,fuel-in,product-out,note
+reciprocating-engine_chp,cf-hhv-lhv-methane,,gas engine on natural gas; electricity and heat out
+anaerobic-digester_chp,cf-hhv-lhv-methane,,gas engine on biogas (a methane fuel); electricity and heat out
+fuel-cell_chp,cf-hhv-lhv-methane,,gas-fuelled cells (the ETSAP brief's basis); electricity and heat out
+combustion-turbine_simple-cycle,cf-hhv-lhv-methane,,"gas turbine or engine on natural gas; the diesel sets merged in 2026-10-05 (XC06) take the methane ratio, about 4% high for diesel"
+combustion-turbine_chp,cf-hhv-lhv-methane,,gas turbine on natural gas
+steam-turbine_back-pressure,cf-hhv-lhv-solid-liquid,,boiler fuel is solid (biomass or coal) in the sources that state LHV
+electrolyzer_low-temperature,,cf-hhv-lhv-hydrogen,electricity in; hydrogen out
+electrolyzer_solid-oxide,,cf-hhv-lhv-hydrogen,electricity (and steam) in; hydrogen out
+gasifier_biomass-methanation,cf-hhv-lhv-solid-liquid,cf-hhv-lhv-methane,wood in; SNG out (net efficiencies also count exported electricity at 1:1)
+gasifier_biomass-methanol,cf-hhv-lhv-solid-liquid,cf-hhv-lhv-methanol,wood in; methanol out
+shaft-furnace_electrolytic-hydrogen,,,energy use is electricity; the LHV in the source note describes the electrolyser
+reactor_haber-bosch-loop,cf-hhv-lhv-hydrogen,cf-hhv-lhv-ammonia,hydrogen (and nitrogen) in; ammonia out. Electricity uses take ratio 1 by their target (heating.CARRIER_RATIO); the DEA catalogue prices and rates the loop per MW of ammonia on LHV
+boiler_fuel-fired,cf-hhv-lhv-methane,,gas-fired in the sources that state LHV (DEA gas/oil boiler; natural gas is the main fuel)
+boiler_solid-fuel,cf-hhv-lhv-solid-liquid,,biomass or coal fuel
+direct-heater_fuel-fired,cf-hhv-lhv-methane,,natural gas burners
+direct-heater_solid-fuel,cf-hhv-lhv-solid-liquid,,solid fuels
+steam-reformer_ammonia,cf-hhv-lhv-methane,,energy use is natural gas feed plus fuel
+anaerobic-digester,cf-hhv-lhv-solid-liquid,cf-hhv-lhv-methane,wet biomass or manure in; biogas (a methane fuel) out
+separator_biogas-upgrading,cf-hhv-lhv-methane,cf-hhv-lhv-methane,biogas in; biomethane out
+reactor_co2-to-methanol,cf-hhv-lhv-hydrogen,cf-hhv-lhv-methanol,hydrogen (and CO2) in; methanol out
+transesterification-unit_alkali-catalyzed,cf-hhv-lhv-solid-liquid,cf-hhv-lhv-solid-liquid,vegetable oil or fats in; biodiesel out
+reactor_hydrotreating-lipids,cf-hhv-lhv-solid-liquid,cf-hhv-lhv-solid-liquid,lipids in; HVO out
+reactor_hydrothermal-liquefaction,cf-hhv-lhv-solid-liquid,cf-hhv-lhv-solid-liquid,wet biomass in; biocrude out
+capture-unit_dac-liquid-solvent,cf-hhv-lhv-methane,,natural gas fires the calciner
+gasifier_biomass-fischer-tropsch,cf-hhv-lhv-solid-liquid,cf-hhv-lhv-solid-liquid,solid biomass in; FT liquids out
+fermenter_grain-dry-mill,cf-hhv-lhv-solid-liquid,cf-hhv-lhv-ethanol,grain in; ethanol out
+fermenter_lignocellulosic-enzymatic,cf-hhv-lhv-solid-liquid,cf-hhv-lhv-ethanol,lignocellulosic biomass in; ethanol out
+furnace_reheating_efficiency-moderate,cf-hhv-lhv-methane,,natural gas (its only carrier) (added 2026-10-02)
+boiler_recovery,cf-hhv-lhv-black-liquor,,black liquor in; steam (and power) out (added 2026-10-02)
+gasifier_black-liquor,cf-hhv-lhv-black-liquor,,black liquor in (added 2026-10-02)
+autothermal-reformer_hydrogen,cf-hhv-lhv-methane,cf-hhv-lhv-hydrogen,"natural gas (its only carrier) as feed and fuel (added 2026-10-02); product-out hydrogen added 2026-10-13 (an LHV efficiency or per-GJ figure converts the hydrogen out too, as on the capture variants)"
+steam-reformer_methanol,cf-hhv-lhv-methane,cf-hhv-lhv-methanol,natural gas in; methanol out (added 2026-10-02)
+anaerobic-digester_biomethane-upgrading,cf-hhv-lhv-solid-liquid,,single fuel biomass; product GJ (approved 2026-10-05)
+annealing-furnace_hydrogen-bell,,,no fuel carrier (none listed); product t finished product (approved 2026-10-05)
+basic-oxygen-furnace,,,no fuel carrier (none listed); product t liquid steel (approved 2026-10-05)
+boiler_electric,,,no fuel carrier (electricity); product GJ (approved 2026-10-05)
+chiller_absorption,cf-hhv-lhv-methane,,single fuel natural-gas; product GJ (approved 2026-10-05)
+chiller_vapour-compression,,,no fuel carrier (electricity); product GJ (approved 2026-10-05)
+coke-oven_by-product,cf-hhv-lhv-solid-liquid,,single fuel coal; product t coke (approved 2026-10-05)
+combined-cycle,cf-hhv-lhv-methane,,single fuel natural-gas; product GJ electricity (approved 2026-10-05)
+combustion-turbine_drive,cf-hhv-lhv-methane,,single fuel natural-gas; product GJ (approved 2026-10-05)
+reciprocating-engine_drive,cf-hhv-lhv-methane,,"gas engine on natural gas; shaft work out (S153, 2026-10-27: puts Clearstone 2019 LHV efficiencies and heat rates on HHV)"
+compressor_co2-dehydration,,,no fuel carrier (electricity); product t CO2 (approved 2026-10-05)
+digester_continuous-kraft,,,no fuel carrier (steam); product ADt pulp (approved 2026-10-05)
+direct-heater_electric,,,no fuel carrier (electricity); product GJ (approved 2026-10-05)
+distillation-column,cf-hhv-lhv-methane,,single fuel natural-gas; product t product (approved 2026-10-05)
+distillation-column_atmospheric-vacuum,cf-hhv-lhv-methane,,single fuel natural-gas; product t crude (approved 2026-10-05)
+distillation-column_atmospheric-vacuum_efficiency-strong,cf-hhv-lhv-methane,,single fuel natural-gas; product t crude (approved 2026-10-05)
+distillation-column_heat-pumped,,,no fuel carrier (electricity); product t product (approved 2026-10-05)
+dryer_ceramic-hot-air,cf-hhv-lhv-methane,,single fuel natural-gas; product t product (approved 2026-10-05)
+dryer_electric,,,no fuel carrier (electricity); product t product (approved 2026-10-05)
+dryer_heat-pump,,,no fuel carrier (electricity); product t water evaporated or t product (approved 2026-10-05)
+electrolysis-cell_chlor-alkali-membrane,cf-hhv-lhv-hydrogen,,single fuel hydrogen; product t product (approved 2026-10-05)
+electrolysis-cell_inert-anode,,,no fuel carrier (electricity); product t aluminum (approved 2026-10-05)
+electrolysis-cell_iron-electrowinning,,,no fuel carrier (electricity); product t iron (approved 2026-10-05)
+electrolysis-cell_molten-oxide,,,no fuel carrier (electricity); product t iron (approved 2026-10-05)
+electrolysis-cell_prebaked-anode,,,no fuel carrier (electricity); product t aluminum (approved 2026-10-05)
+electrolysis-cell_soderberg,,,no fuel carrier (electricity); product t aluminum (approved 2026-10-05)
+electrolysis-cell_zinc-electrowinning,,,no fuel carrier (electricity); product t zinc (approved 2026-10-05)
+evaporator_food,,,no fuel carrier (steam / electricity); product t product (approved 2026-10-05)
+furnace_electric,,,no fuel carrier (electricity); product t glass (approved 2026-10-05)
+furnace_hybrid-electric,cf-hhv-lhv-methane,,single fuel natural-gas; product t glass (approved 2026-10-05)
+furnace_hybrid-majority-electric,cf-hhv-lhv-methane,,"as furnace_hybrid-electric (S152, 2026-10-27)"
+furnace_reheating_efficiency-strong,cf-hhv-lhv-methane,,single fuel natural-gas; product t reheated (approved 2026-10-05)
+melting-furnace_twin-chamber,cf-hhv-lhv-methane,,single fuel natural-gas; product t metal (approved 2026-10-05)
+gas-treatment-unit_sulphur-recovery,cf-hhv-lhv-methane,,single fuel natural-gas; product t throughput (approved 2026-10-05)
+gasifier_biomass-chp,cf-hhv-lhv-solid-liquid,,single fuel biomass; product GJ (approved 2026-10-05)
+gasifier_biomass-waste,cf-hhv-lhv-solid-liquid,cf-hhv-lhv-hydrogen,"single fuel biomass; product GJ (approved 2026-10-05); product-out hydrogen added 2026-10-13 (an LHV efficiency or per-GJ figure converts the hydrogen out too, as on the capture variants)"
+gasifier_coal-fischer-tropsch,cf-hhv-lhv-solid-liquid,cf-hhv-lhv-solid-liquid,single fuel coal; product GJ liquid fuels (approved 2026-10-05)
+gasifier_coal-methanation,cf-hhv-lhv-solid-liquid,cf-hhv-lhv-methane,single fuel coal; product GJ SNG (approved 2026-10-05)
+geothermal-well_binary-power,,,no fuel carrier (geothermal); product GJ electricity (approved 2026-10-05)
+geothermal-well_direct-use,,,no fuel carrier (geothermal); product GJ (approved 2026-10-05)
+grinding-mill_ball,,,no fuel carrier (electricity); product t cement (approved 2026-10-05)
+grinding-mill_vertical-roller,,,no fuel carrier (electricity); product t cement (approved 2026-10-05)
+heat-pump_industrial,,,no fuel carrier (electricity / waste-heat); product GJ (approved 2026-10-05)
+heat-pump_very-high-temperature,,,no fuel carrier (electricity / waste-heat); product GJ (approved 2026-10-05); split 2026-10-09
+heat-pump_hvac,,,no fuel carrier (electricity); product GJ (approved 2026-10-05)
+kiln_intermittent,cf-hhv-lhv-methane,,single fuel natural-gas; product t product (approved 2026-10-05)
+kiln_tunnel-roller_efficiency-strong,cf-hhv-lhv-methane,,single fuel natural-gas; product t product (approved 2026-10-05)
+melting-furnace_hot-blast-cupola,cf-hhv-lhv-solid-liquid,,single fuel coke; product t melt (approved 2026-10-05)
+melting-furnace_induction,,,no fuel carrier (electricity); product t product (approved 2026-10-05)
+melting-furnace_regenerative-oxy-fuel,cf-hhv-lhv-methane,,single fuel natural-gas; product t metal (approved 2026-10-05)
+melting-furnace_rotary-oxy-fuel,cf-hhv-lhv-methane,,single fuel natural-gas; product t metal (approved 2026-10-05)
+mobile-equipment_battery-electric,,,no fuel carrier (electricity); product GJ (approved 2026-10-05)
+mobile-equipment_diesel,cf-hhv-lhv-solid-liquid,,single fuel diesel; product GJ (approved 2026-10-05)
+mobile-equipment_hydrogen-combustion,cf-hhv-lhv-hydrogen,,single fuel hydrogen; product GJ (approved 2026-10-05)
+mobile-equipment_hydrogen-fuel-cell,cf-hhv-lhv-hydrogen,,single fuel hydrogen; product GJ (approved 2026-10-05)
+motor_variable-speed,,,no fuel carrier (electricity); product GJ (approved 2026-10-05)
+paper-machine,,,no fuel carrier (steam); product t paper (approved 2026-10-05)
+photovoltaic-array_battery-storage,,,no fuel carrier (none listed); product GJ electricity (approved 2026-10-05)
+preheater_ladle,cf-hhv-lhv-methane,,single fuel natural-gas; product t liquid steel (approved 2026-10-05)
+process-improvement_landfill-gas-recovery,,,no fuel carrier (none listed); product GJ (approved 2026-10-05)
+electric-arc-furnace_smelting-submerged-arc_pre-reduction,,,no fuel carrier (none listed); product t product (approved 2026-10-05)
+pulper_recycled-fibre,,,no fuel carrier (electricity / steam); product ADt pulp (approved 2026-10-05)
+pulper_thermomechanical,,,no fuel carrier (none listed); product ADt pulp (approved 2026-10-05)
+reactor_alkylation,,,no fuel carrier (steam); product t throughput (approved 2026-10-05)
+reactor_ammonium-nitrate,,,no fuel carrier (steam / electricity); product t product (approved 2026-10-05)
+reactor_anthraquinone-autoxidation,cf-hhv-lhv-hydrogen,,single fuel hydrogen; product t product (approved 2026-10-05)
+reactor_catalytic-reforming,,,no fuel carrier (electricity); product t throughput (approved 2026-10-05)
+reactor_chemical-depolymerization,,,no fuel carrier (steam); product t product (approved 2026-10-05)
+reactor_ethylene-oxidation,cf-hhv-lhv-methane,,single fuel natural-gas; product t product (approved 2026-10-05)
+reactor_fluid-catalytic-cracking,,,no fuel carrier (steam / electricity); product t throughput (approved 2026-10-05)
+reactor_gas-to-liquids,cf-hhv-lhv-methane,cf-hhv-lhv-solid-liquid,single fuel natural-gas; product GJ liquid fuels (approved 2026-10-05)
+reactor_haber-bosch-electrolytic,cf-hhv-lhv-hydrogen,,single fuel hydrogen; product t product (approved 2026-10-05)
+reactor_nitric-acid,cf-hhv-lhv-ammonia,,single fuel ammonia; product t product (approved 2026-10-05)
+reactor_polymerization-extrusion,cf-hhv-lhv-methane,,single fuel natural-gas; product t product (approved 2026-10-05)
+reactor_polymerization-extrusion_efficiency-strong,cf-hhv-lhv-methane,,single fuel natural-gas; product t product (approved 2026-10-05)
+reactor_urea-synthesis,,,no fuel carrier (steam / electricity); product t product (approved 2026-10-05)
+refinery_nickel-matte,cf-hhv-lhv-methane,,single fuel natural-gas; product t nickel (approved 2026-10-05)
+resistance-heater_hvac,,,no fuel carrier (electricity); product GJ (approved 2026-10-05)
+rolling-mill_cold,cf-hhv-lhv-solid-liquid,,single fuel oil; product t rolled product (approved 2026-10-05)
+separator_mine-water-treatment,,,no fuel carrier (none listed); product m3 water treated (approved 2026-10-05)
+sinter-plant,cf-hhv-lhv-methane,,single fuel natural-gas; product t sinter or pellets (approved 2026-10-05)
+smelting-vessel_smelting-reduction_ccs-concentrated,cf-hhv-lhv-solid-liquid,,single fuel coal; product t iron (approved 2026-10-05)
+solar-collector,,,no fuel carrier (solar); product GJ (approved 2026-10-05)
+solar-concentrator_line-focus,,,no fuel carrier (solar); product GJ (approved 2026-10-05); split 2026-10-09
+steam-cracker_fired-tubular_ccs-diffuse,cf-hhv-lhv-methane,,single fuel natural-gas; product t high-value chemicals (approved 2026-10-05)
+steam-cracker_electric,,,no fuel carrier (none listed); product t high-value chemicals (approved 2026-10-05)
+steam-reformer_ammonia_efficiency-moderate,cf-hhv-lhv-methane,,single fuel natural-gas; product t product (approved 2026-10-05)
+steam-reformer_methane,cf-hhv-lhv-methane,cf-hhv-lhv-hydrogen,"single fuel natural-gas; product GJ (approved 2026-10-05); product-out hydrogen added 2026-10-13 (an LHV efficiency or per-GJ figure converts the hydrogen out too, as on the capture variants)"
+steam-turbine_waste-heat,,,no fuel carrier (none listed); product GJ electricity (approved 2026-10-05)
+thermal-storage_electric,,,no fuel carrier (electricity); product GJ (approved 2026-10-05)
+thermal-storage_heat-charged,,,no fuel carrier (waste-heat / steam); product GJ (approved 2026-10-05)
+vapour-recompressor_evaporation,,,no fuel carrier (electricity / steam); product t black liquor solids (approved 2026-10-05)
+wind-turbine,,,no fuel carrier (none listed); product GJ electricity (approved 2026-10-05)
+steam-turbine_condensing,cf-hhv-lhv-solid-liquid,,several fuels; dominant fuel coal (recommended); product GJ electricity (decided 2026-10-05)
+kiln_tunnel-roller,cf-hhv-lhv-methane,,several fuels; dominant fuel natural-gas (recommended); product t product (decided 2026-10-05)
+furnace_regenerative,cf-hhv-lhv-methane,,several fuels; dominant fuel natural-gas (recommended); product t glass (decided 2026-10-05)
+reactor_hydroprocessing,cf-hhv-lhv-methane,,several fuels; dominant fuel natural-gas (modeller chose natural-gas over the recommended hydrogen); product t throughput (decided 2026-10-05)
+furnace_oxy-fuel,cf-hhv-lhv-methane,,several fuels; dominant fuel natural-gas (recommended); product t glass (decided 2026-10-05)
+melting-furnace_reverberatory-rotary,cf-hhv-lhv-methane,,several fuels; dominant fuel natural-gas (recommended); product t metal (decided 2026-10-05)
+gasifier_coal-petroleum-coke,cf-hhv-lhv-solid-liquid,cf-hhv-lhv-hydrogen,"several fuels; dominant fuel coal (recommended); product GJ (decided 2026-10-05); product-out hydrogen added 2026-10-13 (an LHV efficiency or per-GJ figure converts the hydrogen out too, as on the capture variants)"
+kiln_legacy,cf-hhv-lhv-solid-liquid,,several fuels; dominant fuel coal (recommended); product t clinker (decided 2026-10-05)
+kiln_dry-precalciner,cf-hhv-lhv-solid-liquid,,several fuels; dominant fuel coal (recommended); product t clinker (decided 2026-10-05)
+hvac-heater_fuel-fired,cf-hhv-lhv-methane,,several fuels; dominant fuel natural-gas (recommended); product GJ (decided 2026-10-05)
+electric-arc-furnace,cf-hhv-lhv-methane,,several fuels; dominant fuel natural-gas (recommended); product t liquid steel (decided 2026-10-05)
+steam-cracker_fired-tubular,cf-hhv-lhv-methane,,several fuels; dominant fuel natural-gas (recommended); product t high-value chemicals (decided 2026-10-05)
+pellet-plant_induration,cf-hhv-lhv-solid-liquid,,several fuels; dominant fuel coal (recommended); product t sinter or pellets (decided 2026-10-05)
+melting-furnace_cupola,cf-hhv-lhv-solid-liquid,,several fuels; dominant fuel coke (recommended); product t liquid metal (decided 2026-10-05)
+dryer_rotary-direct-fired,cf-hhv-lhv-solid-liquid,,several fuels; dominant fuel oil (recommended); product t product (decided 2026-10-05)
+boiler_fuel-fired_efficiency-moderate,cf-hhv-lhv-methane,,several fuels; dominant fuel natural-gas (recommended); product GJ (decided 2026-10-05)
+digester_bayer,cf-hhv-lhv-methane,,several fuels; dominant fuel natural-gas (recommended); product t alumina (decided 2026-10-05)
+kiln_lime-shaft,cf-hhv-lhv-methane,,several fuels; dominant fuel natural-gas (recommended); product t lime (decided 2026-10-05)
+reactor_methane-pyrolysis,cf-hhv-lhv-methane,cf-hhv-lhv-hydrogen,"several fuels; dominant fuel natural-gas (recommended); product GJ (decided 2026-10-05); product-out hydrogen added 2026-10-13 (an LHV efficiency or per-GJ figure converts the hydrogen out too, as on the capture variants)"
+furnace_anode-baking,cf-hhv-lhv-methane,,several fuels; dominant fuel natural-gas (recommended); product t anode (decided 2026-10-05)
+furnace_reheating,cf-hhv-lhv-methane,,several fuels; dominant fuel natural-gas (recommended); product t reheated (decided 2026-10-05)
+furnace_heat-treatment,cf-hhv-lhv-methane,,several fuels; dominant fuel natural-gas (recommended); product t product (decided 2026-10-05)
+reactor_delayed-coking,cf-hhv-lhv-methane,,several fuels; dominant fuel natural-gas (recommended); product t throughput (decided 2026-10-05)
+capture-unit_amine,cf-hhv-lhv-methane,,several fuels; dominant fuel natural-gas (recommended); product t CO2 (decided 2026-10-05)
+kiln_lime-rotary-preheater,cf-hhv-lhv-methane,,several fuels; dominant fuel natural-gas (recommended); product t lime (decided 2026-10-05)
+kiln_lime-rotary,cf-hhv-lhv-methane,,several fuels; dominant fuel natural-gas (recommended); product t CaO (decided 2026-10-05)
+furnace_homogenizing,cf-hhv-lhv-methane,,several fuels; dominant fuel natural-gas (recommended); product t metal (decided 2026-10-05)
+kiln_lime-long-rotary,cf-hhv-lhv-methane,,several fuels; dominant fuel natural-gas (modeller chose natural-gas over the recommended coal); product t lime (decided 2026-10-05)
+blast-furnace,cf-hhv-lhv-solid-liquid,,several fuels; dominant fuel coke (recommended); product t iron (decided 2026-10-05)
+calciner_gas-suspension,cf-hhv-lhv-methane,,several fuels; dominant fuel natural-gas (recommended); product t alumina (decided 2026-10-05)
+annealing-furnace_batch-bell,cf-hhv-lhv-methane,,several fuels; dominant fuel natural-gas (recommended); product t finished product (decided 2026-10-05)
+blast-furnace_efficiency-moderate,cf-hhv-lhv-solid-liquid,,several fuels; dominant fuel coke (recommended); product t iron (decided 2026-10-05)
+capture-unit_chemical-solvent,cf-hhv-lhv-hydrogen,,several fuels; dominant fuel hydrogen (recommended); product t CO2 (decided 2026-10-05)
+kiln_dry-precalciner_efficiency-strong,cf-hhv-lhv-solid-liquid,,several fuels; dominant fuel coal (recommended); product t clinker (decided 2026-10-05)
+direct-heater_fuel-fired_efficiency-moderate,cf-hhv-lhv-methane,,several fuels; dominant fuel natural-gas (recommended); product GJ (decided 2026-10-05)
+furnace_rotary-hearth-direct-reduction,cf-hhv-lhv-methane,,several fuels; dominant fuel natural-gas (modeller chose natural-gas over the recommended coal); product t DRI (decided 2026-10-05)
+kiln_rotary-expanded-clay,cf-hhv-lhv-methane,,several fuels; dominant fuel natural-gas (recommended); product m3 aggregate (decided 2026-10-05)
+refinery_sugar-beet,cf-hhv-lhv-methane,,several fuels; dominant fuel natural-gas (recommended); product t beet (decided 2026-10-05)
+shaft-furnace_direct-reduction,cf-hhv-lhv-methane,,several fuels; dominant fuel natural-gas (recommended); product t iron (decided 2026-10-05)
+shaft-furnace_direct-reduction_ccs-concentrated,cf-hhv-lhv-methane,,several fuels; dominant fuel natural-gas (recommended); product t iron (decided 2026-10-05)
+basic-oxygen-furnace_efficiency-strong,,,derived 2026-10-09 from carriers (none) and product (liquid steel) for the regional LHV default; review
+binder_alkali-activated,,,derived 2026-10-09 from carriers (none) and product (cement) for the regional LHV default; review
+blast-furnace_ccs-diffuse,cf-hhv-lhv-solid-liquid,,derived 2026-10-09 from carriers (by-product-gas; hydrogen; coke; coal) and product (iron) for the regional LHV default; review
+blast-furnace_efficiency-strong,cf-hhv-lhv-methane,,derived 2026-10-09 from carriers (coke; coal; natural-gas) and product (iron) for the regional LHV default; review
+boiler_fuel-fired_ccs-diffuse,cf-hhv-lhv-methane,,derived 2026-10-09 from carriers (biomass; natural-gas; coal; nuclear; by-product-gas; oil; biogas) and product (heat) for the regional LHV default; review
+boiler_oxy-fuel,cf-hhv-lhv-methane,,derived 2026-10-09 from carriers (coal; natural-gas; biomass) and product (heat) for the regional LHV default; review
+calciner_electric,,,derived 2026-10-09 from carriers (electricity) and product (alumina) for the regional LHV default; review
+capture-unit_advanced-solvent,,,derived 2026-10-09 from carriers (steam; electricity) and product (CO2) for the regional LHV default; review
+caster_strip,,,derived 2026-10-09 from carriers (electricity) and product (cast product) for the regional LHV default; review
+coating-line_electrolytic,,,derived 2026-10-09 from carriers (electricity) and product (finished product) for the regional LHV default; review
+coating-line_hot-dip,cf-hhv-lhv-methane,,derived 2026-10-09 from carriers (natural-gas) and product (finished product) for the regional LHV default; review
+coke-oven_by-product_efficiency-strong,,,derived 2026-10-09 from carriers (none) and product (coke) for the regional LHV default; review
+combined-cycle_ccs-diffuse,cf-hhv-lhv-methane,,derived 2026-10-09 from carriers (natural-gas) and product (electricity) for the regional LHV default; review
+combustion-turbine_chp_ccs-diffuse,cf-hhv-lhv-methane,,derived 2026-10-09 from carriers (natural-gas; biogas; by-product-gas) and product (heat) for the regional LHV default; review
+compressor_electric,,,derived 2026-10-09 from carriers (electricity) and product (shaft work) for the regional LHV default; review
+converter_continuous,cf-hhv-lhv-methane,,derived 2026-10-09 from carriers (electricity; natural-gas) and product (metal) for the regional LHV default; review
+distillation-column_heat-integrated,cf-hhv-lhv-methane,,derived 2026-10-09 from carriers (steam; natural-gas) and product (intermediate chemical) for the regional LHV default; review
+dryer_direct-fired,cf-hhv-lhv-methane,,derived 2026-10-09 from carriers (natural-gas; biogas; hydrogen; liquid-biomass; lpg; oil; coal) and product (dried product) for the regional LHV default; review
+dryer_direct-fired_efficiency-moderate,cf-hhv-lhv-methane,,derived 2026-10-09 from carriers (natural-gas) and product (dried product) for the regional LHV default; review
+dryer_steam-heated,,,derived 2026-10-09 from carriers (steam) and product (dried product) for the regional LHV default; review
+electric-arc-furnace_scrap-preheating,cf-hhv-lhv-methane,,derived 2026-10-09 from carriers (electricity; natural-gas) and product (liquid steel) for the regional LHV default; review
+electrolysis-cell_chlor-alkali-diaphragm,,,derived 2026-10-09 from carriers (electricity; steam) and product (Cl2) for the regional LHV default; review
+fermenter_syngas,cf-hhv-lhv-solid-liquid,cf-hhv-lhv-ethanol,derived 2026-10-09 from carriers (biomass) and product (ethanol) for the regional LHV default; review
+flare,,,derived 2026-10-09 from carriers (none) and product (CO2) for the regional LHV default; review
+gasifier_biomass-ethylene,cf-hhv-lhv-solid-liquid,,derived 2026-10-09 from carriers (biomass) and product (high-value chemicals) for the regional LHV default; review
+gasifier_coal-ammonia,cf-hhv-lhv-solid-liquid,cf-hhv-lhv-ammonia,derived 2026-10-09 from carriers (coal) and product (ammonia) for the regional LHV default; review
+gasifier_coal-methanol,cf-hhv-lhv-solid-liquid,cf-hhv-lhv-methanol,derived 2026-10-09 from carriers (coal) and product (methanol) for the regional LHV default; review
+gasifier_coal-petroleum-coke_ccs-concentrated,cf-hhv-lhv-solid-liquid,cf-hhv-lhv-hydrogen,derived 2026-10-09 from carriers (biomass; coal) and product (hydrogen) for the regional LHV default; review
+geothermal-well_flash-power,,,derived 2026-10-09 from carriers (geothermal) and product (electricity) for the regional LHV default; review
+haul-truck_diesel,cf-hhv-lhv-solid-liquid,,derived 2026-10-09 from carriers (diesel; electricity) and product (ore) for the regional LHV default; review
+heat-pump_heat-transformer,,,derived 2026-10-09 from carriers (waste-heat) and product (heat) for the regional LHV default; review
+incinerator_waste-to-energy,cf-hhv-lhv-solid-liquid,,derived 2026-10-09 from carriers (municipal-waste) and product (waste treated, per t since 2026-11-10) for the regional LHV default; review
+kiln_dry-precalciner_ccs-diffuse,cf-hhv-lhv-methane,,derived 2026-10-09 from carriers (waste-heat; coal; petroleum-coke; natural-gas) and product (clinker) for the regional LHV default; review
+kiln_lumber-steam,,,derived 2026-10-09 from carriers (none) and product (lumber or panel product) for the regional LHV default; review
+liquefaction-train_small-scale,cf-hhv-lhv-methane,cf-hhv-lhv-methane,derived 2026-10-09 from carriers (natural-gas; electricity) and product (LNG) for the regional LHV default; review
+pickling-line_acid,,,derived 2026-10-09 from carriers (steam; electricity) and product (rolled product) for the regional LHV default; review
+pump_artificial-lift,,,derived 2026-10-09 from carriers (electricity) and product (oil or gas) for the regional LHV default; review
+reactor_adipic-acid,,,derived 2026-10-09 from carriers (steam; electricity) and product (product) for the regional LHV default; review
+reactor_co2-to-ethanol,cf-hhv-lhv-hydrogen,cf-hhv-lhv-ethanol,derived 2026-10-09 from carriers (hydrogen; electricity) and product (ethanol) for the regional LHV default; review
+reactor_co2-to-fischer-tropsch,cf-hhv-lhv-hydrogen,cf-hhv-lhv-solid-liquid,derived 2026-10-09 from carriers (hydrogen; electricity) and product (renewable diesel and SAF) for the regional LHV default; review
+reactor_co2-to-ome3-5,cf-hhv-lhv-hydrogen,cf-hhv-lhv-ome3-5,"hydrogen in, OME3-5 out (product ratio added 2026-10-27, S156/CHEM012)"
+reactor_ethanol-to-ethylene,,,derived 2026-10-09 from carriers (none) and product (high-value chemicals) for the regional LHV default; review
+reactor_methanol-to-olefins,cf-hhv-lhv-methanol,,derived 2026-10-09 from carriers (methanol) and product (high-value chemicals) for the regional LHV default; review
+reactor_propane-dehydrogenation,cf-hhv-lhv-methane,,derived 2026-10-09 from carriers (natural-gas; electricity) and product (intermediate chemical) for the regional LHV default; review
+reactor_pyrolysis-oil,cf-hhv-lhv-solid-liquid,cf-hhv-lhv-solid-liquid,"biomass in; upgraded hydrocarbon blendstocks out (PB014, 2026-10-28)"
+rolling-mill_hot,,,derived 2026-10-09 from carriers (electricity) and product (rolled product) for the regional LHV default; review
+rolling-mill_thin-slab,cf-hhv-lhv-methane,,derived 2026-10-09 from carriers (natural-gas; electricity) and product (cast product) for the regional LHV default; review
+sinter-plant_efficiency-strong,,,derived 2026-10-09 from carriers (none) and product (sinter or pellets) for the regional LHV default; review
+smelting-vessel_bath-tuyere,cf-hhv-lhv-methane,,derived 2026-10-09 from carriers (natural-gas; coal) and product (metal) for the regional LHV default; review
+smelting-vessel_bottom-blowing,cf-hhv-lhv-methane,,derived 2026-10-09 from carriers (natural-gas; coal) and product (metal) for the regional LHV default; review
+smelting-vessel_flash,cf-hhv-lhv-methane,,derived 2026-10-09 from carriers (natural-gas) and product (metal) for the regional LHV default; review
+smelting-vessel_smelting-reduction,cf-hhv-lhv-solid-liquid,,derived 2026-10-09 from carriers (coal) and product (iron) for the regional LHV default; review
+smelting-vessel_top-submerged-lance,cf-hhv-lhv-methane,,derived 2026-10-09 from carriers (biomass; natural-gas; coal; oil) and product (metal) for the regional LHV default; review
+steam-cracker_fired-tubular_efficiency-moderate,cf-hhv-lhv-methane,,derived 2026-10-09 from carriers (oil; coal; methanol; biomass; steam; hydrogen; natural-gas; naphtha) and product (high-value chemicals) for the regional LHV default; review
+steam-reformer_methane_ccs-concentrated,cf-hhv-lhv-methane,cf-hhv-lhv-hydrogen,derived 2026-10-09 from carriers (natural-gas) and product (hydrogen) for the regional LHV default; review
+turboexpander_pressure-let-down,,,derived 2026-10-09 from carriers (electricity) and product (electricity) for the regional LHV default; review
+boiler_recovery-high-solids,cf-hhv-lhv-black-liquor,,"black liquor in; steam (and power) out, as boiler_recovery (PB017, 2026-10-14)"
+shaft-furnace_hydrogen-direct-reduction,cf-hhv-lhv-hydrogen,,"dominant fuel hydrogen; product t iron; copied from shaft-furnace_direct-reduction with the fuel changed to hydrogen (D4, user 2026-10-14)"
+calciner_hydrogen-fired,cf-hhv-lhv-hydrogen,,"hydrogen in; product t alumina; as calciner_gas-suspension with hydrogen as the fuel (user 2026-10-14, D8)"
+separator_reverse-osmosis,,,"no fuel carrier (electricity); product m3 water treated (user 2026-10-14, as separator_mine-water-treatment)"
+fracturing-fleet_diesel,cf-hhv-lhv-solid-liquid,,single fuel diesel; product GJ hydraulic work (2026-10-23)
+fracturing-fleet_dual-fuel,cf-hhv-lhv-methane,,natural gas with 25-30% diesel; the methane ratio is about 4% high for the diesel share (2026-10-23)
+fracturing-fleet_electric,cf-hhv-lhv-methane,,gas turbines on natural gas; product GJ hydraulic work (2026-10-23)
+reactor_alcohol-to-jet,cf-hhv-lhv-ethanol,cf-hhv-lhv-solid-liquid,"ethanol in; jet and diesel out (Tao 2017's ratio includes gasoline and diesel co-products) (sanity-check run 2026-10-24, PB010)"
+reactor_hydroprocessing_electric-heating,cf-hhv-lhv-methane,,S149 variant of reactor_hydroprocessing: fuel-in as the host (2026-10-27)
+reactor_hydroprocessing_hydrogen-fuel,cf-hhv-lhv-hydrogen,,S149 variant of reactor_hydroprocessing: fuel-in hydrogen (2026-10-27)
+reactor_catalytic-reforming_electric-heating,,,S149 variant of reactor_catalytic-reforming: fuel-in as the host (2026-10-27)
+steam-cracker_fired-tubular_hydrogen-fuel,cf-hhv-lhv-hydrogen,,S149 variant of steam-cracker_fired-tubular: fuel-in hydrogen (2026-10-27)
+calciner_clay-flash,cf-hhv-lhv-methane,,"fuel natural gas (D21); product t calcined clay (S121, 2026-10-27)"
+kiln_clay-calcination,cf-hhv-lhv-methane,,"fuel natural gas (D21); product t calcined clay (S121, 2026-10-27)"
+grinding-mill_slag,cf-hhv-lhv-methane,,"drier fuel natural gas; product t ground slag (S121, 2026-10-27)"
+reactor_co2-to-gasoline,cf-hhv-lhv-hydrogen,cf-hhv-lhv-solid-liquid,"hydrogen in; gasoline out (PB014, 2026-10-28)"
+chiller_hvac,,,"no fuel carrier (electricity); product GJ (split from chiller_vapour-compression 2026-10-28, S164)"
+reactor_co2-to-higher-alcohols,cf-hhv-lhv-hydrogen,cf-hhv-lhv-higher-alcohols,hydrogen (and CO2) in; C4-C8 alcohols out (capacity conversion 2026-10-28)
+reactor_co2-to-dme,cf-hhv-lhv-hydrogen,cf-hhv-lhv-dme,hydrogen (and CO2) in; DME out (capacity conversion 2026-10-28)
+reactor_co2-to-ome1,cf-hhv-lhv-hydrogen,cf-hhv-lhv-methylal,hydrogen (and CO2) in; methylal out (capacity conversion 2026-10-28)
+electrolyzer_low-temperature-central,,cf-hhv-lhv-hydrogen,electricity in; hydrogen out (central split 2026-10-28)
+direct-heater_refinery,cf-hhv-lhv-methane,,natural gas burners (refinery heater split 2026-10-28)
+direct-heater_refinery_efficiency-moderate,cf-hhv-lhv-methane,,several fuels; dominant fuel natural-gas (recommended); product GJ (decided 2026-10-05) (refinery heater split 2026-10-28)
+refinery_alumina,cf-hhv-lhv-methane,,several fuels; dominant fuel natural-gas (recommended); product t alumina (decided 2026-10-05) (alumina split 2026-10-28)
+digester_bayer_electric-heating,cf-hhv-lhv-methane,,several fuels; dominant fuel natural-gas (recommended); product t alumina (decided 2026-10-05) (alumina split 2026-10-28)
+reactor_methanol-loop,cf-hhv-lhv-hydrogen,cf-hhv-lhv-methanol,"hydrogen and CO2 in; methanol out (added 2026-11-05, so per-kW loop costs on an LHV basis convert)"

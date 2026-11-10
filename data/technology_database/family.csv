@@ -1,0 +1,22 @@
+family,kind,label,description,uktm-code,naics-2017,isic-rev4,note
+heat-supply,service,Heat supply,"Separable systems that raise steam, hot water, thermal oil or hot gas for a process: boilers, CHP, heat pumps, electric and solar heat, fired heaters. The temperature band an archetype reaches is its heat-tier.",,,,
+power-generation,service,On-site power generation,Electricity-only generation at an industrial site.,,,,
+machine-drive,service,Machine drive,"Motors, drives and the systems they turn: pumps, fans and blowers, compressed air, materials handling and processing.",,,,
+space-conditioning,service,Space conditioning,"Space heating, cooling and ventilation of industrial buildings.",,,,
+lighting,service,Lighting,Industrial lighting.,,,,
+mobile-equipment,service,Mobile equipment,Off-road vehicles and mobile machinery at a site.,,,,
+co2-capture,service,CO2 capture,"Capture plants on concentrated or dilute streams, and direct air capture. The stream is the hierarchy node an archetype serves.",,,,
+iron-and-steel,sector,Iron and steel,"Coke making, ironmaking, steelmaking, casting and rolling. Excludes downstream fabrication.",IIS,3311;3312,241,
+cement-and-lime,sector,Cement and lime,"Clinker production, grinding and blending, cement binders, and lime and dolime calcination. Split from the other mineral products because the kiln dominates.",ICM,32731;32741,2394,Renamed from cement 2026-11-04 (Brad): lime kilns moved in from non-metallic-minerals.
+glass-and-ceramics,sector,Glass and ceramics,"Glass melting, forming and finishing; ceramic, brick and tile firing and drying; gypsum calcining; expanded clay aggregate and mineral wool.",INM,3271;3272;32742;32799,231;2391;2392;2393;2395;2399,Renamed from non-metallic-minerals 2026-11-04 (Brad): lime kilns moved to cement-and-lime.
+chemicals,sector,Chemicals,"Petrochemicals, industrial gases, ammonia and fertilizer, and other bulk and fine chemicals.",ICH,325,20,
+biofuels,sector,Biofuels,"Ethanol, biodiesel, renewable diesel and SAF, and renewable natural gas production.",,325193,2011,
+hydrogen,sector,Hydrogen,Centralized hydrogen production and its distribution by pipeline to industrial users. On-site hydrogen stays in the sector that makes it.,,325120,2011,
+petroleum-refining,sector,Petroleum refining,"Crude distillation, conversion, treating and utilities at refineries.",,32411,192,
+pulp-and-paper,sector,Pulp and paper,"Pulping, papermaking, drying and converting.",IPP,322,17,
+mining,sector,Mining (including coal mining),"Metal, non-metal and coal mining, milling and on-site processing. Excludes oil and gas extraction.",,212,05;07;08,
+oil-and-gas,sector,Oil and gas,"Extraction, oil sands, gas processing and LNG, and oil and gas pipelines.",,211;213111;486,06;0910;4930,
+food-and-beverage,sector,Food and beverage,"Food processing, beverage production and tobacco.",IFD,311;312,10;11;12,
+non-ferrous-metals,sector,Non-ferrous metals,"Primary and secondary aluminum, copper, zinc, nickel and other non-ferrous smelting and refining.",INF,3313;3314,242,
+waste-treatment,sector,Waste treatment,"Municipal and commercial solid waste treated with energy recovery (waste-to-energy incineration), per t of waste treated; heat and electricity are its secondary products. Landfill gas control, the CIMS waste sector, is not carried.",,562213,3821,Brad 2026-11-10: the incinerator moved out of heat supply; its service is the waste it treats.
+other-industry,sector,Other industry,"Manufacturing not covered by another sector: machinery, vehicles, textiles, wood products, construction.",IOI,,,

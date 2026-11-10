@@ -1,0 +1,169 @@
+record-id,action,factor-id,reason,finding,decided
+tf-etsap_2015_001-0029,exclude,,"ETSAP I07 Table 4 mechanical-pulping section balance: the oil, biomass and steam rows include the mill's own boilers, not the refiners",PP04,Brad 2026-11-05 rule 5
+tf-etsap_2015_001-0030,exclude,,as tf-etsap_2015_001-0029,PP04,Brad 2026-11-05 rule 5
+tf-etsap_2015_001-0031,exclude,,as tf-etsap_2015_001-0029,PP04,Brad 2026-11-05 rule 5
+tf-etsap_2015_001-0032,exclude,,as tf-etsap_2015_001-0029,PP04,Brad 2026-11-05 rule 5
+tf-etsap_2015_001-0035,exclude,,as tf-etsap_2015_001-0029,PP04,Brad 2026-11-05 rule 5
+tf-etsap_2015_001-0036,exclude,,as tf-etsap_2015_001-0029,PP04,Brad 2026-11-05 rule 5
+tf-etsap_2015_001-0037,exclude,,as tf-etsap_2015_001-0029,PP04,Brad 2026-11-05 rule 5
+tf-etsap_2015_001-0038,exclude,,as tf-etsap_2015_001-0029,PP04,Brad 2026-11-05 rule 5
+tf-etsap_2015_001-0041,exclude,,"ETSAP I07 Table 4 recycled-pulping section balance: the oil, biomass and steam rows include the mill's own boilers",PP04,Brad 2026-11-05 rule 5
+tf-etsap_2015_001-0042,exclude,,as tf-etsap_2015_001-0041,PP04,Brad 2026-11-05 rule 5
+tf-etsap_2015_001-0043,exclude,,as tf-etsap_2015_001-0041,PP04,Brad 2026-11-05 rule 5
+tf-etsap_2015_001-0044,exclude,,as tf-etsap_2015_001-0041,PP04,Brad 2026-11-05 rule 5
+tf-ct_2011_001-0034,exclude,,"UKERC/CT 2011 stock-preparation saving rows per unit of baseline output, not the low-energy refiner's own electricity",PP15,Brad 2026-11-05 rule 5
+tf-ct_2011_001-0035,exclude,,as tf-ct_2011_001-0034,PP15,Brad 2026-11-05 rule 5
+tf-ct_2011_001-0036,exclude,,as tf-ct_2011_001-0034,PP15,Brad 2026-11-05 rule 5
+tf-ct_2011_001-0037,exclude,,as tf-ct_2011_001-0034,PP15,Brad 2026-11-05 rule 5
+tf-ct_2011_001-0038,exclude,,as tf-ct_2011_001-0034,PP15,Brad 2026-11-05 rule 5
+tf-ct_2011_001-0039,exclude,,as tf-ct_2011_001-0034,PP15,Brad 2026-11-05 rule 5
+tf-ct_2011_001-0040,exclude,,as tf-ct_2011_001-0034,PP15,Brad 2026-11-05 rule 5
+tf-larson_2006_001-0001,divide,cf-bls-per-pulp-larson-2006,per bone-dry t of pulp on a per-t-black-liquor-solids archetype: divide by the source's solids ratio (1.90),PP05,Brad 2026-11-05 rule 5
+tf-larson_2006_001-0002,divide,cf-bls-per-pulp-larson-2006,as tf-larson_2006_001-0001,PP05,Brad 2026-11-05 rule 5
+tf-larson_2006_001-0003,divide,cf-bls-per-pulp-larson-2006,as tf-larson_2006_001-0001,PP05,Brad 2026-11-05 rule 5
+tf-larson_2006_001-0004,divide,cf-bls-per-pulp-larson-2006,as tf-larson_2006_001-0001,PP05,Brad 2026-11-05 rule 5
+tf-larson_2006_001-0005,divide,cf-bls-per-pulp-larson-2006,as tf-larson_2006_001-0001,PP05,Brad 2026-11-05 rule 5
+tf-larson_2006_001-0006,divide,cf-bls-per-pulp-larson-2006,as tf-larson_2006_001-0001,PP05,Brad 2026-11-05 rule 5
+tf-larson_2006_001-0007,divide,cf-bls-per-pulp-larson-2006,as tf-larson_2006_001-0001,PP05,Brad 2026-11-05 rule 5
+tf-larson_2006_001-0008,divide,cf-bls-per-pulp-larson-2006,as tf-larson_2006_001-0001,PP05,Brad 2026-11-05 rule 5
+tf-larson_2006_001-0009,divide,cf-bls-per-pulp-larson-2006,as tf-larson_2006_001-0001,PP05,Brad 2026-11-05 rule 5
+tf-larson_2006_001-0010,divide,cf-bls-per-pulp-larson-2006,as tf-larson_2006_001-0001,PP05,Brad 2026-11-05 rule 5
+tf-larson_2006_001-0011,divide,cf-bls-per-pulp-larson-2006,as tf-larson_2006_001-0001,PP05,Brad 2026-11-05 rule 5
+tf-hekkert_1997_001-0016,divide,cf-bls-per-pulp,per t of pulp on a per-t-black-liquor-solids archetype: divide by the generic solids ratio (1.5),PP05,Brad 2026-11-05 rule 5
+tf-hekkert_1997_001-0017,divide,cf-bls-per-pulp,as tf-hekkert_1997_001-0016,PP05,Brad 2026-11-05 rule 5
+tf-hekkert_1997_001-0018,divide,cf-bls-per-pulp,as tf-hekkert_1997_001-0016,PP05,Brad 2026-11-05 rule 5
+tf-hekkert_1997_001-0019,divide,cf-bls-per-pulp,as tf-hekkert_1997_001-0016,PP05,Brad 2026-11-05 rule 5
+tf-hekkert_1997_001-0020,divide,cf-bls-per-pulp,as tf-hekkert_1997_001-0016,PP05,Brad 2026-11-05 rule 5
+tf-hekkert_1997_001-0021,divide,cf-bls-per-pulp,as tf-hekkert_1997_001-0016,PP05,Brad 2026-11-05 rule 5
+tf-hekkert_1997_001-0022,divide,cf-bls-per-pulp,as tf-hekkert_1997_001-0016,PP05,Brad 2026-11-05 rule 5
+tf-hekkert_1997_001-0023,divide,cf-bls-per-pulp,as tf-hekkert_1997_001-0016,PP05,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0266,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0267,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0268,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0269,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0270,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0271,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0272,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0273,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0274,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0275,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0276,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0277,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0278,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0279,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0280,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0281,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0282,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0283,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0284,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0285,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0286,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0287,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0288,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0289,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0290,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0291,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0292,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0293,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0294,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0295,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0296,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0297,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0298,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0299,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0300,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0301,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0302,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0303,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0304,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0305,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0306,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0307,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0308,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0309,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0310,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0311,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0312,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0313,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0314,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0315,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0316,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0317,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0318,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0319,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0320,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0321,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0322,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0323,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0324,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0325,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0326,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0327,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0328,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0329,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0330,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0331,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0332,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0333,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0334,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0335,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0336,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0337,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0338,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0339,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0340,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0341,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0342,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0343,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0344,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0345,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0346,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0347,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0348,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0349,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0350,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0351,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0352,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0353,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0354,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0355,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0356,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0357,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0358,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0359,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0360,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0361,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0362,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0363,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0364,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0365,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0366,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0367,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0368,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0369,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0370,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0371,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0372,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0373,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0374,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0375,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0376,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0377,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0378,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0379,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0380,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-ukerc_2013_001-0381,exclude,,"UKERC whole cement plant balance per t cement (clinker 0.856 t, gypsum, ash and kiln fuels): not the kiln per t clinker",IM13,Brad 2026-11-05 rule 5
+tf-etsap_2010_003-0010,exclude,,cement composition on a grinding mill: the mill grinds the recipe the binder archetypes request; these shares are not per t of ground cement,IM16,Brad 2026-11-05 rule 5
+tf-van-geene_2024_001-0749,exclude,,cement composition on a grinding mill: the mill grinds the recipe the binder archetypes request; these shares are not per t of ground cement,IM16,Brad 2026-11-05 rule 5
+tf-van-geene_2024_001-0750,exclude,,cement composition on a grinding mill: the mill grinds the recipe the binder archetypes request; these shares are not per t of ground cement,IM16,Brad 2026-11-05 rule 5
+tf-van-geene_2024_001-0751,exclude,,cement composition on a grinding mill: the mill grinds the recipe the binder archetypes request; these shares are not per t of ground cement,IM16,Brad 2026-11-05 rule 5
+tf-van-geene_2024_001-0756,exclude,,cement composition on a grinding mill: the mill grinds the recipe the binder archetypes request; these shares are not per t of ground cement,IM16,Brad 2026-11-05 rule 5
+tf-van-geene_2024_001-0757,exclude,,cement composition on a grinding mill: the mill grinds the recipe the binder archetypes request; these shares are not per t of ground cement,IM16,Brad 2026-11-05 rule 5
+tf-van-geene_2024_001-0758,exclude,,cement composition on a grinding mill: the mill grinds the recipe the binder archetypes request; these shares are not per t of ground cement,IM16,Brad 2026-11-05 rule 5
+tf-van-geene_2024_001-0760,exclude,,cement composition on a grinding mill: the mill grinds the recipe the binder archetypes request; these shares are not per t of ground cement,IM16,Brad 2026-11-05 rule 5
+tf-van-geene_2024_001-0761,exclude,,cement composition on a grinding mill: the mill grinds the recipe the binder archetypes request; these shares are not per t of ground cement,IM16,Brad 2026-11-05 rule 5
+tf-van-geene_2024_001-0762,exclude,,cement composition on a grinding mill: the mill grinds the recipe the binder archetypes request; these shares are not per t of ground cement,IM16,Brad 2026-11-05 rule 5
+tf-van-geene_2024_001-0766,exclude,,cement composition on a grinding mill: the mill grinds the recipe the binder archetypes request; these shares are not per t of ground cement,IM16,Brad 2026-11-05 rule 5
+tf-van-geene_2024_001-0767,exclude,,cement composition on a grinding mill: the mill grinds the recipe the binder archetypes request; these shares are not per t of ground cement,IM16,Brad 2026-11-05 rule 5
+tf-van-geene_2024_001-0768,exclude,,cement composition on a grinding mill: the mill grinds the recipe the binder archetypes request; these shares are not per t of ground cement,IM16,Brad 2026-11-05 rule 5
+tf-crundwell_2011_001-0001,divide,cf-nickel-per-laterite-ore,"acid per t of laterite ore on a per-t-nickel archetype: divide by the nickel recovered per t ore (0.0118), about 25 t acid per t Ni",NF20,Brad 2026-11-05 (node alignment review NF20)

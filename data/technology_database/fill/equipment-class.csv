@@ -1,0 +1,114 @@
+equipment,lifetime-class,vom-class,note
+adsorber,rotating-equipment,minor,adsorbent replacement is periodic and small against capital
+air-separation-unit,process-plant,minor,
+anaerobic-digester,process-plant,material,feedstock handling and digestate management
+annealing-furnace,process-plant,minor,
+arc-heater,heat-equipment,minor,
+autothermal-reformer,process-plant,material,catalyst replacement
+basic-oxygen-furnace,process-plant,material,refractory and oxygen lance consumables
+binder,process-plant,material,clinker substitutes and admixtures are purchased materials
+blast-furnace,process-plant,material,refractory relining and tuyere consumables
+boiler,heat-equipment,minor,
+calciner,process-plant,material,refractory
+capture-unit,process-plant,material,solvent or sorbent make-up and degradation
+caster,process-plant,minor,
+chiller,rotating-equipment,minor,
+cleaning-system,process-plant,material,cleaning chemicals
+clinker-cooler,process-plant,minor,
+coating-line,process-plant,material,coating metals and chemicals
+coke-oven,process-plant,material,refractory and door maintenance
+combined-cycle,power-equipment,minor,
+combustion-turbine,power-equipment,minor,
+compressor,rotating-equipment,minor,
+converter,process-plant,material,refractory and tuyeres
+conveyor,rotating-equipment,minor,belt replacement
+cooling-tower,rotating-equipment,minor,water treatment chemicals are small
+crusher,process-plant,minor,liner wear is modest against capital
+debarker,process-plant,minor,
+digester,process-plant,material,cooking chemicals (kraft make-up; sulphite liquor)
+direct-heater,heat-equipment,minor,
+distillation-column,process-plant,minor,
+distillery,process-plant,material,yeast and enzymes; consumables per batch
+drilling-rig,mobile-equipment,material,bits and consumables per metre drilled
+dryer,heat-equipment,minor,
+electric-arc-furnace,process-plant,material,electrodes and refractory
+electrolysis-cell,electrochemical,material,electrodes and membranes; anodes in aluminium smelting
+electrolyzer,electrochemical,material,stack replacement and water treatment
+evaporator,heat-equipment,minor,
+fan,rotating-equipment,minor,
+fermenter,process-plant,material,enzymes and yeast
+flare,controls-and-programmes,none,
+flotation-cell,process-plant,material,collectors and frothers
+fracturing-fleet,mobile-equipment,material,proppant and fluids per stage
+fuel-cell,electrochemical,material,stack replacement
+furnace,process-plant,material,refractory
+gas-treatment-unit,process-plant,material,amine or glycol make-up
+gasifier,process-plant,material,refractory and catalyst where present
+geothermal-well,wells-and-pipelines,minor,
+grinding-mill,process-plant,material,grinding media and liners
+haul-truck,mobile-equipment,material,tyres and parts per tonne hauled
+heat-exchanger,rotating-equipment,minor,
+heat-pump,heat-equipment,minor,
+heat-recovery-unit,rotating-equipment,minor,
+hoist,rotating-equipment,minor,ropes
+hvac-heater,heat-equipment,minor,
+incinerator,process-plant,material,ash handling and flue-gas reagents
+induction-heater,heat-equipment,minor,
+kiln,process-plant,material,refractory
+leaching-vessel,process-plant,material,acid and reagents per tonne of ore
+lighting,controls-and-programmes,minor,lamp replacement
+liquefaction-train,process-plant,minor,
+management-system,controls-and-programmes,none,
+melting-furnace,process-plant,material,refractory and crucibles
+microturbine,power-equipment,minor,
+microwave-heater,heat-equipment,minor,
+mine,process-plant,material,consumables across the whole mine
+mobile-equipment,mobile-equipment,material,tyres and parts per operating hour
+motor,rotating-equipment,minor,
+no-abatement,controls-and-programmes,none,no-abatement options 2026-10-22 (modeller)
+oven,heat-equipment,minor,
+paper-machine,process-plant,minor,clothing and chemicals are small against capital
+paste-plant,process-plant,material,pitch and coke are purchased materials
+pasteurizer,heat-equipment,minor,
+pellet-plant,process-plant,material,binder (bentonite) and refractory
+photochemical-heater,heat-equipment,minor,
+photovoltaic-array,power-equipment,minor,
+pickling-line,process-plant,material,acid make-up
+pipeline,wells-and-pipelines,none,
+plasma-torch,heat-equipment,minor,electrodes are small against capital
+pneumatic-device,controls-and-programmes,none,
+precalciner,process-plant,material,refractory
+preheater,process-plant,minor,
+press,process-plant,minor,
+process-improvement,controls-and-programmes,none,
+pulper,process-plant,minor,
+pump,rotating-equipment,minor,
+radio-frequency-heater,heat-equipment,minor,
+reactor,process-plant,material,catalyst replacement
+reciprocating-engine,power-equipment,minor,
+refinery,process-plant,material,catalysts and chemicals across the whole plant
+refining-furnace,process-plant,material,refractory and fluxes
+resistance-heater,heat-equipment,minor,
+roaster,process-plant,material,refractory
+rolling-mill,process-plant,minor,rolls
+rotary-compression-heater,heat-equipment,minor,
+separator,process-plant,material,treatment chemicals and membranes
+shaft-furnace,process-plant,material,refractory
+sinter-plant,process-plant,minor,
+smelting-vessel,process-plant,material,refractory and tuyeres
+solar-collector,heat-equipment,minor,
+solar-concentrator,heat-equipment,minor,
+steam-cracker,process-plant,material,decoking and catalysts where present
+steam-reformer,process-plant,material,catalyst replacement
+steam-turbine,power-equipment,minor,
+storage-cavern,wells-and-pipelines,none,
+thermal-storage,heat-equipment,minor,
+transesterification-unit,process-plant,material,catalyst and methanol make-up
+turboexpander,rotating-equipment,minor,
+ultraviolet-curer,heat-equipment,minor,lamp replacement
+valve,heat-equipment,minor,a let-down station: the line heater sets the class (Brad 2026-10-29)
+vapour-recompressor,heat-equipment,minor,
+ventilation-unit,rotating-equipment,minor,
+well,wells-and-pipelines,minor,workovers
+wind-turbine,power-equipment,minor,
+pulp-mill,process-plant,material,cooking and bleaching chemicals across the whole mill

@@ -1,0 +1,31 @@
+scale,level,canonical-trl,band,definition,definition-industrial-process,source
+trl-1-9,1,1,concept,Basic principles observed.,,cims/service-technology-map/technology-readiness-levels.md
+trl-1-9,2,2,concept,Technology concept formulated.,,cims/service-technology-map/technology-readiness-levels.md
+trl-1-9,3,3,concept,Experimental proof of concept.,Laboratory experiments are designed to verify that the conceptual process works as expected.,cims/service-technology-map/technology-readiness-levels.md
+trl-1-9,4,4,prototype,Technology validated in lab.,Process components are validated individually and could be integrated in an ad hoc manner at lab scale.,cims/service-technology-map/technology-readiness-levels.md
+trl-1-9,5,5,prototype,Technology validated in relevant environment (industrially relevant environment in the case of key enabling technologies).,Integrated validation of the process to produce small outputs or short batches of the end product.,cims/service-technology-map/technology-readiness-levels.md
+trl-1-9,6,6,prototype,Technology demonstrated in relevant environment (industrially relevant environment in the case of key enabling technologies).,Development of a pilot-scale testing plant or unit (1/100th of commercial scale) including engineering-scale equivalents of all the operations that will be required at scale.,cims/service-technology-map/technology-readiness-levels.md
+trl-1-9,7,7,demonstration,System prototype demonstration in operational environment.,Successful demonstration of the continuous operation of the pilot plant/unit during a relevant timeframe.,cims/service-technology-map/technology-readiness-levels.md
+trl-1-9,8,8,demonstration,System complete and qualified.,Demonstration plant is constructed (1/10th of commercial scale) and operated in continuous mode, including working outside normal parameters.,cims/service-technology-map/technology-readiness-levels.md
+trl-1-9,9,9,market-uptake,Actual system proven in operational environment (competitive manufacturing in the case of key enabling technologies; or in space).,Commercial plant/unit set up and running for full range of operating conditions.,cims/service-technology-map/technology-readiness-levels.md
+nasa-1-9,1,1,concept,Basic principles observed and reported.,,"NASA/EU 1-9 ladder as named by IPCC AR6 WGIII Table 11.3 (column heading ""NASA TRL""). Numerically identical to trl-1-9; see the note in the design doc D5a."
+nasa-1-9,2,2,concept,Technology concept or application formulated.,,IPCC AR6 WGIII Table 11.3 column heading
+nasa-1-9,3,3,concept,Experimental proof of concept.,,IPCC AR6 WGIII Table 11.3 column heading
+nasa-1-9,4,4,prototype,Component validated in a laboratory.,,IPCC AR6 WGIII Table 11.3 column heading
+nasa-1-9,5,5,prototype,Component validated in a relevant environment.,,IPCC AR6 WGIII Table 11.3 column heading
+nasa-1-9,6,6,prototype,System model demonstrated in a relevant environment.,,IPCC AR6 WGIII Table 11.3 column heading
+nasa-1-9,7,7,demonstration,System prototype demonstrated in an operational environment.,,IPCC AR6 WGIII Table 11.3 column heading
+nasa-1-9,8,8,demonstration,System complete and qualified.,,IPCC AR6 WGIII Table 11.3 column heading
+nasa-1-9,9,9,market-uptake,Actual system proven in an operational environment.,,IPCC AR6 WGIII Table 11.3 column heading
+iea-etp,1,1,concept-and-small-prototype,Initial idea.,,"IEA ETP readiness scale. Bands read from Figure 2.16 of Energy Technology Perspectives 2026, held at database/raw-data/iea"
+iea-etp,2,2,concept-and-small-prototype,Application formulated.,,IEA ETP 2026 Figure 2.16 bands
+iea-etp,3,3,concept-and-small-prototype,Concept needs validation.,,IEA ETP 2026 Figure 2.16 bands
+iea-etp,4,4,large-prototype,Early prototype.,,IEA ETP 2026 Figure 2.16 bands
+iea-etp,5,5,large-prototype,Large prototype.,,IEA ETP 2026 Figure 2.16 bands
+iea-etp,6,6,large-prototype,Full prototype at scale.,,IEA ETP 2026 Figure 2.16 bands
+iea-etp,7,7,demonstration,Pre-commercial demonstration.,,IEA ETP 2026 Figure 2.16 bands
+iea-etp,8,8,demonstration,First-of-a-kind commercial.,,IEA ETP 2026 Figure 2.16 bands
+iea-etp,9,9,market-uptake,"Commercial operation. ETP 2026 defines pre-commercial as ""has not yet reached TRL 9"" and awaiting adoption as ""has reached TRL 9"".",,IEA ETP 2026 annex General notes
+iea-etp,9A,9,market-uptake,"Market uptake, first stage. ETP charts subdivide level 9 into 9A/9B/9C; the Clean Energy Technology Guide does not use the subdivision and reports a plain 9.",,IEA ETP 2026 Figure 2.16 axis
+iea-etp,9B,9,market-uptake,"Market uptake, second stage. Not used by the Clean Energy Technology Guide.",,IEA ETP 2026 Figure 2.16 axis
+iea-etp,9C,9,market-uptake,"Market uptake, third stage. Not used by the Clean Energy Technology Guide.",,IEA ETP 2026 Figure 2.16 axis

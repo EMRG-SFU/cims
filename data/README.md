@@ -41,6 +41,8 @@ Raw data from various sources is gathered and placed in the External-CIMS sharep
 │   ├── NIR_to_CIMS_map.csv     # Maps NIR rows to CIMS branch nodes
 │   └── README.md
 │
+├── technology_database/        # Technology database records (hand-edited, committed): archetypes, source-to-archetype mapping, reference tables
+│
 ├── raw_data/                   # Source files — gitignored, never committed
 │   ├── assumptions/            # Assumption parameters that extend model input data through the projection period
 │   ├── fixed_data/             # Structural parameters per sector from the JCIMS model (wide-format CSVs; should be updated over time)
@@ -56,13 +58,15 @@ Raw data from various sources is gathered and placed in the External-CIMS sharep
 │   ├── ceedc/                  # CEEDC data
 │   ├── ipcc/                   # IPCC data
 │   ├── ab_gov/                 # Alberta government data
-│   └── bc_gov/                 # BC government data
+│   ├── bc_gov/                 # BC government data
+│   └── technology_database/    # Technology database source extractions and manifest (the FRDR deposit)
 │
 ├── processed_data/             # Stage 1 outputs — gitignored, auto-generated, for quick visualization of processed data
 │   ├── activity/
 │   ├── eccc/
 │   ├── energy_prices/
-│   └── nrcan/ceud/
+│   ├── nrcan/ceud/
+│   └── technology_database/    # Technology database build outputs, incl. the workbook
 │
 ├── model_inputs/               # Stage 2 outputs — gitignored, auto-generated
 │   ├── model/
@@ -102,6 +106,7 @@ Pipeline **code** lives outside the data tree, inside the installed `CIMS` packa
 │       ├── commercial/
 │       ├── transportation_passenger/
 │       └── transportation_freight/
+├── technology_database/        # Technology database build (python -m CIMS.data_processing.technology_database.build)
 ├── sector/                     # Stage 2 — processed_data + fixed_data → model_inputs
 │   ├── agriculture_model_inputs.py
 │   ├── agriculture_calibration.py
@@ -402,6 +407,10 @@ pip install polars pandas numpy scipy openpyxl marimo
 
 - All Python scripts in `src/CIMS/data_processing/`
 - Mapping and conversion files in `mappings_conversions/`
+- The technology database's hand-edited records in `technology_database/`. The build is
+  [`src/CIMS/data_processing/technology_database/`](../src/CIMS/data_processing/technology_database/README.md);
+  it reads the source extractions from `raw_data/technology_database/` (from FRDR) and writes
+  `processed_data/technology_database/`.
 - `.gitkeep` files preserving empty output directory structure
 - This README and sub-READMEs
 
