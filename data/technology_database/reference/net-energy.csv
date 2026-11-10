@@ -1,0 +1,22 @@
+record-id,action,add-back,reason,decided
+tp-cusano_2017_001-0076,gross-up,237,total net energy after an energy credit of 237 MJ/t (printed); gross = net + 237 MJ/t,modeller 2026-10-13
+tp-coursol_2015_001-0002,gross-up,176,net electricity after a 176 kWh/t steam credit; gross 1120 kWh/t printed,modeller 2026-10-13
+tp-coursol_2015_001-0004,gross-up,129,net electricity after a 129 kWh/t steam credit; gross 1107 kWh/t printed,modeller 2026-10-13
+tp-golder_2021_001-0002,exclude,,net of a credit for the blast furnace gas generated; gross input not printed,modeller 2026-10-13
+tp-golder_2021_001-0003,exclude,,net of a credit for the BOF gas and steam recovered; gross input not printed,modeller 2026-10-13
+tp-nrcan_2007_001-0025,exclude,,"printed net total after credits (BFG, electricity, carbon) on a primary-electricity basis",modeller 2026-10-13
+tp-nrcan_2007_001-0029,exclude,,"printed net total after credits for steam and BOF gas, carbon in hot metal included, on a primary-electricity basis",modeller 2026-10-13
+tp-pardo_2013_001-0001,exclude,,direct energy net of the coke-oven gas the battery generates,modeller 2026-10-13
+tp-pardo_2013_001-0051,exclude,,direct energy net of the coke-oven gas the battery generates (BAT variant),modeller 2026-10-13
+tp-pardo_2013_001-0007,exclude,,direct energy net of the blast furnace gas the furnace generates,modeller 2026-10-13
+tp-pardo_2013_001-0063,exclude,,direct energy net of the blast furnace gas the furnace generates (BAT variant),modeller 2026-10-13
+tp-purola_2021_001-0008,exclude,,"net energy consumption: total less the HP steam export credit, whose size is not extracted",modeller 2026-10-13
+tp-purola_2021_001-0016,exclude,,"net energy consumption: total less the HP steam export credit, whose size is not extracted",modeller 2026-10-13
+tp-purola_2021_001-0025,exclude,,"net energy consumption: total less the HP steam export credit, whose size is not extracted",modeller 2026-10-13
+tp-purola_2021_001-0029,exclude,,"net energy consumption: total less the HP steam export credit, whose size is not extracted",modeller 2026-10-13
+tp-purola_2021_001-0034,exclude,,"net energy consumption: total less the HP steam export credit, whose size is not extracted",modeller 2026-10-13
+tp-purola_2021_001-0038,exclude,,"net energy consumption: total less the HP steam export credit, whose size is not extracted",modeller 2026-10-13
+tp-meyers_1997_001-0023,exclude,,net steam: consumption at two pressures less export at a third,modeller 2026-10-13
+tp-meyers_1997_001-0027,exclude,,net steam: consumption at two pressures less export at a third,modeller 2026-10-13
+tp-barthe_2015_001-0090,exclude,,"feed + fuel less export steam per 1,000 Nm3 H2; the export-steam credit is not printed (ruling 2026-10-13: net values with no printed credit are excluded)",modeller 2026-10-13
+tp-meyers_1997_001-0019,exclude,,"steam PRODUCTION 40-200 lb/bbl loaded as a negative range with no central; net_sec reads only a negative central, so the export stayed in the pool; gross consumption not printed (ruling 1, 2026-10-13)",modeller 2026-10-13

@@ -1,0 +1,536 @@
+discriminator,definition,reviewed
+absorption,Absorption chiller,no
+acid,Acid pickling line,no
+acid-catalyzed,Homogeneous acid catalyst,no
+acid-gas-advanced,Advanced acid gas removal,no
+activated-sludge,Activated sludge aeration,no
+adipic-acid,Nitric acid oxidation adipic acid plant,no
+advanced-anodes,Electrowinning with advanced anodes and energy control,no
+advanced-integration,Advanced heat integration,no
+advanced-solvent,Advanced low-energy solvent,no
+air-system-management,Compressed-air system management,no
+air-water,Direct-fired air or water heater,no
+alcohol-to-jet,Alcohol-to-jet,no
+alkali-activated,Alkali-activated binder,no
+alkali-catalyzed,Alkali-catalyzed transesterification,no
+alkylation,Acid-catalysed alkylation of light olefins with isobutane,yes
+alkylation-isomerization,Alkylation and isomerization,no
+all-electric,All-electric injection moulding and extrusion,no
+alumina,A whole Bayer alumina refinery (digestion through calcination) treated as one plant,no
+amine,Amine post-combustion capture,no
+amine-sweetening,Amine sweetening,no
+ammonia,Steam reforming with Haber-Bosch synthesis; Ammonia plant with capture on the process CO2,no
+ammonium-nitrate,Ammonium nitrate neutralisation and finishing,no
+anode-baking,Prebake anode baking furnace,no
+anode-baking-electric,Electrified or hydrogen-fired anode baking,no
+anthraquinone-autoxidation,Anthraquinone hydrogen peroxide process,no
+aromatics-extraction,Aromatics (BTX) extraction plant,no
+artificial-lift,Electric artificial lift,no
+aseptic-uht,Aseptic and UHT processing,no
+atmospheric-vacuum,Atmospheric and vacuum distillation with fired heaters,no
+automatic-shutoff,Self-acting shutoff or reseating relief valve,no
+back-pressure,Back-pressure or extraction steam turbine,no
+baking,Microwave or radio-frequency assisted baking,no
+ball,Ball mill,no
+base-load,Base-load LNG liquefaction train,no
+batch-bell,Batch (bell) annealing,no
+batch-kraft,Batch kraft digester with displacement heating,no
+bath-reduction,Bath smelting reduction,no
+bath-tuyere,Tuyere-injected bath smelting reactor,no
+battery-electric,Battery-electric equipment; Battery-electric haulage,no
+battery-hybrid,Battery hybrid rig power,no
+battery-storage,Solar PV with battery storage,no
+bayer,Bayer digestion on fossil steam; Solar thermal in the Bayer process,no
+bayer-biomass,Biomass-fired Bayer heat,no
+bayer-electric,Electrified Bayer heat,no
+bayer-hydrogen,Hydrogen in the Bayer process,no
+beverage-spirits,"Beverage spirits (whisky, rum, vodka) as distinct from fuel ethanol",no
+binary-power,Geothermal binary-cycle power,no
+bio-pitch,Bio-pitch and bio-coke anodes,no
+biocarbon-reductant,Biocarbon reductant,no
+biogas-upgrading,Biogas upgrading,no
+bioleaching,Bioleaching,no
+biomass-ammonia,Ammonia from gasified biomass,no
+biomass-chp,Biomass gasifier CHP,no
+biomass-ethylene,Ethylene from gasified biomass,no
+biomass-fischer-tropsch,Biomass or waste gasification with Fischer-Tropsch synthesis to liquid hydrocarbons,yes
+biomass-flash-pyrolysis,Flash pyrolysis of biomass to olefins and aromatics,no
+biomass-methanation,Biomass gasification with methanation,no
+biomass-methanol,Biomass or waste gasification to methanol,no
+biomass-waste,Biomass or waste gasification,no
+biomethane-upgrading,Anaerobic digestion with upgrading,no
+black-liquor,Black liquor gasification,no
+blended-cement,Blended cement with supplementary cementitious materials,no
+blowdown-avoidance,Pipeline or meter-run work done without venting the isolated segment,no
+blowdown-recovery,Blowdown gas recompression,no
+boil-off-recovery,Boil-off gas recovery,no
+bottom-blowing,Oxygen bottom-blowing bath smelting,no
+by-product,By-product coke oven battery,no
+calcined-clay,Calcined clay cement (LC3),no
+calcium-looping,Calcium looping,no
+calcium-silicate-feed,Calcium-silicate rock as the calcium source,no
+carbonated,Carbonated binder,no
+catalytic-n2o,Catalytic N2O abatement,no
+catalytic-naphtha,Catalytic cracking of naphtha,no
+catalytic-oxidiser,Catalytic oxidation of vent gas,no
+catalytic-reforming,Catalytic reforming,no
+caustic-evaporation,Caustic evaporation with mechanical vapour recompression,no
+caustic-soda,Caustic soda (sodium hydroxide) concentration,no
+ceramic-electric,Electric kiln,no
+ceramic-hot-air,Hot-air drying of green ceramic ware,no
+ceramic-hydrogen,Hydrogen-fired kiln,no
+ceramic-microwave-assisted,Ceramic kiln with microwave heating assisting the fired kiln,yes
+ceramic-microwave-assisted-gas,Gas-fired ceramic kiln with part of the heat from microwaves,no
+charcoal-retort,"Industrial charcoal retort (continuous or batch, pyrolysis gas fired)",no
+chemi-thermomechanical,Chemi-thermomechanical pulping,no
+chemical-depolymerization,Chemical depolymerization,no
+chemical-solvent,Chemical solvent on process gas,no
+chilled-water,Chilled-water system,no
+chlor-alkali-diaphragm,Chlor-alkali electrolysis with an asbestos or polymer diaphragm,no
+chlor-alkali-membrane,Membrane chlor-alkali cell,no
+chlor-alkali-mercury,Mercury chlor-alkali cell,no
+chp,Combined-cycle CHP; Fuel-cell CHP; Reciprocating engine CHP,no
+clarifier,Clarification and sludge dewatering,no
+claus,Claus sulphur recovery,no
+clay-calcination,"Rotary kiln calcining clay, new or a converted cement kiln",no
+clay-flash,Flash (gas-suspension) calciner for clay,no
+co2,Carries captured CO2,no
+co2-dehydration,Dehydration and compression,no
+co2-storage,Geological storage of CO2,no
+co2-to-dme,Dimethyl ether from hydrogen and CO2,no
+co2-to-ethanol,Ethanol from hydrogen and CO2,no
+co2-to-fischer-tropsch,Fischer-Tropsch fuels from hydrogen and CO2,no
+co2-to-gasoline,Gasoline from e-methanol (MTG),no
+co2-to-higher-alcohols,Higher alcohols from hydrogen and CO2,no
+co2-to-methanol,CO2-to-methanol,no
+co2-to-ome1,OME1 (methylal) from hydrogen and CO2,no
+co2-to-ome3-5,OME3-5 from hydrogen and CO2,no
+coal-ammonia,Ammonia from gasified coal,no
+coal-fischer-tropsch,Coal gasification with Fischer-Tropsch synthesis to liquid fuels,yes
+coal-methanation,Coal gasification with methanation,no
+coal-methanol,Coal gasification route to methanol,no
+coal-mine-methane,No coal-mine methane control,no
+coal-mine-methane-drainage,Coal-mine methane drainage and use,no
+coal-petroleum-coke,Coal or petroleum-coke gasification,no
+coal-to-liquids,Coal-to-liquids,no
+cold,Cold rolling mill,no
+compressor-station-power,Compressor-station waste-heat power,no
+condensing,Condensing boiler; Condensing steam turbine,no
+constant-volume,Constant-volume fan system,no
+continuous,Continuous annealing line; Continuous casting; Continuous converting,no
+continuous-casting,Continuous casting and rolling,no
+continuous-kraft,Continuous kraft digester,no
+conversion,Conversion (cracking) refinery,no
+cooler-heat-recovery,Induration with cooler heat recovery,no
+coupled-pickling,Coupled pickling and tandem cold mill,no
+crucible-gas-fired,Fuel-fired crucible,no
+crude-oil,Crude oil and liquids transmission pipeline,no
+cryogenic-condensation,Cryogenic separation,no
+cryogenic-flue-gas,Cryogenic post-combustion capture,no
+crystallizer,Evaporators and crystallizers,no
+crystallizer-produced-water,Evaporator-crystalliser treating oilfield produced water,no
+cupola,Cupola or gas-fired melting furnace,no
+cyclic-steam,Cyclic steam stimulation,no
+dac-liquid-solvent,Liquid-solvent DAC,no
+dac-solid-sorbent,Solid-sorbent DAC,no
+deep-conversion,Deep-conversion (coking) refinery,no
+deep-eutectic-solvent,Pulping with deep eutectic solvents,no
+delayed-coking,Delayed coking,no
+demand-controlled,Demand-controlled ventilation,no
+dewatering,Mechanical dewatering before drying,no
+dewatering-advanced,Advanced mechanical dewatering,no
+diesel,Diesel non-road equipment; Diesel drilling rig,no
+diesel-electric,Diesel-electric hybrid equipment,no
+diesel-field,Diesel field engine,no
+diesel-fleet,Diesel haul truck fleet,no
+diesel-generator,Diesel generator set,no
+direct-contact,Direct contact steam generation,no
+direct-fired,Direct-fired dryer or curing oven,no
+direct-lithium,Direct lithium extraction,no
+direct-reduction,Shaft-furnace direct reduction; Gas-based direct reduction with capture on the CO2 removal unit,no
+direct-use,Geothermal direct use,no
+disposal-injection,Disposal well injection,no
+distillation,Distillation with mechanical vapour recompression,no
+distillers-grain,Distillers-grain drying with heat recovery or heat pumps,no
+drag-reducing-agent,Drag-reducing agents,no
+drive,"Gas engine or gas turbine drive; Turbine or engine drive efficiency measures, moderate; Steam turbine drive",no
+drive-high-efficiency,High-efficiency gas-turbine drive,no
+drum,Rotating drum machine,yes
+drum-debarker,Drum debarker and disc chipper,no
+dry-gas-seal,Dry gas seals on centrifugal compressors,no
+dry-precalciner,"Dry rotary kiln with preheater and precalciner; Cement kiln with post-combustion capture; Cement kiln efficiency measures, moderate; Cement kiln efficiency measures, strong",no
+dry-stack-tailings,Thickened or dry-stack tailings,no
+dryer-exhaust,Dryer exhaust heat recovery and recirculation,no
+drying,Microwave or radio-frequency drying,no
+dual-fuel,Dual-fuel or natural-gas engines,no
+ebullated-bed-hydrocracking,Ebullated-bed hydrocracking,no
+ecf-bleaching,Elemental-chlorine-free bleaching,no
+efficient-reciprocating,Efficient reciprocating compressor,no
+effluent,Anaerobic treatment with biogas recovery,no
+electric,"Electric boiler; Electric thermal energy storage; Electric or heat-pump dryer; Electrified cracker furnace; Electric fracturing fleet; Electric oven, fryer or roaster",no
+electric-air,Electric air heating,no
+electric-arc,Electric arc melting furnace,no
+electric-autonomous,Electric or autonomous haul fleet,no
+electric-drive-centrifugal,Electric-drive compressor,no
+electric-drive-reciprocating,Electric-drive compression,no
+electric-melter,Electric melter,no
+electric-motor,Electric-motor-driven refrigeration,no
+electric-plasma,Kiln heated by plasma torches and electric heaters,no
+electric-process,Electric process heater,no
+electric-resistance,Electric resistance heating of the melt,no
+electric-smelting,Electric smelting furnace for DRI,no
+electric-station,Electric pump station,no
+electrified-crude,Electrified crude heater,no
+electrochemical,Made electrochemically,no
+electrolytic,Electrolytic coating line,no
+electrolytic-hydrogen,Direct reduction with hydrogen from on-site electrolysis,no
+electrolytic-smelting,Hydro- or electrolytic smelting,no
+electromagnetic,"Electromagnetic heating (microwave, radio-frequency, infrared)",no
+electromagnetic-heating,Electromagnetic (radio-frequency) heating with solvent,no
+electrorefining,Electrolytic refining of cast anodes,no
+enclosed-combustor,Enclosed combustor,no
+enhanced,Enhanced (stimulated) geothermal system,no
+ethanol-to-ethylene,Bio-ethanol dehydration to ethylene,no
+ethylene-oxidation,Ethylene oxide and glycol plant,no
+evaporation,Mechanical vapour recompression evaporation,no
+exhaust-air,Exhaust-air heat recovery,no
+fibreboard-refiner,Refining of chips for fibreboard,no
+field-electric,Electric motor in place of a field engine,no
+fine-bubble,Fine-bubble diffused aeration,no
+fired-heater,Fired heater and distillation train,no
+fired-process,Fired process heater,no
+fired-tubular,Fired tubular steam cracker,no
+fischer-tropsch,Gasification with Fischer-Tropsch synthesis,no
+flare-gas-recovery,Flare gas recovery,no
+flash,Flash smelting furnace,no
+flash-fluid,Flash or fluid-bed calciner,no
+flash-power,Geothermal flash-steam power cycle,no
+floating,Floating LNG liquefaction,no
+fluid-catalytic-cracking,Fluid catalytic cracking; FCC regenerator with post-combustion capture,no
+fluid-catalytic-cracking-oxy-fuel,Oxy-fuel FCC regeneration,no
+fluid-coking,Fluid or flexi-coking,no
+fluidized-bed,Fluidized-bed kiln,no
+fluidized-bed-direct-reduction,Fluidized-bed direct reduction,no
+fluorescent-high-bay,Fluorescent high-bay fixture (T5 HO or T8 HO),no
+fluorescent-t12,T12 fluorescent with magnetic ballast,no
+fluorescent-t8,T8 or T5 fluorescent with electronic ballast,no
+food,Food and beverage duty,no
+fourdrinier-gap,Fourdrinier or gap former with press section,no
+free-evaporative,Free or evaporative cooling,no
+froth,Froth flotation,no
+fuel-fired,Fuel-fired boiler; Fuel-fired space or make-up air heater,no
+furnace,Fired furnace or process heater; Electric resistance furnace,no
+gas-driven,Gas-driven pneumatic controllers and pumps,no
+gas-engine-drive,Reciprocating gas-engine compressor,no
+gas-fired-hood,"Gas-fired hood, infrared or air dryer",no
+gas-forklift,Propane or natural gas forklift,no
+gas-suspension,Gas-suspension calciner,no
+gas-to-liquids,Gas-to-liquids,no
+gas-turbine,Gas-turbine-driven refrigeration,no
+gas-turbine-drive,Gas-turbine compressor station,no
+gasoline-propane,Gasoline or propane field engine,no
+glass-hybrid-electric,Hybrid furnace with electric boosting,no
+glass-hydrogen-fired,Hydrogen-fired glass furnace,no
+glass-oxy-fuel,Oxy-fuel glass furnace,no
+glass-oxy-fuel-thermochemical,Oxy-fuel glass furnace with thermochemical (fuel-reforming) heat recovery,no
+glass-recuperative,Air-fuel furnace with a recuperator (not regenerators),no
+glass-regenerative,Air-fuel regenerative glass furnace,no
+glass-tempering,Glass tempering furnace,no
+glycol-dehydration,Glycol dehydration,no
+grain-dry-mill,Grain dry-mill fermentation and distillation,no
+gravity-magnetic,Gravity and magnetic separation,no
+grid-powered,Grid-powered or electric rig,no
+groundwood,Log grinding against a stone,no
+haber-bosch-electrolytic,Electrolytic-hydrogen Haber-Bosch,no
+haber-bosch-loop,Ammonia synthesis loop without the hydrogen plant,no
+haber-bosch-low-pressure,Low-pressure Haber-Bosch,no
+heap-atmospheric,Heap and atmospheric leaching with SX-EW,no
+heat-charged,Charged with heat,no
+heat-integrated,Heat-integrated or divided-wall column,no
+heat-pump,Heat-pump drying,no
+heat-pumped,Heat-pumped distillation,no
+heat-recovery,Heat-recovery ventilation; Heat-recovery coke oven,no
+heat-recovery-steam-generator,Gas turbine with heat-recovery steam generator,no
+heat-transformer,Heat-driven heat pump (absorption or chemical) lifting waste heat,no
+heat-treatment,Fuel-fired heat-treatment furnace; Electric or induction heat treatment,no
+heterogeneous-catalyst,Heterogeneous-catalyst transesterification,no
+hid,"High-intensity discharge (mercury vapour, metal halide or high-pressure sodium)",no
+high-efficiency,High-efficiency EAF; High-efficiency flare; High-efficiency chiller,no
+high-pressure-acid,High-pressure acid leaching,no
+high-pressure-processing,High-pressure processing,no
+high-temperature,Concentrating solar for high-temperature heat,no
+homogenizing,Homogenizing and reheat furnaces,no
+hood-heat-recovery,High-efficiency hood with heat recovery,no
+hot,"Hot rolling mill; Hot rolling mill efficiency measures, moderate",no
+hot-blast-cupola,Coke-fired cupola melting rock for mineral wool,no
+hot-charging,Hot charging and direct rolling,no
+hot-dip,Hot-dip galvanizing line,no
+hot-platen,Hot press with thermal-oil heater,no
+hot-water,Heat pump for hot water and clean-in-place,no
+hpgr,HPGR-based grinding circuit,no
+hvac,HVAC heat pump; Electric resistance HVAC heating,no
+hybrid-electric,Furnace melting with a large share of electric boosting alongside fuel firing,yes
+hybrid-majority-electric,Hybrid glass furnace melting mostly (60-80%) with electrodes,no
+hydrogen,Hydrogen liquefaction and road transport; Autothermal reforming to hydrogen,no
+hydrogen-ancillary,Hydrogen-fired ancillary heat,no
+hydrogen-bell,Hydrogen bell annealing,no
+hydrogen-blending,Blending into the natural gas network,no
+hydrogen-co2,Gas fermentation of hydrogen and CO2,no
+hydrogen-combustion,Hydrogen internal-combustion engine,no
+hydrogen-direct-reduction,Direct reduction of iron ore with (about 100%) hydrogen,no
+hydrogen-fired,Hydrogen-fired furnace,no
+hydrogen-fuel-cell,Hydrogen fuel-cell equipment; Hydrogen fuel-cell haulage,no
+hydrogen-pipeline,Pipeline compression and transmission,no
+hydroprocessing,Hydroprocessing (hydrocracking and hydrotreating),no
+hydroskimming,Hydroskimming refinery,no
+hydrothermal-liquefaction,Hydrothermal liquefaction,no
+hydrothermal-silicate,Autoclaved calcium hydrosilicate binder,no
+hydrotreating-fixed-bed,Fixed-bed hydrotreating,no
+hydrotreating-lipids,Hydrotreating of oils and fats (HEFA/HVO),no
+in-pit-crushing,In-pit crushing and conveying,no
+in-situ,In-situ leaching,no
+in-situ-oxy-combustion,In-situ oxy-combustion steam generation,no
+indirect,Electrified or indirectly heated calciner,no
+indirect-fired,Indirect-fired oven,no
+induction,Induction melting furnace,no
+induction-standard,"Induction motor, standard efficiency",no
+induration,"Pellet induration (straight-grate, grate-kiln)",no
+industrial,Industrial heat pump,no
+inert-anode,Inert anode cell,no
+infrared,Infrared or ultraviolet curing,no
+ingot,Ingot casting,no
+instrument-air,Instrument air or electric actuation,no
+integrated-upgrader,Whole bitumen upgrader,no
+intermittent,Batch (intermittent) firing in a shuttle or hood kiln,no
+iron-electrowinning,Low-temperature iron electrowinning,no
+isomerization,Isomerization of light naphtha or butane,yes
+isothermal,Immersion heating with forced metal circulation,no
+kiln-waste-heat,Kiln waste-heat drying,no
+ladle,Ladle preheating,no
+ladle-metallurgy,Ladle metallurgy furnace,no
+landfill-gas-recovery,Landfill gas recovery and upgrading,no
+leak-detection,Leak detection and repair,no
+led,"LED, without controls",no
+led-controls,LED lighting with controls,no
+led-high-bay,LED high-bay luminaire,no
+legacy,"Wet, semi-wet, semi-dry or long dry cement kiln, without the dry preheater-precalciner layout",yes
+lehr,Gas-fired annealing lehr,no
+lehr-electric,Electric annealing lehr,no
+lignin-extraction,Lignin extraction,no
+lignocellulosic-enzymatic,Lignocellulosic enzymatic fermentation,no
+lime,Lime kiln with post-combustion capture,no
+lime-dolomitic,Dolomitic lime kiln,no
+lime-electric,Electrified lime kiln,no
+lime-gasifier-fired,Biomass-gasifier-fired lime kiln,no
+lime-long-rotary,Long rotary lime kiln without preheater,no
+lime-oxy-fuel,Oxy-fuel lime kiln,no
+lime-parallel-flow,Parallel-flow regenerative shaft kiln,no
+lime-product-cooler,Lime kiln with product cooler and improved drying,no
+lime-rotary,Rotary lime kiln,no
+lime-rotary-preheater,Rotary lime kiln with preheater,no
+lime-shaft,Mixed-feed or annular shaft lime kiln,no
+limestone-decarbonation,Electrolytic limestone decarbonation,no
+line-focus,"Line-focus solar concentrator (parabolic trough, linear Fresnel)",yes
+line-heater,Fired line heater and treater,no
+lng-dual-fuel,LNG dual-fuel haulage: diesel engines converted to burn LNG with a diesel pilot,no
+log-thawing,Log and chip thawing with recovered heat,no
+low-bleed,Low-bleed pneumatic controllers,no
+low-emission-components,Low-emission valves and connectors,no
+low-emission-seal,"Compressor seal or rod-packing upgrades that cut seal venting (dry gas seals, low-bleed packing)",yes
+low-shaft,Low-shaft furnace,no
+low-temperature,"Water electrolysis, low temperature",no
+low-temperature-central,Centralized alkaline or PEM electrolysis plant (about 100 MW to 1 GW) supplying a pipeline or merchant market,no
+lumber-continuous,Continuous kiln with heat recovery,no
+lumber-heat-pump,Dehumidification or heat-pump kiln,no
+lumber-steam,Steam or thermal-oil lumber kiln,no
+magnesium-chloride,Magnesium chloride electrolysis,no
+market-pulp,Drying of market pulp sheets,no
+membrane,Membrane separation,no
+membrane-bioreactor,Activated sludge with membrane separation,no
+membrane-cryogenic,All-electric membrane or cryogenic separation of CO2 from flue gas,yes
+methane,Steam methane reformer; Steam methane reformer with capture on the shift gas; No methane abatement (vent or leak),no
+methane-monitoring,Continuous methane monitoring,no
+methane-pyrolysis,Methane pyrolysis,no
+methanol,Natural-gas reforming with methanol synthesis (whole plant),yes
+methanol-loop,Methanol synthesis loop without the hydrogen plant,no
+methanol-recovery,Methanol recovery with heat integration,no
+methanol-to-jet,Methanol-to-jet,no
+methanol-to-olefins,Methanol to olefins,no
+mine-air-electric,Electric or heat-pump mine air heating,no
+mine-air-fired,Fixed-flow ventilation with direct-fired air heater,no
+mine-dewatering,Mine dewatering pumping,no
+mine-ventilation,Mine ventilation fans,no
+mine-water-treatment,Mine water treatment plant,no
+molecular-sieve,Molecular-sieve dehydration,no
+molecular-sieve-ethanol,Molecular-sieve dehydration with heat integration,no
+molten-oxide,Molten oxide electrolysis,no
+multiple-effect,Multiple-effect evaporators,no
+multipolar-chloride,Multipolar or chloride cell,no
+n2o,No N2O abatement,no
+naphthenic-froth-treatment,Naphthenic froth treatment,no
+natural-gas,Natural gas transmission pipeline,no
+ngl-recovery,Turboexpander NGL recovery,no
+nickel-matte,Refining of nickel matte to metal,no
+nitric-acid,Ammonia oxidation nitric acid plant,no
+non-aqueous,Non-aqueous extraction,no
+non-emitting,Controllers and pumps driven by instrument air or electricity instead of gas,yes
+nru-optimization,Nitrogen rejection unit tuning and upgrades,no
+nuclear-htgr,High-temperature gas-cooled reactor,no
+nuclear-micro,Microreactor,no
+nuclear-small-modular,Small modular reactor CHP,no
+nuclear-steam,Nuclear steam supply,no
+off-gas,Off-gas energy recovery,no
+ohmic-infrared,"Ohmic, microwave or infrared heating",no
+oil-treating,Electric or heat-pump treating,no
+once-through,Once-through field boiler,no
+open-pit-coal,Open-pit coal mine,no
+open-pit-oil-sands,Oil sands surface mine and extraction plant,no
+optimization,Fan system optimization; Pump system optimization,no
+ore-sorting,Sensor-based ore sorting,no
+oven-exhaust,Oven exhaust heat recovery,no
+overland,Conveying in place of truck haulage,no
+oxy-fuel,"Fired with oxygen instead of air (kilns, furnaces)",no
+oxy-fuel-thermochemical,Oxy-fuel furnace with thermochemical heat recovery (flue gas reforms the fuel),yes
+oxygen-delignification,Oxygen delignification with ECF bleaching,no
+oxygen-depolarized,Oxygen-depolarized cathode cell,no
+packaged,Packaged air conditioner or rooftop unit,no
+paraffinic-froth-treatment,Paraffinic froth treatment,no
+partial-upgrading,Partial upgrading,no
+peirce-smith,Peirce-Smith converting,no
+pfc-anode-effect-control,Anode-effect control for PFC reduction,no
+physical-solvent,Physical solvent,no
+plasma-electric,Plasma or electric induration,no
+plastic-liner,Plastic insert liner in an existing main,no
+plastics-pyrolysis,Plastics pyrolysis recycling,no
+plunger-lift,Plunger lift and smart liquids unloading,no
+point-focus,"Point-focus solar concentrator (tower, dish)",yes
+polymerization-extrusion,Polymerization reactor and extrusion,no
+portland-cement,Portland cement (GU),no
+potash,"Potash (KCl) milling of sylvinite ore: desliming, flotation, drying and compaction",no
+potash-crystallization,Potash crystallization and flotation,no
+power-modulation,Smelter power modulation,no
+pre-reduction,Pre-reduction of feed,no
+prebaked-anode,Prebaked anode cell,no
+premium-efficiency,Premium-efficiency motor,no
+pressure-let-down,Pressure let-down station (city gate or regulator station),no
+pressure-swing,Pressure or vacuum swing adsorption,no
+produced-water-recycling,Produced water recycling for makeup,no
+propane-dehydrogenation,Propane dehydrogenation,no
+pump-drive,Gas-engine driven pumps,no
+pyrolysis-oil,Pyrolysis oil upgrading,no
+recovery,Recovery boiler; Recovery boiler with post-combustion capture,no
+recovery-high-solids,High-solids firing and high-pressure recovery boiler,no
+recycled-fibre,Recycled-fibre repulping and deinking,no
+reduced-emission-completion,Gas capture during well completion flowback,no
+refiner-low-energy,Low-energy refining,no
+refinery,"Fired heater or furnace in refinery service (crude, vacuum, reformer, coker and hydrotreater heaters): large, with air preheat",no
+regenerative,"Recovers heat regeneratively: regenerator-fired furnace, or product-to-product regeneration",no
+regenerative-burners,Regenerative or recuperative burners,no
+regenerative-oxidiser,Thermal oxidiser with regenerative ceramic beds,no
+regenerative-oxy-fuel,Regenerative or oxy-fuel burner furnace; Regenerative or oxy-fuel melting,no
+reheating,"Reheating furnace, fuel-fired; Reheating furnace efficiency measures, moderate; Reheating furnace efficiency measures, strong; Induction reheating",no
+reverberatory-rotary,Reverberatory or rotary melting furnace,no
+reverse-osmosis,Reverse osmosis and evaporative concentration,no
+reversible,Reversible heat pump,no
+ring,Ring rolling,no
+rotary-direct-fired,Direct-fired rotary dryer or calciner,no
+rotary-expanded-clay,Rotary expansion kiln for lightweight clay aggregate,no
+rotary-hearth-direct-reduction,Direct reduction of coal-ore composite pellets on a rotary hearth,no
+rotary-oxy-fuel,Oxy-fuel fired rotary furnace,no
+rotodynamic,Rotodynamic heater; Rotodynamic cracking reactor,no
+sag-ball,SAG and ball mill circuit,no
+sagd,Steam-assisted gravity drainage,no
+scrap-preheating,"Electric arc furnace that preheats the scrap with off-gas (shaft, continuous charging)",yes
+semi-chemical,Semi-chemical and sulphite pulping,no
+shaft-hoisting,Shaft hoisting,no
+shaft-preheat,Shaft melter preheating the charge in its stack,no
+shoe-extended,Shoe (extended-nip) press,no
+silicothermic,"Reduction of calcined dolomite with ferrosilicon (Pidgeon, Magnetherm)",yes
+silicothermic-pidgeon,Silicothermic (Pidgeon) magnesium reduction,no
+simple-cycle,"Gas engine or simple-cycle gas turbine; Generating set efficiency measures, moderate",no
+slag,Granulated blast-furnace slag,no
+small-nuclear,"A small nuclear reactor supplying heat or steam (small modular, high-temperature gas-cooled or micro reactor)",yes
+small-nuclear-power,A small nuclear reactor generating electricity,no
+small-scale,Small-scale or modular liquefaction,no
+smelting-open-arc-dc,"Open-arc DC smelting furnace (non-ferrous, ferroalloy)",yes
+smelting-reduction,Coal-based reduction of iron ore in a smelting vessel (two-stage or bath),yes
+smelting-submerged-arc,"Submerged-arc smelting furnace (non-ferrous, ferroalloy)",yes
+soderberg,Soderberg cell; Soderberg paste plant,no
+sodium-chlorate,Sodium chlorate cell,no
+solid-fuel,Solid-fuel boiler,no
+solid-oxide,Solid-oxide electrolysis,no
+solid-sorbent,Solid sorbent capture,no
+solvent-assisted,Solvent-assisted steam recovery,no
+solvent-only,Solvent-only extraction,no
+space,Electric resistance space heating,no
+space-heating,Space-heating heat pump,no
+spark-ignition,Spark-ignited engine on propane or natural gas,yes
+spray-drum-belt,"Direct-fired spray, drum or belt dryer",no
+stack,Stack (tower) melter for aluminium,no
+steam-generating,Steam-generating heat pump,no
+steam-heated,"Steam-heated cylinder dryer section; Steam-heated kettles, retorts and plate heat exchangers",no
+steel-offgas,Steel-mill off-gas as feed,no
+steel-offgas-chemicals,Chemicals from steel-mill off-gases,no
+stirred,Stirred fine grinding mills,no
+strand,Sinter strand,no
+strip,Strip casting,no
+strip-heating,Induction strip heating,no
+sugar-beet,Beet sugar factory,no
+sulphite,"Sulphite cooking (acid, bisulphite or neutral) rather than kraft",no
+sulphoaluminate,Calcium sulphoaluminate clinker,no
+sulphur-recovery,Sulphur recovery and acid gas removal,no
+sulphuric-acid-metallurgical,Sulphuric acid plant on smelter off-gas (gas cleaning and double contact),no
+supercritical-methanol,Non-catalytic reaction in supercritical methanol,no
+superheated-steam,Dryer using superheated steam as the drying medium,no
+syngas,Syngas fermentation,no
+syngas-methanol,Syngas methanol synthesis,no
+tailings-reclaim,Tailings thickening and water reclaim,no
+tank-venting-reduction,Storage changes that stop tank flashing or blanket-gas venting,no
+tempering,Furnace that heats and quenches a product to temper it,yes
+thermal,Concentrating solar thermal,no
+thermal-n2o-destruction,Thermal N2O destruction,no
+thermal-oil,Thermal-oil heater,no
+thermal-oxidiser,Thermal oxidation of vent gas with support fuel,no
+thermomechanical,Thermomechanical pulping refiners,no
+thickening-filtration,Thickening and filtration,no
+thin-slab,Thin-slab casting with direct rolling,no
+through-air,Hot air blown through the web (through-air drying),no
+top-gas-recycling,Top-gas recycling oxygen blast furnace,no
+top-submerged-lance,Top-submerged-lance bath smelting,no
+torrefaction,Biomass torrefaction,no
+trolley-assist,Trolley-assist haulage,no
+tunnel-deck,Direct-fired tunnel or deck oven,no
+tunnel-roller,Tunnel or roller kiln,no
+turbine-exhaust,Turbine waste-heat recovery,no
+twin-chamber,Twin-chamber furnace with decoating,no
+two-stage,Two-stage smelting reduction,no
+underground-battery,Underground battery-electric equipment,no
+underground-coal,Underground coal mine,no
+urea-synthesis,Urea synthesis from ammonia and CO2,no
+urea-total-recycle,Total-recycle urea process without stripping,no
+vam-oxidiser,Ventilation-air methane oxidiser,no
+vapour-compression,Vapour-compression chiller or refrigeration plant,no
+vapour-recovery,Vapour recovery unit,no
+variable-speed,Variable-speed drive; Variable-speed fans; Variable-speed pump drives,no
+veneer-strand,Direct-fired veneer and strand dryer,no
+vertical-roller,Vertical roller mill or high-pressure grinding rolls,no
+very-high-temperature,Heat pump or vapour recompression delivering above 150 degC,yes
+visbreaking,Mild thermal cracking of residue (visbreaking),no
+warm-lime-softening,De-oiling and warm lime softening,no
+warm-water-extraction,Hydrotransport and warm-water extraction,no
+waste-heat,Waste-heat power (ORC or steam Rankine),no
+waste-to-energy,Incineration with energy recovery,no
+waterless,Paper formed without water,no
+wet-seal-degassing-recovery,Wet-seal degassing gas recovery,no
+wood,Wood pellet mill,no
+zinc-electrowinning,Zinc electrowinning from sulphate solution,no
+kraft,Kraft (sulphate) pulping,no
+with-dryer-section,Whole paper machine: forming and press with the dryer section,no
+black-liquor-fuels,"Black liquor gasification making motor fuels or chemicals (DME, methanol, FT liquids, mixed alcohols)",no
+reduced-iron-charge,Charged mostly with reduced iron (DRI or HBI) rather than scrap,no
+open-pit-coal-excavation,"Drilling, blasting and loading at an open-pit coal mine",no
+underground-coal-cutting,Cutting and loading of coal underground,no
+gypsum,Gypsum calcining to stucco,no
+electric-paper,Electrically heated paper drying,no
+sf6,Sulphur hexafluoride,no
+magnesium-cover-gas,SF6-free cover gas for molten magnesium,no

@@ -1,0 +1,27 @@
+source-pattern,default-basis,note
+etsap_,LHV,"IEA ETSAP technology briefs state energy on a net calorific (LHV) basis unless a brief says otherwise (ruling 2026-10-05: unstated basis in DEA, ETSAP, BREF and MIDDEN rows is LHV)"
+dea_,LHV,"Danish Energy Agency technology catalogues use lower heating values throughout (catalogue introduction); ruling 2026-10-05"
+van-geene_2024_001,LHV,"MIDDEN database v0.4a: energy flows on an LHV basis per the MIDDEN methodology; ruling 2026-10-05"
+van-geene_2025_001,LHV,MIDDEN follow-up; ruling 2026-10-05
+remus_2013_001,LHV,EU BREF (iron and steel): net calorific values; ruling 2026-10-05
+suhr_2015_001,LHV,EU BREF (pulp and paper); ruling 2026-10-05
+schorcht_2013_001,LHV,EU BREF (cement lime magnesia); ruling 2026-10-05
+scalet_2013_001,LHV,EU BREF (glass); ruling 2026-10-05
+jrc_2007_001,LHV,EU BREF (LVIC-S); ruling 2026-10-05
+jrc_2007_002,LHV,EU BREF (LVIC-AAF); ruling 2026-10-05
+jrc_2007_003,LHV,EU BREF (polymers); ruling 2026-10-05
+jrc_2007_004,LHV,EU BREF (ceramics); ruling 2026-10-05
+jrc_2009_001,LHV,EU BREF (energy efficiency); ruling 2026-10-05
+jrc_2022_001,LHV,EU BREF (ferrous metals processing); ruling 2026-10-05
+falcke_2017_001,LHV,EU BREF (LVOC); ruling 2026-10-05
+barthe_2015_001,LHV,EU BREF (refineries); ruling 2026-10-05
+aries_2024_001,LHV,EU BREF (smitheries and foundries); ruling 2026-10-05
+cusano_2017_001,LHV,EU BREF (non-ferrous metals); ruling 2026-10-05
+lecomte_2017_001,LHV,EU BREF (large combustion plants); ruling 2026-10-05
+giner-santonja_2019_001,LHV,EU BREF (food drink and milk); ruling 2026-10-05
+brinkmann_2014_001,LHV,EU BREF (chlor-alkali); ruling 2026-10-05
+brinkmann_2016_001,LHV,EU BREF (common waste water and gas); ruling 2026-10-05
+daginnus_2023_001,LHV,EU BREF (waste gas in chemicals); ruling 2026-10-05
+stubdrup_2016_001,LHV,EU BREF (wood-based panels); ruling 2026-10-05
+neuwahl_2019_001,LHV,EU BREF (waste incineration); ruling 2026-10-05
+pinasseau_2018_001,LHV,EU BREF (waste treatment); ruling 2026-10-05

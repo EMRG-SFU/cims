@@ -1,0 +1,4 @@
+record-id,note
+tp-etsap_2010_005-0023,"ETSAP E05 Table 4 'Total production cost, $/MWh' of the back-pressure steam turbine: the whole plant's cost per MWh of electricity, no heat credit stated. Put per GJ of heat with the heat-to-power ratio (modeller 2026-10-02)."
+tp-etsap_2010_005-0024,"ETSAP E05 Table 4 'Total production cost, $/MWh' of the digester CHP: the whole plant's cost per MWh of electricity, no heat credit stated. Put per GJ of heat with the heat-to-power ratio (modeller 2026-10-02)."
+tp-etsap_2013_012-0072,"ETSAP P11 Table 10 'Electricity price (LCOE) incl. power gen.': read as the levelized cost of energy including power generation, i.e. the whole chain's cost per kWh of electricity (modeller 2026-10-02). Put per GJ of heat with the heat-to-power ratio."

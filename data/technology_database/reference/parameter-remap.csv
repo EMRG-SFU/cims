@@ -1,0 +1,16 @@
+record-id,parameter,reason,decided
+tp-ieaghg_2016_001-0052,emissions-biomass,"black-liquor combustion CO2, biogenic per the source (PB003, PB004; ruling 2026-10-14)",modeller 2026-10-14
+tp-kuparinen_2019_001-0001,emissions-biomass,"black-liquor combustion CO2, biogenic per the source (PB003, PB004; ruling 2026-10-14)",modeller 2026-10-14
+tp-kuparinen_2019_001-0004,emissions-biomass,"black-liquor combustion CO2, biogenic per the source (PB003, PB004; ruling 2026-10-14)",modeller 2026-10-14
+tp-kuparinen_2019_001-0011,emissions-biomass,"black-liquor combustion CO2, biogenic per the source (PB003, PB004; ruling 2026-10-14)",modeller 2026-10-14
+tp-ieaghg_2016_001-0058,emissions-biomass,"kraft lime-kiln calcination CO2, biogenic per the source (the carbonate carbon came from the wood) (PB003, PB004; ruling 2026-10-14)",modeller 2026-10-14
+tp-ieaghg_2016_001-0062,emissions-biomass,"kraft lime-kiln calcination CO2, biogenic per the source (the carbonate carbon came from the wood) (PB003, PB004; ruling 2026-10-14)",modeller 2026-10-14
+tp-kuparinen_2019_001-0008,emissions-biomass,"kraft lime-kiln calcination CO2, biogenic per the source (the carbonate carbon came from the wood) (PB003, PB004; ruling 2026-10-14)",modeller 2026-10-14
+tp-kuparinen_2019_001-0015,emissions-biomass,"kraft lime-kiln calcination CO2, biogenic per the source (the carbonate carbon came from the wood) (PB003, PB004; ruling 2026-10-14)",modeller 2026-10-14
+tp-etsap_2013_012-0052,emissions-reduction-potential,"landfill methane collection efficiency (the share of the methane generated that the wells collect), not a capture plant's CO2 capture rate; the other methane measures carry their effect as emissions-reduction-potential (S69)","sanity-check run 2026-10-24 (P-D8, S69; Fable review)"
+tp-etsap_2013_012-0053,emissions-reduction-potential,"landfill methane collection efficiency (the share of the methane generated that the wells collect), not a capture plant's CO2 capture rate; the other methane measures carry their effect as emissions-reduction-potential (S69)","sanity-check run 2026-10-24 (P-D8, S69; Fable review)"
+tp-etsap_2013_012-0054,emissions-reduction-potential,"landfill methane collection efficiency (the share of the methane generated that the wells collect), not a capture plant's CO2 capture rate; the other methane measures carry their effect as emissions-reduction-potential (S69)","sanity-check run 2026-10-24 (P-D8, S69; Fable review)"
+tp-etsap_2013_012-0055,emissions-reduction-potential,"landfill methane collection efficiency (the share of the methane generated that the wells collect), not a capture plant's CO2 capture rate; the other methane measures carry their effect as emissions-reduction-potential (S69)","sanity-check run 2026-10-24 (P-D8, S69; Fable review)"
+tp-nrel_2018_003-0141,emissions-biomass,"biogenic CO2 from the biomass feedstock, per its note; not fossil (HPCH015; PB003 precedent)",sanity-check run 2026-10-24 (batch H; Fable review)
+tp-etsap_2010_002-0040,opex-fixed,"$32/t-yr: per t of annual capacity, a fixed O&M (IS015)",sanity-check run 2026-10-24 (batch H; Fable review)
+tp-etsap_2010_002-0028,opex-fixed,"$13-19/t-yr: per t of annual capacity, a fixed O&M (IS015)",sanity-check run 2026-10-24 (batch H; Fable review)

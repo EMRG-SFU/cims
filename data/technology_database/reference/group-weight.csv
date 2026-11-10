@@ -1,0 +1,8 @@
+archetype,group,weight,source-id,note
+management-system_leak-detection,production,0.516,dunsky_2023_001,"Share of upstream fugitive methane at production sites: gas, crude oil and crude bitumen batteries (125 + 54 + 36 = 215 kt CH4/yr of 417), Dunsky 2023 Appendix B updated inventory (AB, SK, BC). Wells report through their batteries"
+management-system_leak-detection,gathering,0.197,dunsky_2023_001,"Gas gathering and compressor stations, 82 of 417 kt CH4/yr (Dunsky 2023 Appendix B)"
+management-system_leak-detection,processing,0.288,dunsky_2023_001,"Gas plants, 120 of 417 kt CH4/yr (Dunsky 2023 Appendix B)"
+management-system_leak-detection,transmission,0,,"Transmission and storage sit on natural-gas.product.transmission, which this archetype does not serve (S148, 2026-10-27)"
+management-system_leak-detection,distribution,0,,"Distribution (gate and metering stations, service lines) is not part of natural-gas supply (S148, 2026-10-27)"
+management-system_leak-detection,unspecified,0,,"Examples whose site type cannot be told (component-level LDAR, PSV testing, an inspector programme, satellite surveys); listed, not weighted"
+management-system_leak-detection,off-node,0,,"Leak detection at chemical plants (DOE 2023 MACC)"

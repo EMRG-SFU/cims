@@ -1,0 +1,42 @@
+/* Custom styling for the Technology Data Input Template.
+   Wired in via marimo.App(css_file=...). Highlights entry fields that have
+   content vs. those still showing only a placeholder hint. */
+
+/* Filled entry fields: solid blue border + light tint + bold */
+input[placeholder]:not(:placeholder-shown) {
+    border: 2px solid #2563eb !important;
+    background-color: rgba(37, 99, 235, 0.10) !important;
+    font-weight: 600 !important;
+}
+
+/* Empty entry fields (showing only the placeholder hint): dimmed + dashed */
+input[placeholder]:placeholder-shown {
+    border-style: dashed !important;
+    opacity: 0.6 !important;
+}
+
+/* Compact "currently loaded" badge (sizing for the loaded-file indicator) */
+.loaded-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    margin: 2px 0;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    line-height: 1.3;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+}
+.loaded-badge.loaded-yes {
+    background-color: rgba(22, 163, 74, 0.12);
+    border: 1px solid #16a34a;
+    color: #166534;
+}
+.loaded-badge.loaded-no {
+    background-color: rgba(0, 0, 0, 0.05);
+    border: 1px solid #9ca3af;
+    color: #6b7280;
+}
+.loaded-badge code {
+    background: transparent;
+    padding: 0;
+}

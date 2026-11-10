@@ -1,0 +1,67 @@
+chain-id,reference,component,quantity,supplies,note
+h2-dri-eaf,shaft-furnace_electrolytic-hydrogen,electric-arc-furnace_reduced-iron-charge,1,,the arc furnace charged with reduced iron (split by charge 2026-11-05)
+h2-dri-eaf,shaft-furnace_electrolytic-hydrogen,shaft-furnace_hydrogen-direct-reduction,1.05,,1.05 t DRI per t steel: the whole plant's 1.5 t pellets over 1.43 t pellets per t DRI
+h2-dri-eaf,shaft-furnace_electrolytic-hydrogen,electrolyzer_low-temperature-central,7.17,hydrogen,1.05 x 6.824 GJ hydrogen per t DRI
+h2-dri-eaf,shaft-furnace_electrolytic-hydrogen,storage-cavern_hydrogen,7.17,,"upper bound: all hydrogen through buffer storage (HYBRIT plans rock-cavern storage); about 39 $/t-yr of capital, so not a major missing component"
+open-pit-coal-haulage,mine_open-pit-coal,haul-truck_diesel,12.8,,about 12.8 t of overburden and coal moved per t coal: the whole mine's diesel less excavation (0.29 GJ/t) over the truck's 0.0226 GJ/t (judgement)
+underground-coal-services,mine_underground-coal,hoist,1,,hoisting per t coal
+underground-coal-services,mine_underground-coal,fan_mine-ventilation,1,,ventilation per t coal
+electrolytic-ammonia,reactor_haber-bosch-electrolytic,reactor_haber-bosch-loop,1,,"synthesis loop with air separation, buying hydrogen"
+electrolytic-ammonia,reactor_haber-bosch-electrolytic,electrolyzer_low-temperature-central,25.2,hydrogen,0.1776 t H2 per t NH3 at 141.79 GJ/t HHV
+co2-to-methanol,reactor_co2-to-methanol,reactor_methanol-loop,1,,methanol synthesis buying hydrogen and CO2
+co2-to-methanol,reactor_co2-to-methanol,electrolyzer_low-temperature-central,26.95,hydrogen,"the loop sources' hydrogen use, 26.95 GJ HHV per t methanol"
+biomass-methanol-to-olefins,gasifier_biomass-ethylene,gasifier_biomass-methanol,2.3,methanol,2.30 t methanol per t HVC (the MTO sources)
+biomass-methanol-to-olefins,gasifier_biomass-ethylene,reactor_methanol-to-olefins,1,,
+alumina-refinery,refinery_alumina,digester_bayer,1,,per t alumina
+alumina-refinery,refinery_alumina,calciner_gas-suspension,1,,
+alumina-refinery,refinery_alumina,boiler_fuel-fired,5.03,steam,the digestion steam (GJ per t alumina) from the sector base boiler
+pulp-kraft,pulp-mill_kraft,debarker_drum,2.0,,oven-dry wood per ADt (cf-wood-per-pulp-kraft)
+pulp-kraft,pulp-mill_kraft,digester_continuous-kraft,1,,
+pulp-kraft,pulp-mill_kraft,reactor_ecf-bleaching,1,,bleached pulp
+pulp-kraft,pulp-mill_kraft,dryer_market-pulp,1,,market pulp dried
+pulp-kraft,pulp-mill_kraft,evaporator_multiple-effect,1.5,,t black liquor solids per ADt (cf-bls-per-pulp)
+pulp-kraft,pulp-mill_kraft,boiler_recovery,1.5,steam,the recovery boiler raises the steam the chain uses
+pulp-kraft,pulp-mill_kraft,kiln_lime-rotary,0.28,,t lime reburned per ADt (judgement: about 0.5 t lime mud per ADt)
+paper-whole,paper-machine_with-dryer-section,paper-machine,1,,
+paper-whole,paper-machine_with-dryer-section,dryer_steam-heated,1,,t dried product per t paper
+pulp-kraft,pulp-mill_kraft,separator_clarifier,30,,"m3 effluent per ADt (judgement, Canadian kraft mills about 30-60). Not in the chain: causticizing and washing (no archetypes) and the back-pressure turbine (on the steam node)"
+pulp-kraft,pulp-mill_kraft,fan_activated-sludge,30,,m3 effluent per ADt (judgement)
+ch-refinery-hydroskimming,refinery_hydroskimming,distillation-column_atmospheric-vacuum,1,,"unit throughput per m3 of refinery product: typical shares, a judgement for validation only"
+ch-refinery-hydroskimming,refinery_hydroskimming,reactor_catalytic-reforming,0.25,,"unit throughput per m3 of refinery product: typical shares, a judgement for validation only"
+ch-refinery-hydroskimming,refinery_hydroskimming,reactor_hydroprocessing,0.6,,"unit throughput per m3 of refinery product: typical shares, a judgement for validation only"
+ch-refinery-hydroskimming,refinery_hydroskimming,direct-heater_refinery,1.02,heat,the heat the units ask for
+ch-refinery-hydroskimming,refinery_hydroskimming,boiler_fuel-fired,0.504,steam,the steam the units ask for
+ch-refinery-hydroskimming,refinery_hydroskimming,steam-reformer_methane,0.449,,net hydrogen (service requests): hydroprocessing 1.79 GJ/m3 less the reformer's 2.5 GJ/m3
+ch-refinery-conversion,refinery_conversion,distillation-column_atmospheric-vacuum,1,,"unit throughput per m3 of refinery product: typical shares, a judgement for validation only"
+ch-refinery-conversion,refinery_conversion,reactor_catalytic-reforming,0.25,,"unit throughput per m3 of refinery product: typical shares, a judgement for validation only"
+ch-refinery-conversion,refinery_conversion,reactor_hydroprocessing,0.8,,"unit throughput per m3 of refinery product: typical shares, a judgement for validation only"
+ch-refinery-conversion,refinery_conversion,reactor_fluid-catalytic-cracking,0.35,,"unit throughput per m3 of refinery product: typical shares, a judgement for validation only"
+ch-refinery-conversion,refinery_conversion,reactor_alkylation,0.08,,"unit throughput per m3 of refinery product: typical shares, a judgement for validation only"
+ch-refinery-conversion,refinery_conversion,direct-heater_refinery,1.29,heat,the heat the units ask for
+ch-refinery-conversion,refinery_conversion,boiler_fuel-fired,0.646,steam,the steam the units ask for
+ch-refinery-conversion,refinery_conversion,steam-reformer_methane,0.807,,net hydrogen (service requests): hydroprocessing 1.79 GJ/m3 less the reformer's 2.5 GJ/m3
+ch-refinery-deep-conversion,refinery_deep-conversion,distillation-column_atmospheric-vacuum,1,,"unit throughput per m3 of refinery product: typical shares, a judgement for validation only"
+ch-refinery-deep-conversion,refinery_deep-conversion,reactor_catalytic-reforming,0.25,,"unit throughput per m3 of refinery product: typical shares, a judgement for validation only"
+ch-refinery-deep-conversion,refinery_deep-conversion,reactor_hydroprocessing,1,,"unit throughput per m3 of refinery product: typical shares, a judgement for validation only"
+ch-refinery-deep-conversion,refinery_deep-conversion,reactor_fluid-catalytic-cracking,0.3,,"unit throughput per m3 of refinery product: typical shares, a judgement for validation only"
+ch-refinery-deep-conversion,refinery_deep-conversion,reactor_alkylation,0.08,,"unit throughput per m3 of refinery product: typical shares, a judgement for validation only"
+ch-refinery-deep-conversion,refinery_deep-conversion,reactor_delayed-coking,0.2,,"unit throughput per m3 of refinery product: typical shares, a judgement for validation only"
+ch-refinery-deep-conversion,refinery_deep-conversion,direct-heater_refinery,1.55,heat,the heat the units ask for
+ch-refinery-deep-conversion,refinery_deep-conversion,boiler_fuel-fired,0.671,steam,the steam the units ask for
+ch-refinery-deep-conversion,refinery_deep-conversion,steam-reformer_methane,1.17,,net hydrogen (service requests): hydroprocessing 1.79 GJ/m3 less the reformer's 2.5 GJ/m3
+ch-integrated-upgrader,reactor_integrated-upgrader,reactor_delayed-coking,1,,"coker liquids about equal to the synthetic crude made, a judgement"
+ch-integrated-upgrader,reactor_integrated-upgrader,reactor_hydroprocessing,1,,all coker liquids hydrotreated
+ch-integrated-upgrader,reactor_integrated-upgrader,direct-heater_refinery,1.36,heat,"the heat the units ask for, from the crude-oil fired-heater node (added 2026-11-05)"
+ch-integrated-upgrader,reactor_integrated-upgrader,boiler_fuel-fired,0.13,steam,the steam the units ask for
+ch-integrated-upgrader,reactor_integrated-upgrader,steam-reformer_methane,1.79,,hydrogen for hydroprocessing (service request)
+ch-oil-sands-mine,mine_open-pit-oil-sands,haul-truck_diesel,12.6,,"about 2 t of ore per bbl of bitumen; overburden left out, a judgement"
+ch-oil-sands-mine,mine_open-pit-oil-sands,separator_warm-water-extraction,1,,
+ch-oil-sands-mine,mine_open-pit-oil-sands,separator_naphthenic-froth-treatment,1,,
+ch-oil-sands-mine,mine_open-pit-oil-sands,boiler_fuel-fired,1.4,steam,process hot water and steam extraction asks for (service request)
+ch-oil-sands-mine,mine_open-pit-oil-sands,separator_thickening-filtration,10,,"about 10 t of tailings per m3 of bitumen, a judgement"
+ch-hydroprocessing-electric,reactor_hydroprocessing_electric-heating,reactor_hydroprocessing,1,,
+ch-hydroprocessing-electric,reactor_hydroprocessing_electric-heating,direct-heater_electric,0.719,heat,"the heat the host asks for, made electrically"
+ch-reforming-electric,reactor_catalytic-reforming_electric-heating,reactor_catalytic-reforming,1,,
+ch-reforming-electric,reactor_catalytic-reforming_electric-heating,direct-heater_electric,0.892,heat,"the heat the host asks for, made electrically"
+open-pit-coal-haulage,mine_open-pit-coal,mine_open-pit-coal-excavation,1,,excavation per t coal
+underground-coal-services,mine_underground-coal,mine_underground-coal-cutting,1,,cutting per t coal
