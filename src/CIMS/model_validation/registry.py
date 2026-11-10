@@ -37,6 +37,7 @@ from dataclasses import dataclass
 from typing import Callable, Dict, Optional
 from . import file_errors
 from . import file_warnings
+from . import graph_errors
 
 # ---------------------------------------------------------------------------
 # Core registry tags
@@ -131,7 +132,8 @@ REGISTRY.register("invalid_competition_type", CheckSpec(
         "  valid competition types list; row_index is that node's competition row\n"
         "  in model_df, node is the branch name.\n\n"
         "Reading: check the Value column at the flagged row to see what value was\n"
-        "set. This check is skipped entirely when no list CSV is provided."
+        "set. Blank values are always flagged; values are only checked against the\n"
+        "valid types when a list CSV is provided."
     ),
 ))
 REGISTRY.register("nodes_requesting_self", CheckSpec(
@@ -383,6 +385,56 @@ REGISTRY.register("nodes_missing_competition", CheckSpec(
         "row with the appropriate type."
     ),
 ))
+REGISTRY.register("techs_missing_dcc_class", CheckSpec(
+    fn=file_errors.techs_missing_dcc_class,
+    phase=Phase.FILE,
+    severity=Severity.ERROR,
+    argmap={},
+    short_desc="technologies have dcc_capacity_1 but no dcc_class",
+    help_text=(
+        "Output: [(row_index, node, tech)]\n"
+        "  Each entry is a technology with a dcc_capacity_1 row but no dcc_class\n"
+        "  row with a Value; row_index is a representative dcc_capacity_1 row.\n\n"
+        "Reading: declining capital cost is only calculated for technologies in a\n"
+        "DCC class. Without one, the model uses the fixed capital cost and ignores\n"
+        "the DCC inputs. Add a dcc_class row with the class name in Value (blank\n"
+        "Year for a constant)."
+    ),
+))
+REGISTRY.register("techs_missing_dic_class", CheckSpec(
+    fn=file_errors.techs_missing_dic_class,
+    phase=Phase.FILE,
+    severity=Severity.ERROR,
+    argmap={},
+    short_desc="technologies have dic_initial but no dic_class",
+    help_text=(
+        "Output: [(row_index, node, tech)]\n"
+        "  Each entry is a technology with a dic_initial row but no dic_class\n"
+        "  row with a Value; row_index is a representative dic_initial row.\n\n"
+        "Reading: declining intangible cost declines with the new market share of\n"
+        "the technology's DIC class, so every technology with DIC inputs needs a\n"
+        "class. Add a dic_class row with the class name in Value (blank Year for a\n"
+        "constant)."
+    ),
+))
+REGISTRY.register("market_share_limits_missing_class", CheckSpec(
+    fn=file_errors.market_share_limits_missing_class,
+    phase=Phase.FILE,
+    severity=Severity.ERROR,
+    argmap={},
+    short_desc="market share class limits name a class no technology at the node belongs to",
+    help_text=(
+        "Output: [(row_index, node, class_name)]\n"
+        "  Each entry is a node-level market_share_class_max/min limit whose class\n"
+        "  (the limit row's Context) has no member technology at that node;\n"
+        "  row_index is a representative limit row. class_name is None when the\n"
+        "  limit's Context is blank.\n\n"
+        "Reading: a technology joins a class through a market_share_class row with\n"
+        "the class name in Value. If no technology at the node does, the model\n"
+        "silently ignores the limit. Check the limit's Context, and that the\n"
+        "technologies' market_share_class rows use Value (not Context)."
+    ),
+))
 
 REGISTRY.register("currency_table_coverage", CheckSpec(
     fn=file_errors.currency_table_coverage,
@@ -415,6 +467,22 @@ REGISTRY.register("no_structural_parent_node_exists", CheckSpec(
         "parent with many children likely needs to be added to the model. A\n"
         "parent with only one child may indicate a misspelling in that child's\n"
         "Branch name."
+    ),
+))
+REGISTRY.register("excel_error_values", CheckSpec(
+    fn=file_errors.excel_error_values,
+    phase=Phase.FILE,
+    severity=Severity.ERROR,
+    argmap={},
+    short_desc="rows have an Excel formula error (e.g. #DIV/0!, #N/A) as their Value",
+    help_text=(
+        "Output: [(row_index, node, parameter, value)]\n"
+        "  Each entry is a row whose Value is an Excel error code (#DIV/0!, #N/A,\n"
+        "  #VALUE!, #REF!, #NAME?, #NUM!, #NULL!, #SPILL!, #CALC!); row_index is\n"
+        "  that row in model_df.\n\n"
+        "Reading: the value was likely copied or exported from a spreadsheet where\n"
+        "the formula failed. Fix the formula in the source sheet, or enter the\n"
+        "value directly, and re-export the CSV."
     ),
 ))
 
@@ -532,15 +600,53 @@ REGISTRY.register("cost_params_missing_currency_unit", CheckSpec(
         "This check is skipped when no target_units are configured."
     ),
 ))
+REGISTRY.register("constant_fills_gaps_between_years", CheckSpec(
+    fn=file_warnings.constant_fills_gaps_between_years,
+    phase=Phase.FILE,
+    severity=Severity.WARNING,
+    argmap={},
+    short_desc="run years between explicit update years will take the constant, not an interpolated value",
+    help_text=(
+        "Output: [(node, tech, parameter, years)]\n"
+        "  Each entry is an update parameter with a null-Year constant and explicit year\n"
+        "  rows, where the listed run years fall between explicit years with no row of\n"
+        "  their own; tech is None for node-level entries.\n\n"
+        "Reading: those years take the constant. Values are not carried forward or\n"
+        "interpolated from the surrounding explicit rows. This usually means a model\n"
+        "that runs every year received an update with rows only every few years. Add\n"
+        "rows for the listed years, or remove the constant if it wasn't intended.\n"
+        "Years before the first or after the last explicit row are not flagged."
+    ),
+))
 
 # ---------------------------------------------------------------------------
-# GRAPH-PHASE CHECKS (to be added)
+# GRAPH-PHASE CHECKS
 # ---------------------------------------------------------------------------
-# All of these are run by ModelValidator.file_warnings() via:
+# All of these are run by ModelValidator.validate_graph() via:
 #   REGISTRY.iter(phase=Phase.GRAPH, severity=...)
+#
+# Graph checks can take the constructed model with argmap={"model": "model"}.
 #
 # Errors first, then warnings.
 # ---------------------------------------------------------------------------
 # ---- Errors ----
+REGISTRY.register("market_share_total_after_base_year", CheckSpec(
+    fn=graph_errors.market_share_total_after_base_year,
+    phase=Phase.GRAPH,
+    severity=Severity.ERROR,
+    argmap={"model": "model"},
+    short_desc="technologies have a market_share_total after the base year and a lifetime > 1",
+    help_text=(
+        "Output: [(node, tech, years)]\n"
+        "  Each entry is a technology with a market_share_total value in years\n"
+        "  after the base year where its lifetime is greater than 1; years lists\n"
+        "  them. A constant (blank Year) market_share_total applies to every year.\n\n"
+        "Reading: an exogenous total market share after the base year only gives\n"
+        "consistent stocks when lifetime is 1. Remove the market_share_total rows\n"
+        "for those years, or set lifetime to 1 in those years.\n"
+        "Years without a lifetime value use the default (1), unless lifetime is\n"
+        "in the list file's Interpolated column."
+    ),
+))
 
 # ---- Warnings ----

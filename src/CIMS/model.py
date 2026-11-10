@@ -9,7 +9,7 @@ import os.path
 from typing import Iterable, Mapping
 
 from .utils.model_description import column_list as COL
-from .utils.parameter import construction, list as PARAM, setters, query as param_query
+from .utils.parameter import construction, interpolation, list as PARAM, setters, query as param_query
 from .utils.graph import node_utils, edge_utils, loop_resolution, traversals, query as graph_query 
 from .utils.model_description.columns_builder import build_col_list
 from .readers.helpers import collect_base_files, collect_update_files, collect_files, filter_model_data, print_file_health
@@ -137,6 +137,7 @@ class Model:
         # Parameter lists & defaults
         self.node_tech_defaults = self._model_reader.get_default_params()
         self.inheritable_params = frozenset(self._model_reader.get_inheritable_params())
+        self.interpolated_params = frozenset(self._model_reader.get_interpolated_params())
         self.competition_types = self._model_reader.get_valid_competition_types()
         self.output_params = []
 
@@ -198,7 +199,11 @@ class Model:
         print_file_health(self._file_health_rows, verbose=verbose)
         
     def validate_graph(self):
-        self.validator.validate_graph()
+        if self.status != "graph constructed":
+            raise ValueError(
+                "Model graph has not been constructed. Call construct_graph() before validate_graph()."
+            )
+        self.validator.validate_graph(self)
     
     def update(self, update_files: Mapping[str, Iterable[str]]):
         """
@@ -244,7 +249,7 @@ class Model:
 
         # Update the nodes & edges in the graph
         self.graph.max_tree_index[0] = 0    # For Excel results viewer TODO: remove once we switch to notebook visualization
-        graph = node_utils.make_or_update_nodes(model.graph, scenario_node_dfs, scenario_tech_dfs)
+        graph = node_utils.make_or_update_nodes(model.graph, scenario_node_dfs, scenario_tech_dfs, year_list=[str(y) for y in self._year_list])
         graph = edge_utils.make_or_update_edges(graph, scenario_node_dfs, scenario_tech_dfs)
         self.graph.cur_tree_index[0] += self.graph.max_tree_index[0]
         model.graph = graph
@@ -256,6 +261,7 @@ class Model:
         model.dic_classes = model._dic_classes()
 
         # Re-initialize parameters
+        model._interpolate_parameter_values()
         model._inherit_parameter_values()
         model._initialize_tax()
 
@@ -328,7 +334,7 @@ class Model:
         )
 
         print("  Building base graph...")
-        graph = node_utils.make_or_update_nodes(graph, node_dfs, tech_dfs)
+        graph = node_utils.make_or_update_nodes(graph, node_dfs, tech_dfs, year_list=[str(y) for y in self._year_list])
         graph = edge_utils.make_or_update_edges(graph, node_dfs, tech_dfs)
         graph.cur_tree_index[0] += graph.max_tree_index[0]
 
@@ -342,6 +348,7 @@ class Model:
         self.dic_classes = self._dic_classes()
 
         # Initialize parameters on the base graph
+        self._interpolate_parameter_values()
         self._inherit_parameter_values()
         self._initialize_tax()
 
@@ -351,7 +358,8 @@ class Model:
             print("  Applying scenario overlays...")
             self.graph.max_tree_index[0] = 0
             graph = node_utils.make_or_update_nodes(
-                self.graph, scenario_node_dfs, scenario_tech_dfs
+                self.graph, scenario_node_dfs, scenario_tech_dfs,
+                year_list=[str(y) for y in self._year_list]
             )
             graph = edge_utils.make_or_update_edges(
                 graph, scenario_node_dfs, scenario_tech_dfs
@@ -368,6 +376,7 @@ class Model:
             self.dic_classes = self._dic_classes()
 
             # Re-initialize parameters after scenario changes
+            self._interpolate_parameter_values()
             self._inherit_parameter_values()
             self._initialize_tax()
 
@@ -395,6 +404,9 @@ class Model:
         Iterate through each node and technology in self to create a dictionary mapping Declining
         Capital Cost (DCC) Classes to a list of nodes that belong to that class.
 
+        DCC classes are not scoped to a region: technologies with the same dcc_class name pool
+        together across all regions in the model.
+
         Returns
         -------
         dict {str: [str]}:
@@ -420,13 +432,17 @@ class Model:
     def _dic_classes(self):
         """
         Iterate through each node and technology in self to create a dictionary mapping Declining
-        Capital Cost (DCC) Classes to a list of nodes that belong to that class.
+        Intangible Cost (DIC) Classes to a list of nodes that belong to that class.
+
+        DIC classes are scoped to a region: technologies only pool with others in the same region,
+        even if their dic_class names match. This differs from DCC classes, which pool across
+        regions (see _dcc_classes).
 
         Returns
         -------
-        dict {str: [str]}:
-            Dictionary where keys are declining capital cost classes (str) and values are lists of
-            nodes (str) belonging to that class.
+        dict {(str, str): [(str, str)]}:
+            Dictionary where keys are (region, dic_class) pairs and values are lists of
+            (node, tech) pairs belonging to that class.
         """
         dic_classes = {}
 
@@ -437,10 +453,11 @@ class Model:
                 for tech in nodes[node][base_year][PARAM.technologies]:
                     dicc = self.get_param(PARAM.dic_class, node, base_year, tech=tech)
                     if dicc is not None:
-                        if dicc in dic_classes:
-                            dic_classes[dicc].append((node, tech))
+                        key = (nodes[node].get(COL.region.lower()), dicc)
+                        if key in dic_classes:
+                            dic_classes[key].append((node, tech))
                         else:
-                            dic_classes[dicc] = [(node, tech)]
+                            dic_classes[key] = [(node, tech)]
 
         return dic_classes
 
@@ -1085,6 +1102,28 @@ class Model:
         # Reset the provided_quantities at each node
         for n in self.graph.nodes():
             self.graph.nodes[n][year][PARAM.provided_quantities] = construction.create_value_dict(ProvidedQuantity(), param_source='initialization')
+
+    def _interpolate_parameter_values(self):
+        """
+        Interpolate each parameter in `interpolated_params` between the years it is given, at
+        every node and technology (#619). See utils.parameter.interpolation.
+        """
+        # Models pickled before #619 have no interpolated_params; they never interpolated.
+        interpolated_params = getattr(self, 'interpolated_params', frozenset())
+        if not interpolated_params:
+            return
+        years = [str(y) for y in self._year_list]
+        for node in self.graph.nodes:
+            node_years = {y: self.graph.nodes[node][y] for y in years if y in self.graph.nodes[node]}
+            techs = {tech for year_dict in node_years.values()
+                     for tech in year_dict.get(PARAM.technologies) or {}}
+            year_dicts = [node_years] + [
+                {y: d[PARAM.technologies][tech] for y, d in node_years.items()
+                 if tech in (d.get(PARAM.technologies) or {})}
+                for tech in techs]
+            for param in interpolated_params:
+                for param_years in year_dicts:
+                    interpolation.interpolate_parameter(param_years, param)
 
     def _inherit_parameter_values(self):
         def inherit_function(graph, node, year):

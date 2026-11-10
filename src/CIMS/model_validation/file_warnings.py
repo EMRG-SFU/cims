@@ -208,3 +208,40 @@ def zero_requested_nodes(validator, providers):
     concern_desc = "nodes are defined in the model, but are only requested by nodes where all Service requested values are 0"
 
     return zero_requested, concern_desc
+
+
+def constant_fills_gaps_between_years(validator):
+    """
+    Identify update-file parameters that have a constant (null Year) alongside
+    explicit year rows, where run years *between* explicit years have no row.
+
+    Those in-between years take the constant, not a value carried forward or
+    interpolated from the surrounding explicit years. Typical cause: a model
+    that runs every year receiving an update with rows every 5 years plus a
+    constant. Years before the first or after the last explicit row are not
+    flagged; that is the intended "explicit values, then constant" use.
+    """
+    update_df = validator._scenario_df
+    if update_df.empty:
+        return [], "no update rows to check"
+
+    run_years = sorted(int(y) for y in validator.year_list)
+    key_cols = [COL.branch, COL.technology, COL.parameter, COL.context, COL.sub_context, COL.target]
+    is_constant = update_df[COL.year].isna() & update_df[COL.value].notna()
+
+    concerns = []
+    for key, group in update_df.groupby(key_cols, dropna=False):
+        if not is_constant[group.index].any():
+            continue
+        explicit = {int(y) for y in group[COL.year].dropna()}
+        if len(explicit) < 2:
+            continue
+        filled = [y for y in run_years if min(explicit) < y < max(explicit) and y not in explicit]
+        if filled:
+            branch, tech, parameter = key[0], key[1], key[2]
+            concerns.append((branch, None if pd.isna(tech) else tech, parameter,
+                             ", ".join(str(y) for y in filled)))
+
+    concern_desc = ("update parameters have a constant and explicit years, but run years between "
+                    "the explicit years take the constant")
+    return concerns, concern_desc
