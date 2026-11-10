@@ -20,7 +20,6 @@ with app.setup:
     # For using Flask in a cell without blocking
     import threading
 
-    from CIMS.calibration import VizServer
 
 
     # Custom cell output functions

@@ -15,6 +15,8 @@ Emissions  (calibration_emissions_total from crosswalk; calibration_emissions_by
 Energy demand  (calibration_quantity_requested)
     cer_resd_demand.py            → energy demand in PJ by fuel and CIMS node;
                                     abbreviation regions
+    mecs_steam_calibration.py     → replaces the .Steam node rows with
+                                    EIA MECS steam share × CER sector demand
 
 Output columns
 --------------
@@ -40,6 +42,7 @@ from CIMS.data_processing.utils.calibration_helpers import (
     build_nir_emissions,
 )
 from CIMS.data_processing.utils.output_builder import write_per_region_csvs
+from CIMS.data_processing.utils.mecs_steam_calibration import apply_mecs_steam
 
 # ── configuration ─────────────────────────────────────────────────────────────
 OUTPUT_DIR = BASE_PATH / 'calibration/metal_smelting'
@@ -63,6 +66,9 @@ def main() -> pl.DataFrame:
 
     print('\nRunning CER demand (cer_resd_demand)...')
     cer_df = _cer_mod.main()
+
+    print('\nReplacing Steam node targets with MECS-based steam (mecs_steam_calibration)...')
+    cer_df = apply_mecs_steam(cer_df, '.Metal Smelting')
 
     print('\nBuilding CER energy demand rows...')
     cer_rows = build_cer_energy(cer_df, SECTOR_NAME)

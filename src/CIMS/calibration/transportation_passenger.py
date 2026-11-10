@@ -29,7 +29,6 @@ with app.setup:
     def vv(*args):
         return(mo.vstack(args))
 
-    import VizServer
 
     from Calibration import bind_data
 

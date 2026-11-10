@@ -29,7 +29,6 @@ with app.setup:
     def vv(*args):
         return(mo.vstack(args))
 
-    from CIMS.calibration import VizServer
 
     from CIMS.calibration.Calibration import bind_data
 
@@ -109,92 +108,6 @@ def _(model_pickle_path):
         model = pickle.load(_f)
     return (model,)
 
-
-@app.cell(hide_code=True)
-def _():
-    mo.md(r"""
-    # Start Graph Viz Server
-    """)
-    return
-
-
-@app.cell
-def _(model):
-    # Start up Graph Server
-    vizVars = {}
-    threading.Thread(
-        target=lambda: VizServer.server.run_server_modelObject(
-            model, 
-            cims_funcs=CIMS_Functions,
-            vizVars = vizVars,
-            PORT=5353
-        ), 
-        name="flask-server", 
-        daemon=True
-    ).start()
-    return (vizVars,)
-
-
-@app.cell(hide_code=True)
-def _():
-    mo.md(r"""
-    # Bind Viz and Notebook
-    """)
-    return
-
-
-@app.cell
-def _(vizVars):
-    bind_data(vizVars = vizVars)
-    return
-
-
-@app.cell(hide_code=True)
-def _():
-    mo.md(r"""
-    # Embed Graph Viz
-
-    This pops up a very basic window into the CIMS graph visualizer.
-
-    * In this window the `Fold All` and `Unfold All` buttons do what they advertise, and `Reset Zoom` rescales the zoom to 1.0, and moves the root node to the very top-left of the graph viewport.
-    * The node address bar underneath that is loaded with all the node names in the loaded graph pickle. Type in here to get useful autocompletions, and hit enter to reload a new graph, with the node address as-entered as the root.
-    * Clicking on a node will fold/unfold all of its children.
-    * All other panning/zooming behaviour should be fairly intuitive
-    * Shift-Clicking on a node will **SELECT** it, for use in notebook cell plotting functions.
-
-    <span style="color:red; font-weight:bold; size:large">Notebook -> Graph Viz Communication Disabled Temporarily (sorry!)</span> This means that there's no indication of which node you've selected, no visual indicators of where calibration data is loaded, and no summary graphs of calibration fit. These are coming back soon.
-
-    For now, the `vizVars` object sitting in the cell below the graph is storing the name of the currently selected node.
-    """)
-    return
-
-
-@app.cell
-def _():
-    # Embed the Graph Viewer
-    mo.Html(f''' 
-    <iframe 
-        src="http://localhost:5353/getVizPage/" 
-        style="width:100%; height:700px; border:none;"
-    ></iframe>
-    ''')
-    return
-
-
-@app.cell(hide_code=True)
-def _():
-    mo.md(r"""
-    ## Currently SELECTED node
-
-    This will contain the node node that you have shift-clicked on in the graph above.
-    """)
-    return
-
-
-@app.cell
-def _(vizVars):
-    vizVars
-    return
 
 
 @app.cell(hide_code=True)
