@@ -1150,10 +1150,10 @@ def build_cims_table(df: pl.DataFrame) -> pl.DataFrame:
     Value       : value column from emission_factors.csv
     """
     # Fuels whose CO2 emissions are biogenic and must be labelled "emissions_biomass"
-    _BIOGENIC_FUELS = pl.Series([
+    _BIOGENIC_FUELS = [
         "Ethanol", "Biodiesel", "Black Liquor", "Solid Biomass",
         "Renewable Natural Gas", "SAF", "Renewable Diesel", "Renewable Gasoline",
-    ])
+    ]
 
     return (
         df.with_columns([
@@ -1217,7 +1217,7 @@ def main() -> None:
     # Fuels with "exclude_from_output": True are retained in FUELS for documentation
     # and energy_map validation, but are excluded from both output CSVs.
     _excluded = {f["fuel_name"] for f in FUELS if f.get("exclude_from_output")}
-    df_out = df.filter(~pl.col("fuel").is_in(pl.Series(list(_excluded))))
+    df_out = df.filter(~pl.col("fuel").is_in(list(_excluded)))
 
     output_path = OUTPUT_DIR / "emission_factors.csv"
     df_out.write_csv(output_path)

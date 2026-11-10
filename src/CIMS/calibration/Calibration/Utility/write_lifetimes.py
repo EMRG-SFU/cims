@@ -2,9 +2,9 @@
 # Columns needed in output file:
 # Branch, Type, Region, Sector, Service, Technology, Parameter, Context, Sub_Context, Target, Source, Unit, Year, Value
 
-from Calibration.SubGraphs.graphFunctions import getDescendants
-from Calibration.Data.node_info import list_years, list_techs
-from Calibration.Utility.write_fics import extractRegion, extractSector, extractService, write_rows_by_region
+from CIMS.calibration.Calibration.SubGraphs.graphFunctions import getDescendants
+from CIMS.calibration.Calibration.Data.node_info import list_years, list_techs
+from CIMS.calibration.Calibration.Utility.write_fics import extractRegion, extractSector, extractService, write_rows_by_region
 
 
 def get_lifetime_file_rows(model, nodeName, source="calibration_lifetime_export"):

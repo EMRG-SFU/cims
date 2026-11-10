@@ -77,14 +77,12 @@ Output order per region
 7. rest of fixed data
 """
 
-import tempfile
-from pathlib import Path
 
 import pandas as pd
 import polars as pl
 
 # ── path setup ─────────────────────────────────────────────────────────────────
-import CIMS.data_processing.utils.flatten_fixed_data as _flatten_mod
+from CIMS.data_processing.utils.flatten_fixed_data import read_fixed_data_folder
 
 import CIMS.data_processing.source.activity.oil_production as _oil_production_mod
 
@@ -92,7 +90,7 @@ import CIMS.data_processing.source.energy_prices.energy_price_multipliers as _en
 
 import CIMS.data_processing.source.cer.cer_resd_demand as _cer_resd_mod
 
-from CIMS.data_processing.utils.controls_conversions import BASE_PATH, DATA_START, PROJECTION_END, LAST_DATA_YEAR
+from CIMS.data_processing.utils.controls_conversions import BASE_PATH
 from CIMS.data_processing.utils.collapse_constant_years import collapse_constant_years
 from CIMS.data_processing.utils.drop_zero_activity import drop_zero_activity_regions
 from CIMS.data_processing.utils.feedstock_demand import build_feedstock_rows_all_regions
@@ -123,26 +121,6 @@ REGION_SPECIFIC_ENERGIES = {
 
 
 # ── helpers ────────────────────────────────────────────────────────────────────
-
-def _read_flattened_fixed() -> pl.DataFrame:
-    """Flatten all Petroleum Crude fixed CSVs and return combined DataFrame."""
-    with tempfile.TemporaryDirectory() as tmp:
-        tmp_path = Path(tmp)
-        _flatten_mod.main(
-            input_folder=FIXED_INPUT_DIR,
-            output_folder=tmp_path,
-            year_min=DATA_START,
-            year_max=LAST_DATA_YEAR["cer"],
-            target_start=DATA_START,
-            target_end=PROJECTION_END,
-            target_step=1,
-        )
-        frames = [
-            pl.read_csv(f, infer_schema_length=0)
-            for f in sorted(tmp_path.rglob('*.csv'))
-        ]
-    return pl.concat(frames, how='diagonal_relaxed').cast(pl.String)
-
 
 def _build_total_rows(oil: pl.DataFrame) -> pl.DataFrame:
     """
@@ -357,7 +335,7 @@ def main() -> pl.DataFrame:
     print('=' * 60)
 
     print('\nFlattening fixed structural data...')
-    fixed = _read_flattened_fixed()
+    fixed = read_fixed_data_folder(FIXED_INPUT_DIR)
     print(f'  Rows: {len(fixed):,}')
 
     print('Loading oil production activity data...')

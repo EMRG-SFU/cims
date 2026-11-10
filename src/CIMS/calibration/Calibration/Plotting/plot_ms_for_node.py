@@ -7,15 +7,15 @@ from datetime import datetime
 import pandas as pd
 import re
 
-import Calibration.Data.node_info as node_info
-from Calibration.Data.market_share import get_marketShare_diff_frame
-from Calibration.Plotting.plot_general import plotOverTime_stack
-from Calibration.Plotting.plot_general import plotOverTime_line_df
-from Calibration.Plotting.plot_general import plotHeatmap
+import CIMS.calibration.Calibration.Data.node_info as node_info
+from CIMS.calibration.Calibration.Data.market_share import get_marketShare_diff_frame
+from CIMS.calibration.Calibration.Plotting.plot_general import plotOverTime_stack
+from CIMS.calibration.Calibration.Plotting.plot_general import plotOverTime_line_df
+from CIMS.calibration.Calibration.Plotting.plot_general import plotHeatmap
 
 # Import (for re-exporting) the stuff in _plot_ms_for_node_line
-from Calibration.Plotting._plot_ms_for_node_line import plot_ms_line
-from Calibration.Plotting._plot_ms_for_node_line import plot_ms_line_cims
+from CIMS.calibration.Calibration.Plotting._plot_ms_for_node_line import plot_ms_line
+from CIMS.calibration.Calibration.Plotting._plot_ms_for_node_line import plot_ms_line_cims
 
 
 
@@ -57,9 +57,9 @@ def plot_ms(model,
     Notes
     -----
     Values of `None` or the string 'NA' become `None` and render as gaps.
-    Unlike the sibling VizServer version, no percentage rescaling is applied
-    here: both series are read with `maybeFloat`, which assumes `calMsKey` is
-    already stored as a 0-1 fraction rather than a percentage.
+    No percentage rescaling is applied here: both series are read with
+    `maybeFloat`, which assumes `calMsKey` is already stored as a 0-1
+    fraction rather than a percentage.
     """
 
 

@@ -16,8 +16,6 @@ with app.setup:
     import importlib
     import copy
 
-    # For using Flask in a cell without blocking
-    import threading
 
 
     # Custom cell output functions
@@ -29,36 +27,34 @@ with app.setup:
         return(mo.vstack(args))
 
 
-    from Calibration import bind_data
 
     #from Calibration.cal_model import Cal_Model, find_calibration_nodes
 
-    from Calibration.Plotting import plot_ms_for_node, plot_ms_for_node_line
+    from CIMS.calibration.Calibration.Plotting import plot_ms_for_node
 
-    from Calibration.Optimization.optimize_ms import optimize_total_market_share_fic
+    from CIMS.calibration.Calibration.Optimization.optimize_ms import optimize_total_market_share_fic
     #from Calibration.Optimization_objectiveFunctions import make_objective_localNode
 
-    from Calibration.CIMS_Functions.aggregation_traversal import aggregation_traversal
+    from CIMS.calibration.Calibration.CIMS_Functions.aggregation_traversal import aggregation_traversal
 
-    import Calibration.Data.node_info as node_info
-    import Calibration.Data.parameter_values as parameter_values
-    import Calibration.Data.emissions as emissions
-    import Calibration.Data.quantities as requestedQuantities
-    import Calibration.Data.market_share as market_share
-    import Calibration.Data.FICs as FICs
+    import CIMS.calibration.Calibration.Data.node_info as node_info
+    import CIMS.calibration.Calibration.Data.parameter_values as parameter_values
+    import CIMS.calibration.Calibration.Data.emissions as emissions
+    import CIMS.calibration.Calibration.Data.quantities as requestedQuantities
+    import CIMS.calibration.Calibration.Data.market_share as market_share
+    import CIMS.calibration.Calibration.Data.FICs as FICs
 
-    from Calibration.Plotting.plot_ms_for_node import plot_ms
-    from Calibration.Plotting.plot_ms_for_node_line import plot_ms_line
+    from CIMS.calibration.Calibration.Plotting.plot_ms_for_node import plot_ms, plot_ms_line
 
 
-    from Calibration.paramLoc import ParamLoc
-    from Calibration.paramLoc import RegexSearch as Search
-    from Calibration.paramLoc import RegexMatch as Match
-    from Calibration.paramLoc import All
+    from CIMS.calibration.Calibration.paramLoc import ParamLoc
+    from CIMS.calibration.Calibration.paramLoc import RegexSearch as Search
+    from CIMS.calibration.Calibration.paramLoc import RegexMatch as Match
+    from CIMS.calibration.Calibration.paramLoc import All
 
-    import Calibration.utility_functions as UF
+    import CIMS.calibration.Calibration.utility_functions as UF
 
-    import Calibration.CIMS_Functions as CIMS_Functions
+    import CIMS.calibration.Calibration.CIMS_Functions as CIMS_Functions
 
 
 @app.cell(hide_code=True)
@@ -79,8 +75,9 @@ def _():
 
 @app.cell
 def _():
-    # model_pickle_path = "/path/to/your/model/here.pkl"
-    # or "C:\path\to\your\model.pkl"
+    # Set this to your own model pickle, e.g.
+    #   macOS/Linux: "/path/to/your/model.pkl"
+    #   Windows:     "C:/path/to/your/model.pkl"
 
     model_pickle_path = "C:/cims/results/Reference/model.pkl"
     return (model_pickle_path,)
@@ -111,11 +108,20 @@ def _():
     mo.md(r"""
     # Calibration / Model Debug Stuff
 
-    The cells below can just be run as-is, if a node has been selected from the graph. They default to using the model loaded from the pickle at the top of this notebook file, and the currently selected node in the graph viz.
+    The cells below can just be run as-is. They default to using the model loaded from the pickle at the top of this notebook file, and the node set in `selected_node` below.
 
-    These parameters can be set to anything else, if you have an alternative graph object to examine, or if you want to hardcode the retrieval to some other node in the graph.
+    These parameters can be set to anything else, if you have an alternative graph object to examine, or if you want to look at some other node in the graph.
     """)
     return
+
+
+@app.cell
+def _():
+    # Node used by the debug cells below. This used to be set by shift-clicking
+    # a node in the embedded graph viewer (VizServer), which has been removed
+    # for now. Edit this to inspect a different node.
+    selected_node = "CIMS.CAN.AB.Residential.Dwellings.Building Type.High Density.Vintage.1981-2000 Bldg Code.Heating (Cold)"
+    return (selected_node,)
 
 
 @app.cell(hide_code=True)
@@ -127,8 +133,8 @@ def _():
 
 
 @app.cell
-def _(model, vizVars):
-    node_info.list_nonYearly_nodeParams(model.graph, nodeName = vizVars["selectedNode"])
+def _(model, selected_node):
+    node_info.list_nonYearly_nodeParams(model.graph, nodeName = selected_node)
     return
 
 
@@ -141,8 +147,8 @@ def _():
 
 
 @app.cell
-def _(model, vizVars):
-    node_info.list_techs(model.graph, nodeName = vizVars["selectedNode"])
+def _(model, selected_node):
+    node_info.list_techs(model.graph, nodeName = selected_node)
     return
 
 
@@ -155,8 +161,8 @@ def _():
 
 
 @app.cell
-def _(model, vizVars):
-    node_info.list_years(model.graph, nodeName = vizVars["selectedNode"])
+def _(model, selected_node):
+    node_info.list_years(model.graph, nodeName = selected_node)
     return
 
 
@@ -169,8 +175,8 @@ def _():
 
 
 @app.cell
-def _(model, vizVars):
-    node_info.list_yearly_nodeParams_intersect(model.graph, nodeName = vizVars["selectedNode"])
+def _(model, selected_node):
+    node_info.list_yearly_nodeParams_intersect(model.graph, nodeName = selected_node)
     return
 
 
@@ -183,8 +189,8 @@ def _():
 
 
 @app.cell
-def _(model, vizVars):
-    node_info.list_yearly_techParams_intersect(model.graph, nodeName = vizVars["selectedNode"], techName = "Electricity_GSHP")
+def _(model, selected_node):
+    node_info.list_yearly_techParams_intersect(model.graph, nodeName = selected_node, techName = "Electricity_GSHP")
     return
 
 

@@ -9,7 +9,7 @@ import re
 from collections.abc import Iterable
 import types
 
-import Calibration.utility_functions as UF
+import CIMS.calibration.Calibration.utility_functions as UF
 
 class RegexSearch:
     def __init__(self, string):

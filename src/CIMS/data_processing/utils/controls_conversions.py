@@ -444,7 +444,7 @@ def load_macro_indicators(filepath: str, scenario: str) -> pl.DataFrame:
     pivot = df.pivot(
         values='Value',
         index='Year',
-        columns='Variable'
+        on='Variable'
     )
     
     return pivot

@@ -11,13 +11,13 @@ with app.setup:
 
     import polars as pl
 
-    from Calibration.Optimization.optimize_ms import (
+    from CIMS.calibration.Calibration.Optimization.optimize_ms import (
         optimize_total_market_share_fic,
         optimize_total_market_share_fic_lifetime,
         optimize_on_slice,
     )
-    from Calibration.CIMS_Functions.aggregation_traversal import aggregation_traversal
-    from Calibration.Utility.calibration_outputs import (
+    from CIMS.calibration.Calibration.CIMS_Functions.aggregation_traversal import aggregation_traversal
+    from CIMS.calibration.Calibration.Utility.calibration_outputs import (
         group_by_sector,
         last_recorded_fits,
         log_file_for,
@@ -26,12 +26,12 @@ with app.setup:
         write_calibration_outputs,
     )
 
-    import Calibration.Data.node_info as node_info
-    import Calibration.Data.market_share as market_share
+    import CIMS.calibration.Calibration.Data.node_info as node_info
+    import CIMS.calibration.Calibration.Data.market_share as market_share
 
-    import Calibration.Plotting.plot_ms_for_node as plotMS
-    import Calibration.Plotting.plot_emissions_for_node as plotEmissions
-    import Calibration.Plotting.plot_requestedQuantities_for_node as plotRequestedQuantities
+    import CIMS.calibration.Calibration.Plotting.plot_ms_for_node as plotMS
+    import CIMS.calibration.Calibration.Plotting.plot_emissions_for_node as plotEmissions
+    import CIMS.calibration.Calibration.Plotting.plot_requestedQuantities_for_node as plotRequestedQuantities
 
 
 @app.cell(hide_code=True)

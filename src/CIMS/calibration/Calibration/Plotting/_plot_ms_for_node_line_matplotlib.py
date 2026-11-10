@@ -8,7 +8,7 @@ from plotly.subplots import make_subplots
 from datetime import datetime
 import pandas as pd
 
-import Calibration.Data.node_info as node_info
+import CIMS.calibration.Calibration.Data.node_info as node_info
 
 
 def plotOverTime_line(fig, ax, res_obj, allYears=None ):  # See `res_base` and `res_calib` above.

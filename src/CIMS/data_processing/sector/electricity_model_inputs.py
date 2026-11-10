@@ -47,20 +47,18 @@ Output order per region
 5. Remainder of fixed data (technologies, Storage, Transmission, CCS)
 """
 
-import tempfile
-from pathlib import Path
 
 import polars as pl
 
 # ── path setup ─────────────────────────────────────────────────────────────────
-import CIMS.data_processing.utils.flatten_fixed_data as _flatten_mod
+from CIMS.data_processing.utils.flatten_fixed_data import read_fixed_data_file
 
 import CIMS.data_processing.source.energy_prices.energy_price_multipliers as _energy_price_mod
 
 import CIMS.data_processing.source.activity.electricity as _elec_mod
 
 from CIMS.data_processing.utils.controls_conversions import (
-    BASE_PATH, DATA_START, PROJECTION_END, LAST_DATA_YEAR,
+    BASE_PATH,
     force_single_technology_market_share,
 )
 from CIMS.data_processing.utils.collapse_constant_years import collapse_constant_years
@@ -98,20 +96,8 @@ _LOAD_VAR_TO_SERVICE: dict[str, str] = {
 # ── helpers ────────────────────────────────────────────────────────────────────
 
 def _read_flattened_fixed(region: str) -> pl.DataFrame:
-    """Flatten one Electricity fixed CSV and return a row-indexed DataFrame."""
-    fixed_path = FIXED_INPUT_DIR / f'electricity_{region.lower()}.csv'
-    with tempfile.TemporaryDirectory() as tmp:
-        out_file = Path(tmp) / f'electricity_{region.lower()}.csv'
-        _flatten_mod.process_file(
-            input_path=fixed_path,
-            output_path=out_file,
-            year_min=DATA_START,
-            year_max=LAST_DATA_YEAR['cer'],
-            target_start=DATA_START,
-            target_end=PROJECTION_END,
-            target_step=1,
-        )
-        df = pl.read_csv(out_file, infer_schema_length=0)
+    """Flatten one fixed electricity CSV, force is_supply rows to TRUE, and return a row-indexed DataFrame."""
+    df = read_fixed_data_file(FIXED_INPUT_DIR / f'electricity_{region.lower()}.csv')
     df = df.with_columns(
         pl.when(pl.col('Parameter') == 'is_supply').then(pl.lit('')).otherwise(pl.col('Context')).alias('Context'),
         pl.when(pl.col('Parameter') == 'is_supply').then(pl.lit('TRUE')).otherwise(pl.col('Value')).alias('Value'),
