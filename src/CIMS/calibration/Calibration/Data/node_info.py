@@ -4,8 +4,8 @@ import re
 
 from CIMS.calibration.list_utils import intersect_sublists, union_of_sublists
 
-# The helpers below live in the shared graph_utils module, where VizServer uses
-# them too. They are imported here under the names this module has always used.
+# The helpers below live in the shared graph_utils module. They are imported
+# here under the names this module has always used.
 from CIMS.calibration.graph_utils import (
     ##################################
     #  Parameter Information

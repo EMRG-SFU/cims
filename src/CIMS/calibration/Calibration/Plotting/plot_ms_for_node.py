@@ -57,9 +57,9 @@ def plot_ms(model,
     Notes
     -----
     Values of `None` or the string 'NA' become `None` and render as gaps.
-    Unlike the sibling VizServer version, no percentage rescaling is applied
-    here: both series are read with `maybeFloat`, which assumes `calMsKey` is
-    already stored as a 0-1 fraction rather than a percentage.
+    No percentage rescaling is applied here: both series are read with
+    `maybeFloat`, which assumes `calMsKey` is already stored as a 0-1
+    fraction rather than a percentage.
     """
 
 

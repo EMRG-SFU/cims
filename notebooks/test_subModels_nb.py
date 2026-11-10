@@ -17,8 +17,6 @@ with app.setup:
     import copy
     import re
 
-    # For using Flask in a cell without blocking
-    import threading
 
 
 

@@ -1,8 +1,9 @@
 """
 Helpers for reading nodes, years and parameter names out of a CIMS model graph.
 
-Shared by the Calibration and VizServer packages. Both `utility_functions`
-modules and `Calibration.Data.node_info` import these, some under other names.
+Graph helpers shared across calibration tools, so they live in one place rather
+than inside any single tool. `Calibration.utility_functions` and
+`Calibration.Data.node_info` import these, some under other names.
 """
 
 import re
@@ -111,7 +112,6 @@ def get_tech_param_over_time(gr, nodeName, techName, paramName, years=None):
     return(pVals)
 
 
-# No
 def get_all_tech_names_union(gr, nodeName, years=None):
     """
     This one returnsr the UNION of each year's set of tech names. Any techs that appear in at least one year
@@ -157,7 +157,6 @@ def list_year_node_params_intersect(gr, nodeName, years=None):
     return(intersect_sublists(l))
 
 
-#No
 def get_all_tech_names_strict(gr, nodeName):
     """
     The set of technologies SHOULD be the same from year to year. This happens when the union is equal to the
@@ -168,7 +167,6 @@ def get_all_tech_names_strict(gr, nodeName):
     """
     def innerFunc(nodeName):
         n = gr.nodes()[nodeName]
-        #yVals = [yr for yr in [str(a) for a in range(2000, 2021, 5)] if yr in list(n)]
         yVals = get_all_node_years(gr, nodeName)
         try:
             subListInter = intersect_sublists([list(n[yv]['technologies']) for yv in yVals])

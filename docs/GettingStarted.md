@@ -52,7 +52,7 @@ Some parts of CIMS need extra packages, which are installed by adding the matchi
 | If you are... | Add |
 |---|---|
 | Running the data pipeline (`CIMS.data_processing`) | `--extra data-processing` |
-| Calibrating a model or using the VizServer (`CIMS.calibration`) | `--extra calibration` |
+| Calibrating a model (`CIMS.calibration`) | `--extra calibration` |
 
 For example, `uv sync --extra notebooks --extra calibration`. To install everything, run `uv sync --all-extras`.
 
@@ -93,7 +93,7 @@ uv will use your existing environment and skip reinstalling dependencies unless 
 
 - **uv not found after install**: Restart your terminal session so the `uv` command is available on your PATH.
 - **Dependency conflicts**: Run `uv sync --extra notebooks` again to bring your environment up to date with the latest `pyproject.toml`.
-- **`ModuleNotFoundError` for `flask`, `plotly`, `openpyxl`, `fastexcel` or `xlrd`**: These belong to the optional `calibration` and `data-processing` groups. Run `uv sync --all-extras` (or add the `--extra` you need, see [Install Dependencies](#2-install-dependencies)).
+- **`ModuleNotFoundError` for `plotly`, `openpyxl`, `fastexcel` or `xlrd`**: These belong to the optional `calibration` and `data-processing` groups. Run `uv sync --all-extras` (or add the `--extra` you need, see [Install Dependencies](#2-install-dependencies)).
 
 ## Additional Resources
 

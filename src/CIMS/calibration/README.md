@@ -25,7 +25,6 @@ see [Calibration/Optimization/README.md](Calibration/Optimization/README.md).
 | [_stage1_worker.py](_stage1_worker.py) | Subprocess entry point for parallel and timeout-guarded Stage 1 fits. You don't run it directly. |
 | `initial_test_nb.py`, `test_calibration_func_nb*.py`, `test_subModels_nb.py` | Older development and test notebooks. These are in `notebooks/` at the repo root. |
 | [Calibration/](Calibration/) | The importable library. Notebooks use `import CIMS.calibration.Calibration.…`. |
-| [VizServer/](VizServer/) | Flask + D3 web viewer for browsing the model tree, viewing tables, editing FICs and re-running a node. |
 
 ### The `Calibration` package
 
@@ -183,19 +182,3 @@ Reference.py loads these from
 `transportation_freight`, `residential`, `commercial` and `fuels`). To
 calibrate a node in any other sector, add that sector's folder name to
 `calibration_output_sectors`, or Reference.py won't read its outputs.
-
----
-
-## VizServer
-
-The VizServer is a small Flask app for browsing a pickled model in the browser.
-It shows the node tree (D3), service, tech, FIC, emissions and
-requested-quantity tables, and market-share plots. It also lets you edit a
-node's FICs and re-run that node.
-
-```bash
-python -m CIMS.calibration.VizServer path/to/model.pkl [port]
-```
-
-It can also be started from a thread inside a notebook (see
-`transportation_passenger.py`).

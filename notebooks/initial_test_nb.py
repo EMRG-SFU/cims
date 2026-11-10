@@ -16,8 +16,6 @@ with app.setup:
     import importlib
     import copy
 
-    # For using Flask in a cell without blocking
-    import threading
 
 
     # Custom cell output functions
@@ -29,7 +27,6 @@ with app.setup:
         return(mo.vstack(args))
 
 
-    from CIMS.calibration.Calibration import bind_data
 
     #from Calibration.cal_model import Cal_Model, find_calibration_nodes
 
@@ -47,8 +44,7 @@ with app.setup:
     import CIMS.calibration.Calibration.Data.market_share as market_share
     import CIMS.calibration.Calibration.Data.FICs as FICs
 
-    from CIMS.calibration.Calibration.Plotting.plot_ms_for_node import plot_ms
-    from CIMS.calibration.Calibration.Plotting._plot_ms_for_node_line import plot_ms_line
+    from CIMS.calibration.Calibration.Plotting.plot_ms_for_node import plot_ms, plot_ms_line
 
 
     from CIMS.calibration.Calibration.paramLoc import ParamLoc
@@ -112,11 +108,20 @@ def _():
     mo.md(r"""
     # Calibration / Model Debug Stuff
 
-    The cells below can just be run as-is, if a node has been selected from the graph. They default to using the model loaded from the pickle at the top of this notebook file, and the currently selected node in the graph viz.
+    The cells below can just be run as-is. They default to using the model loaded from the pickle at the top of this notebook file, and the node set in `selected_node` below.
 
-    These parameters can be set to anything else, if you have an alternative graph object to examine, or if you want to hardcode the retrieval to some other node in the graph.
+    These parameters can be set to anything else, if you have an alternative graph object to examine, or if you want to look at some other node in the graph.
     """)
     return
+
+
+@app.cell
+def _():
+    # Node used by the debug cells below. This used to be set by shift-clicking
+    # a node in the embedded graph viewer (VizServer), which has been removed
+    # for now. Edit this to inspect a different node.
+    selected_node = "CIMS.CAN.AB.Residential.Dwellings.Building Type.High Density.Vintage.1981-2000 Bldg Code.Heating (Cold)"
+    return (selected_node,)
 
 
 @app.cell(hide_code=True)
@@ -128,8 +133,8 @@ def _():
 
 
 @app.cell
-def _(model, vizVars):
-    node_info.list_nonYearly_nodeParams(model.graph, nodeName = vizVars["selectedNode"])
+def _(model, selected_node):
+    node_info.list_nonYearly_nodeParams(model.graph, nodeName = selected_node)
     return
 
 
@@ -142,8 +147,8 @@ def _():
 
 
 @app.cell
-def _(model, vizVars):
-    node_info.list_techs(model.graph, nodeName = vizVars["selectedNode"])
+def _(model, selected_node):
+    node_info.list_techs(model.graph, nodeName = selected_node)
     return
 
 
@@ -156,8 +161,8 @@ def _():
 
 
 @app.cell
-def _(model, vizVars):
-    node_info.list_years(model.graph, nodeName = vizVars["selectedNode"])
+def _(model, selected_node):
+    node_info.list_years(model.graph, nodeName = selected_node)
     return
 
 
@@ -170,8 +175,8 @@ def _():
 
 
 @app.cell
-def _(model, vizVars):
-    node_info.list_yearly_nodeParams_intersect(model.graph, nodeName = vizVars["selectedNode"])
+def _(model, selected_node):
+    node_info.list_yearly_nodeParams_intersect(model.graph, nodeName = selected_node)
     return
 
 
@@ -184,8 +189,8 @@ def _():
 
 
 @app.cell
-def _(model, vizVars):
-    node_info.list_yearly_techParams_intersect(model.graph, nodeName = vizVars["selectedNode"], techName = "Electricity_GSHP")
+def _(model, selected_node):
+    node_info.list_yearly_techParams_intersect(model.graph, nodeName = selected_node, techName = "Electricity_GSHP")
     return
 
 

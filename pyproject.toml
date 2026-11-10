@@ -46,11 +46,10 @@ data-processing = [
     'fastexcel',
     'xlrd',
 ]
-# Needed only by CIMS.calibration: plots and the VizServer, plus marimo because some
+# Needed only by CIMS.calibration: plots, plus marimo because some
 # calibration modules are marimo notebooks
 calibration = [
     'CIMS[notebooks]',
-    'flask>=3.1.3',
     'plotly>=6.9.0',
     'kaleido',
 ]
@@ -64,7 +63,6 @@ where = ["src"]
 include = ["CIMS*"]
 
 [tool.setuptools.package-data]
-"CIMS.calibration.VizServer" = ["static/*", "templates/*"]
 "CIMS.data_processing.source.nrcan.ceud.residential.validation" = ["*.csv"]
 
 [tool.setuptools.dynamic]

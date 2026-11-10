@@ -47,14 +47,12 @@ def listTechParams_intersect(gr, nodeName, techName):
     return(_shared.list_tech_params_intersect(gr, nodeName, techName, years=_YEARS_2000_2020))
 
 
-# No
 def getAllTechNames_intersect(gr, nodeName):
     """
     This one returns the INTERSECTION of each year's set of tech names. Techs returned from this are present in all
     the years.
     """
     n = gr.nodes()[nodeName]
-    #yVals = [yr for yr in [str(a) for a in range(2000, 2021, 5)] if yr in list(n)]
     yVals = getAllNodeYears(gr, nodeName)
     try:
         return(intersect_sublists([list(n[yv]['technologies']) for yv in yVals]))
@@ -73,7 +71,6 @@ def getAllTechNames_intersect(gr, nodeName):
 ###########################################
 ###########################################
 
-# No
 def listTechParams_allYears(gr, nodeName, techName, filterRE=None):
     n = gr.nodes()[nodeName]
     #yearVals = [yr for yr in [str(a) for a in range(2000, 2021, 5)] if yr in list(n)]
