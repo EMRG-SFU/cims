@@ -17,8 +17,6 @@ with app.setup:
     import copy
     import re
 
-    # For using Flask in a cell without blocking
-    import threading
 
 
     # Custom cell output functions
@@ -30,7 +28,6 @@ with app.setup:
         return(mo.vstack(args))
 
 
-    from Calibration import bind_data
 
 
     from Calibration.Optimization.optimize_ms import optimize_total_market_share_fic

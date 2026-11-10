@@ -7,7 +7,7 @@ Flattens fixed incremental cost (FIC) data into CIMS-formatted CSVs
 Sources
 -------
 Fixed structural parameters
-    raw_data/fixed_data/fic/FIC_{region}.csv
+    raw_data/fixed_data/fic/fic_{region}.csv
     Flattened from wide (2000–2050 year columns) to long format.
     Each region has its own file; FIXED_TEMPLATE maps 1:1.
 
@@ -17,15 +17,13 @@ Branch, Type, Region, Sector, Service, Technology, Parameter,
 Context, Sub_Context, Target, Source, Unit, Year, Value
 """
 
-import tempfile
-from pathlib import Path
 
 import polars as pl
 
 # ── path setup ─────────────────────────────────────────────────────────────────
-import CIMS.data_processing.utils.flatten_fixed_data as _flatten_mod
+from CIMS.data_processing.utils.flatten_fixed_data import read_fixed_data_file
 
-from CIMS.data_processing.utils.controls_conversions import BASE_PATH, DATA_START, PROJECTION_END, LAST_DATA_YEAR
+from CIMS.data_processing.utils.controls_conversions import BASE_PATH
 from CIMS.data_processing.utils.collapse_constant_years import collapse_constant_years
 
 # ── configuration ──────────────────────────────────────────────────────────────
@@ -44,26 +42,6 @@ FIXED_TEMPLATE: dict[str, str] = {
     'QC': 'QC', 'SK': 'SK', 'YT': 'YT',
 }
 
-# ── helpers ────────────────────────────────────────────────────────────────────
-
-def _read_flattened_fixed(region: str) -> pl.DataFrame:
-    """Flatten one FIC CSV and return as a long-format DataFrame."""
-    fixed_path = FIXED_INPUT_DIR / f'fic_{region.lower()}.csv'
-    with tempfile.TemporaryDirectory() as tmp:
-        out_file = Path(tmp) / f'fic_{region.lower()}.csv'
-        _flatten_mod.process_file(
-            input_path=fixed_path,
-            output_path=out_file,
-            year_min=DATA_START,
-            year_max=LAST_DATA_YEAR['cer'],
-            target_start=DATA_START,
-            target_end=PROJECTION_END,
-            target_step=1,
-        )
-        df = pl.read_csv(out_file, infer_schema_length=0)
-    return df
-
-
 # ── main ───────────────────────────────────────────────────────────────────────
 
 def main() -> dict[str, pl.DataFrame]:
@@ -76,7 +54,7 @@ def main() -> dict[str, pl.DataFrame]:
     results: dict[str, pl.DataFrame] = {}
 
     for region, template in sorted(FIXED_TEMPLATE.items()):
-        fixed_path = FIXED_INPUT_DIR / f'FIC_{template}.csv'
+        fixed_path = FIXED_INPUT_DIR / f'fic_{template.lower()}.csv'
         if not fixed_path.exists():
             print(f'  ⚠  Skipping {region} — fixed data not found: {fixed_path.name}')
             continue
@@ -84,7 +62,7 @@ def main() -> dict[str, pl.DataFrame]:
         try:
             print(f'\n{region}:')
             print('  Flattening fixed data...')
-            output = _read_flattened_fixed(template).select(OUTPUT_COLS)
+            output = read_fixed_data_file(fixed_path).select(OUTPUT_COLS)
 
             out_path = OUTPUT_DIR / f'fic_{region.lower()}.csv'
             output = collapse_constant_years(output)

@@ -69,14 +69,12 @@ Branch, Type, Region, Sector, Service, Technology, Parameter,
 Context, Sub_Context, Target, Source, Unit, Year, Value
 """
 
-import tempfile
-from pathlib import Path
 from typing import Optional
 
 import polars as pl
 
 # ── path setup ─────────────────────────────────────────────────────────────────
-import CIMS.data_processing.utils.flatten_fixed_data as _flatten_mod
+from CIMS.data_processing.utils.flatten_fixed_data import read_fixed_data_file
 
 import CIMS.data_processing.source.nrcan.ceud.residential.residential as _residential_mod
 
@@ -84,7 +82,7 @@ import CIMS.data_processing.source.energy_prices.energy_price_multipliers as _en
 
 import CIMS.data_processing.source.nrcan.ceud.residential.residential_heating_intensity as _heating_mod
 
-from CIMS.data_processing.utils.controls_conversions import BASE_PATH, DATA_START, PROJECTION_END, LAST_DATA_YEAR
+from CIMS.data_processing.utils.controls_conversions import BASE_PATH, DATA_START, PROJECTION_END
 from CIMS.data_processing.utils.collapse_constant_years import collapse_constant_years
 
 # ── configuration ──────────────────────────────────────────────────────────────
@@ -152,23 +150,6 @@ CIMS_BUILDING_TO_DENSITY: dict[str, str] = {
 
 
 # ── helpers ────────────────────────────────────────────────────────────────────
-
-def _read_flattened_fixed(region: str) -> pl.DataFrame:
-    fixed_path = FIXED_INPUT_DIR / f'residential_{region.lower()}.csv'
-    with tempfile.TemporaryDirectory() as tmp:
-        out_file = Path(tmp) / f'residential_{region.lower()}.csv'
-        _flatten_mod.process_file(
-            input_path=fixed_path,
-            output_path=out_file,
-            year_min=DATA_START,
-            year_max=PROJECTION_END,
-            target_start=DATA_START,
-            target_end=PROJECTION_END,
-            target_step=1,
-        )
-        df = pl.read_csv(out_file, infer_schema_length=0)
-    return df.with_row_index('_order')
-
 
 def _empty_frame() -> pl.DataFrame:
     return pl.DataFrame(
@@ -1505,7 +1486,7 @@ def main() -> dict[str, pl.DataFrame]:
         try:
             print(f'\n{region}:')
             print('  Flattening fixed data...')
-            fixed = _read_flattened_fixed(region)
+            fixed = read_fixed_data_file(fixed_path, year_max=PROJECTION_END).with_row_index('_order')
 
             print('  Assembling...')
             output = _assemble_region(fixed, residential, multipliers, heating, region)

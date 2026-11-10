@@ -11,7 +11,7 @@ import types
 import scipy
 import scipy.optimize as SO
 
-import Calibration.Data.node_info as node_info
+import CIMS.calibration.Calibration.Data.node_info as node_info
 
 
 def optimize_years_sequential(

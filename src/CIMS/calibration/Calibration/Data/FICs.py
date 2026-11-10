@@ -10,10 +10,10 @@ import os
 import sys
 from contextlib import redirect_stdout, redirect_stderr
 
-import Calibration.Data.node_info as node_info
-from Calibration.CIMS_Functions.set_param_calibration import set_param_calibration
-from Calibration.CIMS_Functions.update_market_shares import update_market_shares
-from Calibration.SubGraphs.graphFunctions import getDescendants
+import CIMS.calibration.Calibration.Data.node_info as node_info
+from CIMS.calibration.Calibration.CIMS_Functions.set_param_calibration import set_param_calibration
+from CIMS.calibration.Calibration.CIMS_Functions.update_market_shares import update_market_shares
+from CIMS.calibration.Calibration.SubGraphs.graphFunctions import getDescendants
 
 def get_FICs(model, nodeName, key="fic"):
 

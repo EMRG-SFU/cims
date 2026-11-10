@@ -24,11 +24,11 @@ from pathlib import Path
 import polars as pl
 
 # ── path setup ──────────────────────────────────────────────────────────────────
-import CIMS.data_processing.utils.flatten_fixed_data as _flatten_mod
+from CIMS.data_processing.utils.flatten_fixed_data import read_fixed_data_file
 
 import CIMS.data_processing.source.stats_can.pop_gdp as _pg_mod
 
-from CIMS.data_processing.utils.controls_conversions import BASE_PATH, DATA_START, PROJECTION_END
+from CIMS.data_processing.utils.controls_conversions import BASE_PATH, PROJECTION_END
 from CIMS.data_processing.utils.collapse_constant_years import collapse_constant_years
 
 # ── configuration ───────────────────────────────────────────────────────────────
@@ -76,20 +76,9 @@ def _flatten_fixed(stem: str) -> pl.DataFrame:
     """
     input_path = FIXED_INPUT_DIR / f'{stem}.csv'
     with tempfile.TemporaryDirectory() as tmp:
-        tmp = Path(tmp)
-        cleaned  = tmp / f'{stem}_clean.csv'
-        out_file = tmp / f'{stem}.csv'
+        cleaned = Path(tmp) / f'{stem}.csv'
         _clean_csv(input_path, cleaned)
-        _flatten_mod.process_file(
-            input_path=cleaned,
-            output_path=out_file,
-            year_min=DATA_START,
-            year_max=PROJECTION_END,
-            target_start=DATA_START,
-            target_end=PROJECTION_END,
-            target_step=1,
-        )
-        df = pl.read_csv(out_file, infer_schema_length=0)
+        df = read_fixed_data_file(cleaned, year_max=PROJECTION_END)
     df = df.filter(
         ~(
             (pl.col('Parameter') == 'attribute') &

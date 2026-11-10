@@ -23,9 +23,9 @@ import warnings
 
 import pandas as pd
 
-from Calibration.Data.market_share import get_marketShare_both_dict
-from Calibration.Utility.write_fics import write_fics
-from Calibration.Utility.write_lifetimes import write_lifetimes
+from CIMS.calibration.Calibration.Data.market_share import get_marketShare_both_dict
+from CIMS.calibration.Calibration.Utility.write_fics import write_fics
+from CIMS.calibration.Calibration.Utility.write_lifetimes import write_lifetimes
 
 # Sector names in the model whose output folder is not just the snake-cased name.
 SECTOR_FOLDER_OVERRIDES = {

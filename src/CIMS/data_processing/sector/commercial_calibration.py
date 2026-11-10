@@ -34,7 +34,6 @@ Context, Sub_Context, Target, Source, Unit, Year, Value
 from pathlib import Path
 
 import polars as pl
-import pandas as pd
 
 # ── path setup ────────────────────────────────────────────────────────────────
 
@@ -44,40 +43,19 @@ import CIMS.data_processing.source.eccc.nir.nir_to_cims as _nir_mod
 import CIMS.data_processing.source.cer.cer_resd_demand as _cer_mod
 from CIMS.data_processing.source.nrcan.ceud.commercial.commercial import main as _ceud_main
 from CIMS.data_processing.utils.controls_conversions import BASE_PATH, load_sector_regions, filter_excluded_branches
+from CIMS.data_processing.utils.calibration_helpers import (
+    OUTPUT_COLS,
+    build_cer_energy,
+    build_crosswalk_emissions,
+    build_nir_emissions,
+    empty_df,
+)
+from CIMS.data_processing.utils.output_builder import write_per_region_csvs
 
 # ── configuration ─────────────────────────────────────────────────────────────
 OUTPUT_DIR = BASE_PATH / 'calibration/commercial'
 
-OUTPUT_COLS = [
-    'Branch', 'Type', 'Region', 'Sector', 'Service', 'Technology',
-    'Parameter', 'Context', 'Sub_Context', 'Target', 'Source', 'Unit',
-    'Year', 'Value',
-]
-
 SECTOR_NAME = 'Commercial'
-
-# NIR full province name → CIMS abbreviation (excludes Canada)
-_REGION_MAP: dict[str, str] = {
-    'British Columbia':          'BC',
-    'Alberta':                   'AB',
-    'Saskatchewan':              'SK',
-    'Manitoba':                  'MB',
-    'Ontario':                   'ON',
-    'Quebec':                    'QC',
-    'New Brunswick':             'NB',
-    'Nova Scotia':               'NS',
-    'Prince Edward Island':      'PE',
-    'Newfoundland and Labrador': 'NL',
-    'Yukon':                     'YT',
-    'Northwest Territories':     'NT',
-    'Nunavut':                   'NU',
-}
-
-# Fuels that have region-specific CIMS branches
-_REGIONAL_FUELS = {
-    'Electricity', 'Biodiesel',
-    'Ethanol', 'Hydrogen',
-}
 
 # cer_to_cims_map.csv maps every commercial Space Heating CER row to BOTH a
 # "(Marine)" and a "(Cold)" node variant (see e.g. .Commercial.HVAC (Cold) /
@@ -94,31 +72,6 @@ BC_MARINE_FRACTION = 0.75
 
 # ── helpers ───────────────────────────────────────────────────────────────────
 
-def _branch_meta(branch: str) -> dict:
-    """Infer Type, Region, Sector, Service from a CIMS branch string.
-
-    Branch structure: CIMS.CAN.{Region}[.{Sector}[.{Service}[...]]]
-    """
-    parts = branch.split('.')
-    if len(parts) < 3:
-        return {'Type': '', 'Region': '', 'Sector': '', 'Service': ''}
-    region = parts[2]
-    if len(parts) == 3:
-        return {'Type': 'Region', 'Region': region, 'Sector': '', 'Service': ''}
-    sector = parts[3]
-    if len(parts) == 4:
-        return {'Type': 'Sector', 'Region': region, 'Sector': sector, 'Service': ''}
-    service = parts[4]
-    return {'Type': 'Service', 'Region': region, 'Sector': sector, 'Service': service}
-
-
-def _fuel_target(region: str, fuel: str) -> str:
-    """Build CIMS branch for a fuel (mirrors model_inputs.py price_mult logic)."""
-    if fuel in _REGIONAL_FUELS:
-        return f'CIMS.CAN.{region}.{fuel}'
-    return f'CIMS.Generic Fuels.{fuel}'
-
-
 def _bc_climate_fraction(region: str, node: str) -> float:
     """Cold/Marine split fraction for BC's duplicated Space-Heating nodes (see BC_COLD_FRACTION)."""
     if region != 'BC':
@@ -128,10 +81,6 @@ def _bc_climate_fraction(region: str, node: str) -> float:
     if node.endswith('(Marine)'):
         return BC_MARINE_FRACTION
     return 1.0
-
-
-def _empty_df() -> pl.DataFrame:
-    return pl.DataFrame(schema={c: pl.Utf8 for c in OUTPUT_COLS})
 
 
 def _get_series(df: pl.DataFrame, variable: str, category: str = '') -> dict:
@@ -151,109 +100,6 @@ def _get_categories(df: pl.DataFrame, variable: str) -> list[str]:
     """Return sorted unique category values for a given variable."""
     subset = df.filter(pl.col('variable') == variable)
     return sorted(subset.get_column('category').unique().to_list())
-
-
-# ── energy demand builder ─────────────────────────────────────────────────────
-
-def _build_cer_energy(cer_df: pd.DataFrame) -> pl.DataFrame:
-    """Filter cer_resd_demand output to Commercial CIMS nodes."""
-    com = cer_df[cer_df['Node'].str.startswith('.Commercial')].copy()
-    if com.empty:
-        return _empty_df()
-
-    rows = []
-    for _, row in com.iterrows():
-        region = str(row['Region'])
-        node   = str(row['Node'])
-        fuel   = str(row['Variable'])
-        branch = f'CIMS.CAN.{region}{node}'
-        meta   = _branch_meta(branch)
-        value  = float(row['Value']) * _bc_climate_fraction(region, node)
-        rows.append({
-            'Branch':      branch,
-            'Type':        meta['Type'],
-            'Region':      region,
-            'Sector':      meta['Sector'],
-            'Service':     meta['Service'],
-            'Technology':  '',
-            'Parameter':   'calibration_quantity_requested',
-            'Context':     '',
-            'Sub_Context': '',
-            'Target':      _fuel_target(region, fuel),
-            'Source':      str(row.get('Source', 'CER')),
-            'Unit':        str(row.get('Unit', 'GJ')),
-            'Year':        str(int(row['Year'])),
-            'Value':       str(value),
-        })
-    return pl.DataFrame(rows, schema={c: pl.Utf8 for c in OUTPUT_COLS})
-
-
-# ── emission builders ─────────────────────────────────────────────────────────
-
-def _build_crosswalk_emissions(crosswalk_df: pl.DataFrame) -> pl.DataFrame:
-    """Filter nir_crosswalk_tables_cims output to Commercial CIMS branches."""
-    com = crosswalk_df.filter(pl.col('CIMS_Branch').str.contains(r'\.Commercial'))
-    if com.is_empty():
-        return _empty_df()
-
-    rows = []
-    for row in com.to_dicts():
-        branch = row['CIMS_Branch']
-        meta   = _branch_meta(branch)
-        rows.append({
-            'Branch':      branch,
-            'Type':        meta['Type'],
-            'Region':      meta['Region'],
-            'Sector':      meta['Sector'],
-            'Service':     meta['Service'],
-            'Technology':  '',
-            'Parameter':   'calibration_emissions_total',
-            'Context':     '',
-            'Sub_Context': '',
-            'Target':      '',
-            'Source':      str(row.get('Source', 'NIR')),
-            'Unit':        str(row.get('Unit', 'tCO2e')),
-            'Year':        str(row['Year']),
-            'Value':       str(row['Value']),
-        })
-    return pl.DataFrame(rows, schema={c: pl.Utf8 for c in OUTPUT_COLS})
-
-
-def _build_nir_emissions(nir_df: pl.DataFrame) -> pl.DataFrame:
-    """Extract per-gas NIR emissions for Commercial branches."""
-    known_regions = set(_REGION_MAP.keys())
-    com = nir_df.filter(
-        pl.col('CIMS Branch').str.contains(r'\.Commercial')
-        & pl.col('Region').is_in(known_regions)
-    )
-    if com.is_empty():
-        return _empty_df()
-
-    rows = []
-    for row in com.to_dicts():
-        full_region = row['Region']
-        abbr        = _REGION_MAP[full_region]
-        branch      = row['CIMS Branch'].replace(
-            f'CIMS.CAN.{full_region}.', f'CIMS.CAN.{abbr}.'
-        )
-        meta = _branch_meta(branch)
-        rows.append({
-            'Branch':      branch,
-            'Type':        meta['Type'],
-            'Region':      abbr,
-            'Sector':      meta['Sector'],
-            'Service':     meta['Service'],
-            'Technology':  '',
-            'Parameter':   'calibration_emissions_by_type',
-            'Context':     str(row['Variable']),
-            'Sub_Context': '',
-            'Target':      '',
-            'Source':      'NIR',
-            'Unit':        str(row['Unit']),
-            'Year':        str(row['Year']),
-            'Value':       str(row['Value']),
-        })
-    return pl.DataFrame(rows, schema={c: pl.Utf8 for c in OUTPUT_COLS})
 
 
 # ── technology builders ───────────────────────────────────────────────────────
@@ -285,7 +131,7 @@ def _build_hot_water_techs(ceud_results: dict[str, pl.DataFrame]) -> pl.DataFram
                 })
 
     if not rows:
-        return _empty_df()
+        return empty_df()
     return pl.DataFrame(rows, schema={c: pl.Utf8 for c in OUTPUT_COLS})
 
 
@@ -327,7 +173,7 @@ def _build_hvac_techs(ceud_results: dict[str, pl.DataFrame]) -> pl.DataFrame:
                     })
 
     if not rows:
-        return _empty_df()
+        return empty_df()
     return pl.DataFrame(rows, schema={c: pl.Utf8 for c in OUTPUT_COLS})
 
 
@@ -352,15 +198,15 @@ def main() -> pl.DataFrame:
     ceud_results = _ceud_main(apply_projections=True, export_csv=False)
 
     print('\nBuilding CER energy demand rows...')
-    cer_rows = _build_cer_energy(cer_df)
+    cer_rows = build_cer_energy(cer_df, SECTOR_NAME, scale=_bc_climate_fraction)
     print(f'  Rows: {len(cer_rows):,}')
 
     print('Building crosswalk emission rows...')
-    crosswalk_rows = _build_crosswalk_emissions(crosswalk_df)
+    crosswalk_rows = build_crosswalk_emissions(crosswalk_df, SECTOR_NAME)
     print(f'  Rows: {len(crosswalk_rows):,}')
 
     print('Building NIR annual emission rows (tCO2e via AR5 GWP100)...')
-    nir_rows = _build_nir_emissions(nir_df)
+    nir_rows = build_nir_emissions(nir_df, SECTOR_NAME)
     print(f'  Rows: {len(nir_rows):,}')
 
     print('Building hot water technology rows...')
@@ -389,15 +235,7 @@ def main() -> pl.DataFrame:
 
     output = filter_excluded_branches(output)
 
-    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    regions = output['Region'].drop_nulls().unique().sort().to_list()
-    for region in regions:
-        region_df = output.filter(pl.col('Region') == region)
-        if not (region_df['Value'].cast(pl.Float64, strict=False).fill_null(0) != 0).any():
-            continue
-        out_path  = OUTPUT_DIR / f'commercial_{region.lower()}.csv'
-        region_df.write_csv(out_path)
-        print(f'  Wrote {len(region_df):,} rows → {out_path.name}')
+    regions = write_per_region_csvs(output, OUTPUT_DIR, 'commercial', skip_if_all_zero=True)
 
     print(f'\n✅ Commercial calibration complete')
     print(f'   Total rows:  {len(output):,}')

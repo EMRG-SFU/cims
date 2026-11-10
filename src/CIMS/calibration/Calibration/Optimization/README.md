@@ -26,7 +26,7 @@ All the fitters **mutate `model` in place**. Re-load the pickle between runs
 you want to compare.
 
 ```python
-from Calibration.Optimization.optimize_ms import (
+from CIMS.calibration.Calibration.Optimization.optimize_ms import (
     optimize_total_market_share_fic, optimize_total_market_share_fic_lifetime)
 
 # FICs only
@@ -176,8 +176,8 @@ Lifetime search only: `lifetime_ladder`, `lifetime_min` (3 yrs), `min_gain`
 ## Legacy code
 
 `_optimize_years_sequential.optimize_years_sequential` is the original approach:
-an L1 objective with an unseeded L-BFGS-B start at 0 and no penalties. Only
-`initial_test_nb.py` still uses it. Use `optimize_ms.py` for new work.
+an L1 objective with an unseeded L-BFGS-B start at 0 and no penalties. Nothing
+calls it any more; it is kept for reference. Use `optimize_ms.py` for new work.
 
 `_objectiveFunctions.make_objective_localNode` is **not** legacy.
 `optimize_ms.py` still uses it to set FICs, run the year's LCC and stock

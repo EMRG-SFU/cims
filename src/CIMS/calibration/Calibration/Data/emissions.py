@@ -7,7 +7,7 @@ from functools import reduce
 from operator import itemgetter
 import types
 
-import Calibration.Data.node_info as node_info
+import CIMS.calibration.Calibration.Data.node_info as node_info
 
 def numFormat(x):
     """

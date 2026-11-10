@@ -10,8 +10,8 @@ import pickle
 import sys
 
 # Functions for computing objective function
-from Calibration.CIMS_Functions.lcc_calculation_calibration import lcc_calculation_faster
-from Calibration.CIMS_Functions.set_param_calibration import set_param_calibration 
+from CIMS.calibration.Calibration.CIMS_Functions.lcc_calculation_calibration import lcc_calculation_faster
+from CIMS.calibration.Calibration.CIMS_Functions.set_param_calibration import set_param_calibration 
 
 def make_objective_localNode(
         model,

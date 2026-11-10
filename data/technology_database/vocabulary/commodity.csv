@@ -1,0 +1,154 @@
+commodity,commodity-label,commodity-class,unit-default,energy-carrier,biogenic,note
+coal,Coal,energy,GJ,coal,no,
+air,Air,material,t,,no,
+oil,Fuel oil,energy,GJ,oil,no,
+bauxite,Bauxite,material,t,,no,
+red-mud,Red mud,material,t,,no,
+salt-slag,Salt slag,material,t,,no,
+coking-coal,Coking coal,energy,GJ,coal,no,
+coke,Coke,energy,GJ,coal,no,
+coke-breeze,Coke breeze,energy,GJ,coal,no,
+coke-oven-gas,Coke oven gas,energy,GJ,coal,no,
+blast-furnace-gas,Blast furnace gas,energy,GJ,coal,no,
+basic-oxygen-furnace-gas,Basic oxygen furnace gas,energy,GJ,coal,no,
+benzole-and-tars,Benzole and tars,energy,GJ,coal,no,
+petroleum-coke,Petroleum coke,energy,GJ,petroleum-coke,no,
+natural-gas,Natural gas,energy,GJ,natural-gas,no,
+biomethane,Biomethane,energy,GJ,biomethane,yes,
+refinery-gas,Refinery gas,energy,GJ,oil,no,
+lpg,Liquefied petroleum gas,energy,GJ,oil,no,
+kerosene,Kerosene,energy,GJ,oil,no,
+light-fuel-oil,Light fuel oil,energy,GJ,oil,no,
+heavy-fuel-oil,Heavy fuel oil,energy,GJ,oil,no,
+diesel,Diesel,energy,GJ,oil,no,
+biomass-solid,Solid biomass,energy,GJ,biomass,yes,
+charcoal,Charcoal,energy,GJ,biomass,yes,
+black-liquor,Black liquor,energy,GJ,black-liquor,yes,
+biogas,Biogas,energy,GJ,biogas,yes,
+landfill-gas,Landfill gas,energy,GJ,landfill-gas,yes,
+bioliquid,Liquid biofuel,energy,GJ,biomass,yes,
+municipal-solid-waste,Municipal solid waste,energy,GJ,biomass,no,
+hydrogen,Hydrogen,energy,GJ,hydrogen,no,
+ammonia-fuel,Ammonia as fuel,energy,GJ,ammonia,no,
+electricity,Electricity,energy,GJ,electricity,no,
+steam,Steam,energy,GJ,waste-heat,no,
+hot-water,Hot water,energy,GJ,waste-heat,no,
+waste-heat,Recovered waste heat,energy,GJ,waste-heat,no,
+solar-thermal,Solar thermal heat,energy,GJ,solar,no,
+geothermal-heat,Geothermal heat,energy,GJ,geothermal,no,
+nuclear-heat,Nuclear process heat,energy,GJ,nuclear,no,
+iron-ore,Iron ore,material,t,,no,
+pellets,Iron ore pellets,material,t,,no,
+sinter,Sinter,material,t,,no,
+hot-metal,Hot metal,material,t,,no,
+direct-reduced-iron,Direct reduced iron,material,t,,no,
+scrap-steel,Steel scrap,material,t,,no,
+liquid-steel,Liquid steel,material,t,,no,
+crude-steel,Crude steel,material,t,,no,
+hot-rolled-steel,Hot rolled steel,material,t,,no,
+limestone,Limestone,material,t,,no,
+dolomite,Dolomite,material,t,,no,
+lime,Lime,material,t,,no,
+raw-meal,Cement raw meal,material,t,,no,
+clinker,Clinker,material,t,,no,
+cement,Cement,material,t,,no,
+supplementary-cementitious-material,Supplementary cementitious material,material,t,,no,
+alumina,Alumina,material,t,,no,
+aluminum,Aluminum,material,t,,no,
+oxygen,Oxygen,material,t,,no,
+electrodes,Carbon electrodes,material,t,,no,
+wood-pulp,Wood pulp,material,t,,yes,
+recovered-paper,Recovered paper,material,t,,yes,
+paper,Paper and paperboard,material,t,,yes,
+naphtha,Naphtha,material,t,,no,
+ethane,Ethane,material,t,,no,
+high-value-chemicals,High value chemicals,material,t,,no,
+ammonia,Ammonia,material,t,,no,
+methanol,Methanol,material,t,,no,
+slag,Slag,material,t,,no,
+gypsum,Gypsum,material,t,,no,
+water,Water,material,t,,no,
+waste-plastic,Waste plastic,material,t,,no,
+burning-oil,Burning oil,energy,GJ,oil,no,
+gas-oil,Gas and diesel oil,energy,GJ,oil,no,
+propane,Propane,energy,GJ,lpg,no,
+methane,Methane as feedstock,material,t,,no,
+ethanol,Ethanol,material,t,,yes,
+carrier-gas-coal,Carrier gas coal,energy,GJ,coal,no,
+fossil-waste,Fossil waste fuel,energy,GJ,municipal-waste,no,
+non-renewable-waste,Non-renewable waste fuel,energy,GJ,municipal-waste,no,
+renewable-fuel,"Renewable fuel, unspecified",energy,GJ,biomass,yes,
+petrochemical-feedstock,"Petrochemical feedstock, other",material,t,,no,
+ggbfs,Ground granulated blast furnace slag,material,t,,no,
+pulverized-fuel-ash,Pulverized fuel ash,material,t,,no,
+olivine,Olivine or serpentine,material,t,,no,
+quartz,Quartz,material,t,,no,
+sodium-hydroxide,Sodium hydroxide,material,t,,no,
+solvent-amine,Amine solvent,material,t,,no,
+co2,"Carbon dioxide, fossil",emission,t,,no,
+nox,Nitrogen oxides,emission,t,,no,
+so2,Sulphur dioxide,emission,t,,no,
+co,Carbon monoxide,emission,t,,no,
+voc,Volatile organic compounds,emission,t,,no,
+pm,Particulate matter,emission,t,,no,
+co2-biogenic,"Carbon dioxide, biogenic",emission,t,,yes,
+co2-captured,Carbon dioxide captured,emission,t,,no,
+ch4,Methane,emission,t,,no,
+n2o,Nitrous oxide,emission,t,,no,
+co2e,Carbon dioxide equivalent,emission,t,,no,
+oil-sand,Oil sand (mined ore),material,t,,no,bitumen-bearing sand fed to warm-water extraction
+distillers-grains,Distillers grains (DDGS),material,t,,yes,co-product of grain ethanol
+lignin,Lignin,material,t,,yes,co-product of lignocellulosic ethanol; often burned for process heat
+glycerine,Glycerine,material,t,,yes,co-product of biodiesel transesterification
+benzene,Benzene,material,t,,no,added 2026-10-01 (_high queue 1)
+ethylene,Ethylene,material,t,,no,added 2026-10-01 (_high queue 1)
+propylene,Propylene,material,t,,no,added 2026-10-01 (_high queue 1)
+toluene,Toluene,material,t,,no,added 2026-10-01 (_high queue 1)
+cyclohexane,Cyclohexane,material,t,,no,added 2026-10-01 (_high queue 1)
+ethylbenzene,Ethylbenzene,material,t,,no,added 2026-10-01 (_high queue 1)
+cumene,Cumene,material,t,,no,added 2026-10-01 (_high queue 1)
+phenol,Phenol,material,t,,no,added 2026-10-01 (_high queue 1)
+ethylene-dichloride,Ethylene dichloride,material,t,,no,added 2026-10-01 (_high queue 1)
+vinyl-chloride,Vinyl chloride,material,t,,no,added 2026-10-01 (_high queue 1)
+ethylene-oxide,Ethylene oxide,material,t,,no,added 2026-10-01 (_high queue 1)
+chlorine,Chlorine,material,t,,no,added 2026-10-01 (_high queue 1)
+sodium-chloride,Sodium chloride,material,t,,no,added 2026-10-01 (_high queue 1)
+nitric-acid,Nitric acid,material,t,,no,added 2026-10-01 (_high queue 1)
+hydrogen-chloride,Hydrogen chloride,material,t,,no,added 2026-10-01 (_high queue 1)
+carbon-black,Carbon black,material,t,,no,added 2026-10-01 (_high queue 1)
+pyrolysis-gasoline,Pyrolysis gasoline,material,t,,no,added 2026-10-01 (_high queue 1)
+platinum,Platinum,material,t,,no,added 2026-10-01 (_high queue 1)
+fluorspar,Fluorspar,material,t,,no,added 2026-10-01 (_high queue 1)
+nitrogen,Nitrogen,material,t,,no,added 2026-10-01 (_high queue 1)
+iron-oxide,Iron oxide,material,t,,no,added 2026-10-01 (_high queue 1)
+heat,"Heat (recovered or delivered, carrier unspecified)",energy,GJ,heat,no,added 2026-10-01: recovered or delivered heat where the source does not say steam or hot water
+process-off-gas,Process off-gas,energy,GJ,process-off-gas,no,"added 2026-10-01: export or off-gas from smelting reduction, phosphorus furnaces and similar, not otherwise listed"
+magnesite,Magnesite,material,t,,no,added 2026-10-01 (_high queue 2)
+alkaline-silicate-mineral,Alkaline (Mg/Ca-rich) silicate mineral,material,t,,no,added 2026-10-01 (_high queue 2)
+gasoline,Gasoline,energy,GJ,gasoline,no,added 2026-10-01 (_high queue 2)
+grain,Grain (cereal feedstock),material,t,,no,added 2026-10-01 (_high queue 2)
+clay,Clay,material,t,,no,added 2026-10-01 (_medium queue)
+kaolinite-clay,Kaolinitic clay,material,t,,no,added 2026-10-01 (_medium queue)
+pyrolysis-oil,Pyrolysis oil,energy,GJ,pyrolysis-oil,no,added 2026-10-01 (_medium queue)
+pyrolysis-ash,Pyrolysis char and ash,material,t,,no,added 2026-10-01 (_medium queue)
+terephthalic-acid,Terephthalic acid,material,t,,no,added 2026-10-01 (_medium queue)
+ethylene-glycol,Ethylene glycol,material,t,,no,added 2026-10-01 (_medium queue)
+sodium-sulphate,Sodium sulphate,material,t,,no,added 2026-10-01 (_medium queue)
+sulphuric-acid,Sulphuric acid,material,t,,no,added 2026-10-01 (_medium queue)
+enzyme,Enzyme,material,t,,no,added 2026-10-01 (_medium queue)
+vegetable-oil,Vegetable oil (biodiesel feedstock),material,t,,yes,"added 2026-10-02 (haas_2006_001, west_2008_001)"
+isobutanol,Isobutanol,material,t,,no,added 2026-10-02
+cullet,Glass cullet,material,t,,no,added 2026-10-02
+sand,Silica sand,material,t,,no,added 2026-10-02
+soda-ash,Soda ash,material,t,,no,added 2026-10-02
+sulphur,Sulphur,material,t,,no,added 2026-10-02
+rutile,Rutile,material,t,,no,added 2026-10-02
+c4-fraction,C4 fraction,material,t,,no,added 2026-10-03 (CIMS/JCIMS intake)
+styrene,Styrene,material,t,,no,added 2026-10-03 (CIMS/JCIMS intake)
+regranulate,Plastic regranulate,material,t,,no,added 2026-10-03 (CIMS/JCIMS intake)
+vacuum-residue,Vacuum residue,material,t,,no,added 2026-10-03 (CIMS/JCIMS intake)
+bitumen,Bitumen,material,t,,no,added 2026-10-03 (CIMS/JCIMS intake)
+carbon-monoxide,Carbon monoxide,material,t,,no,added 2026-10-03 (CIMS/JCIMS intake)
+dme,Dimethyl ether,energy,GJ,,no,added 2026-10-03 (CIMS/JCIMS intake)
+matte,Copper or nickel matte,material,t,,no,"added 2026-10-06 (schlesinger_2011_001, flash converting feed)"
+pyrolysis-fuel-oil,Pyrolysis fuel oil (steam-cracker heavy co-product),energy,t,oil,no,"added 2026-10-07 (purola_2021_001)"

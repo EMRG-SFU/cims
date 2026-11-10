@@ -11,15 +11,15 @@ with app.setup:
 
     import polars as pl
 
-    import Calibration.Data.node_info as node_info
-    import Calibration.Plotting.plot_ms_for_node as plotMS
-    from Calibration.Optimization.optimize_ms import (
+    import CIMS.calibration.Calibration.Data.node_info as node_info
+    import CIMS.calibration.Calibration.Plotting.plot_ms_for_node as plotMS
+    from CIMS.calibration.Calibration.Optimization.optimize_ms import (
         optimize_total_market_share_fic,
         optimize_total_market_share_fic_lifetime,
         run_stage1_nodes_parallel,
         optimize_on_slice,
     )
-    from Calibration.Utility.calibration_outputs import (
+    from CIMS.calibration.Calibration.Utility.calibration_outputs import (
         group_by_sector,
         last_recorded_fits,
         log_file_for,

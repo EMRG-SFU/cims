@@ -37,38 +37,20 @@ import CIMS.data_processing.source.eccc.nir.nir_to_cims as _nir_mod
 import CIMS.data_processing.source.cer.cer_resd_demand as _cer_mod
 import CIMS.data_processing.source.nrcan.ceud.transportation_freight.transportation_freight as _tf_mod
 from CIMS.data_processing.utils.controls_conversions import BASE_PATH, load_sector_regions, filter_excluded_branches
+from CIMS.data_processing.utils.calibration_helpers import (
+    OUTPUT_COLS,
+    branch_meta,
+    build_cer_energy,
+    build_crosswalk_emissions,
+    build_nir_emissions,
+    empty_df,
+)
+from CIMS.data_processing.utils.output_builder import write_per_region_csvs
 
 # ── configuration ─────────────────────────────────────────────────────────────
 OUTPUT_DIR = BASE_PATH / 'calibration/transportation_freight'
 
-OUTPUT_COLS = [
-    'Branch', 'Type', 'Region', 'Sector', 'Service', 'Technology',
-    'Parameter', 'Context', 'Sub_Context', 'Target', 'Source', 'Unit',
-    'Year', 'Value',
-]
-
 SECTOR_NAME = 'Transportation Freight'
-
-_REGION_MAP: dict[str, str] = {
-    'British Columbia':          'BC',
-    'Alberta':                   'AB',
-    'Saskatchewan':              'SK',
-    'Manitoba':                  'MB',
-    'Ontario':                   'ON',
-    'Quebec':                    'QC',
-    'New Brunswick':             'NB',
-    'Nova Scotia':               'NS',
-    'Prince Edward Island':      'PE',
-    'Newfoundland and Labrador': 'NL',
-    'Yukon':                     'YT',
-    'Northwest Territories':     'NT',
-    'Nunavut':                   'NU',
-}
-
-_REGIONAL_FUELS = {
-    'Electricity', 'Biodiesel',
-    'Ethanol', 'Hydrogen',
-}
 
 # Pipeline fuel category → Light Medium technology name, for provinces where
 # the source pipeline can't compute the Low/Medium/High Efficiency vintage
@@ -91,31 +73,6 @@ _TECH_SHARE_SERVICES: list[tuple[str, str, str, dict[str, str] | None, int | Non
 
 
 # ── helpers ───────────────────────────────────────────────────────────────────
-
-def _branch_meta(branch: str) -> dict:
-    """Infer Type, Region, Sector, Service from a CIMS branch string."""
-    parts = branch.split('.')
-    if len(parts) < 3:
-        return {'Type': '', 'Region': '', 'Sector': '', 'Service': ''}
-    region = parts[2]
-    if len(parts) == 3:
-        return {'Type': 'Region', 'Region': region, 'Sector': '', 'Service': ''}
-    sector = parts[3]
-    if len(parts) == 4:
-        return {'Type': 'Sector', 'Region': region, 'Sector': sector, 'Service': ''}
-    service = parts[4]
-    return {'Type': 'Service', 'Region': region, 'Sector': sector, 'Service': service}
-
-
-def _fuel_target(region: str, fuel: str) -> str:
-    if fuel in _REGIONAL_FUELS:
-        return f'CIMS.CAN.{region}.{fuel}'
-    return f'CIMS.Generic Fuels.{fuel}'
-
-
-def _empty_df() -> pl.DataFrame:
-    return pl.DataFrame(schema={c: pl.Utf8 for c in OUTPUT_COLS})
-
 
 # Bottom-up roll-up chain: each parent branch suffix (after "CIMS.CAN.{region}")
 # gets a calibration_quantity_requested row equal to the sum of its children's
@@ -180,7 +137,7 @@ def _rollup_hierarchy(rows: pl.DataFrame) -> pl.DataFrame:
 
         df = df[~existing_mask]
 
-        meta_cols = summed['Branch'].apply(_branch_meta).apply(pd.Series).drop(columns=['Region'])
+        meta_cols = summed['Branch'].apply(branch_meta).apply(pd.Series).drop(columns=['Region'])
         summed = pd.concat([summed.reset_index(drop=True), meta_cols.reset_index(drop=True)], axis=1)
         summed['Technology']  = ''
         summed['Parameter']   = 'calibration_quantity_requested'
@@ -194,108 +151,6 @@ def _rollup_hierarchy(rows: pl.DataFrame) -> pl.DataFrame:
 
     df = df.drop(columns=['Value_f'])
     return pl.DataFrame(df, schema={c: pl.Utf8 for c in OUTPUT_COLS})
-
-
-# ── energy demand builder ─────────────────────────────────────────────────────
-
-def _build_cer_energy(cer_df: pd.DataFrame) -> pl.DataFrame:
-    """Filter cer_resd_demand output to Transportation Freight CIMS nodes."""
-    tf = cer_df[cer_df['Node'].str.startswith('.Transportation Freight')].copy()
-    if tf.empty:
-        return _empty_df()
-
-    rows = []
-    for _, row in tf.iterrows():
-        region = str(row['Region'])
-        node   = str(row['Node'])
-        fuel   = str(row['Variable'])
-        branch = f'CIMS.CAN.{region}{node}'
-        meta   = _branch_meta(branch)
-        rows.append({
-            'Branch':      branch,
-            'Type':        meta['Type'],
-            'Region':      region,
-            'Sector':      meta['Sector'],
-            'Service':     meta['Service'],
-            'Technology':  '',
-            'Parameter':   'calibration_quantity_requested',
-            'Context':     '',
-            'Sub_Context': '',
-            'Target':      _fuel_target(region, fuel),
-            'Source':      str(row.get('Source', 'CER')),
-            'Unit':        str(row.get('Unit', 'GJ')),
-            'Year':        str(int(row['Year'])),
-            'Value':       str(row['Value']),
-        })
-    return pl.DataFrame(rows, schema={c: pl.Utf8 for c in OUTPUT_COLS})
-
-
-# ── emission builders ─────────────────────────────────────────────────────────
-
-def _build_crosswalk_emissions(crosswalk_df: pl.DataFrame) -> pl.DataFrame:
-    """Filter nir_crosswalk_tables_cims output to Transportation Freight CIMS branches."""
-    tf = crosswalk_df.filter(pl.col('CIMS_Branch').str.contains(r'\.Transportation Freight'))
-    if tf.is_empty():
-        return _empty_df()
-
-    rows = []
-    for row in tf.to_dicts():
-        branch = row['CIMS_Branch']
-        meta   = _branch_meta(branch)
-        rows.append({
-            'Branch':      branch,
-            'Type':        meta['Type'],
-            'Region':      meta['Region'],
-            'Sector':      meta['Sector'],
-            'Service':     meta['Service'],
-            'Technology':  '',
-            'Parameter':   'calibration_emissions_total',
-            'Context':     '',
-            'Sub_Context': '',
-            'Target':      '',
-            'Source':      str(row.get('Source', 'NIR')),
-            'Unit':        str(row.get('Unit', 'tCO2e')),
-            'Year':        str(row['Year']),
-            'Value':       str(row['Value']),
-        })
-    return pl.DataFrame(rows, schema={c: pl.Utf8 for c in OUTPUT_COLS})
-
-
-def _build_nir_emissions(nir_df: pl.DataFrame) -> pl.DataFrame:
-    """Extract per-gas NIR emissions for Transportation Freight branches."""
-    known_regions = set(_REGION_MAP.keys())
-    tf = nir_df.filter(
-        pl.col('CIMS Branch').str.contains(r'\.Transportation Freight')
-        & pl.col('Region').is_in(known_regions)
-    )
-    if tf.is_empty():
-        return _empty_df()
-
-    rows = []
-    for row in tf.to_dicts():
-        full_region = row['Region']
-        abbr        = _REGION_MAP[full_region]
-        branch      = row['CIMS Branch'].replace(
-            f'CIMS.CAN.{full_region}.', f'CIMS.CAN.{abbr}.'
-        )
-        meta = _branch_meta(branch)
-        rows.append({
-            'Branch':      branch,
-            'Type':        meta['Type'],
-            'Region':      abbr,
-            'Sector':      meta['Sector'],
-            'Service':     meta['Service'],
-            'Technology':  '',
-            'Parameter':   'calibration_emissions_by_type',
-            'Context':     str(row['Variable']),
-            'Sub_Context': '',
-            'Target':      '',
-            'Source':      'NIR',
-            'Unit':        str(row['Unit']),
-            'Year':        str(row['Year']),
-            'Value':       str(row['Value']),
-        })
-    return pl.DataFrame(rows, schema={c: pl.Utf8 for c in OUTPUT_COLS})
 
 
 # ── technology market share builder ───────────────────────────────────────────
@@ -314,7 +169,7 @@ def _build_tf_tech_shares(
         mask = mask & (pl.col('year') <= year_max)
     data = tf.filter(mask)
     if data.is_empty():
-        return _empty_df()
+        return empty_df()
 
     rows: list[dict] = []
     for r in data.iter_rows(named=True):
@@ -339,7 +194,7 @@ def _build_tf_tech_shares(
             'Value':       str(r['value']),
         })
     if not rows:
-        return _empty_df()
+        return empty_df()
     return pl.DataFrame(rows, schema={c: pl.Utf8 for c in OUTPUT_COLS})
 
 
@@ -368,17 +223,17 @@ def main() -> pl.DataFrame:
     )
 
     print('\nBuilding CER energy demand rows...')
-    cer_rows = _build_cer_energy(cer_df)
+    cer_rows = build_cer_energy(cer_df, SECTOR_NAME)
     print(f'  Leaf rows: {len(cer_rows):,}')
     cer_rows = _rollup_hierarchy(cer_rows)
     print(f'  Rows after rolling up to Freight/Transportation Freight: {len(cer_rows):,}')
 
     print('Building crosswalk emission rows...')
-    crosswalk_rows = _build_crosswalk_emissions(crosswalk_df)
+    crosswalk_rows = build_crosswalk_emissions(crosswalk_df, SECTOR_NAME)
     print(f'  Rows: {len(crosswalk_rows):,}')
 
     print('Building NIR annual emission rows (tCO2e via AR5 GWP100)...')
-    nir_rows = _build_nir_emissions(nir_df)
+    nir_rows = build_nir_emissions(nir_df, SECTOR_NAME)
     print(f'  Rows: {len(nir_rows):,}')
 
     print('Building technology market share rows...')
@@ -387,7 +242,7 @@ def main() -> pl.DataFrame:
         frame = _build_tf_tech_shares(tf, variable, service_name, branch_suffix, cat_to_tech, year_max)
         tech_frames.append(frame)
         print(f'  {service_name}: {len(frame):,} rows')
-    tech_rows = pl.concat(tech_frames, how='diagonal_relaxed') if tech_frames else _empty_df()
+    tech_rows = pl.concat(tech_frames, how='diagonal_relaxed') if tech_frames else empty_df()
     print(f'  Tech share total: {len(tech_rows):,} rows')
 
     print('Combining...')
@@ -407,21 +262,13 @@ def main() -> pl.DataFrame:
 
     output = filter_excluded_branches(output)
 
-    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    regions = output['Region'].drop_nulls().unique().sort().to_list()
-    written = 0
-    for region in regions:
-        region_df = output.filter(pl.col('Region') == region)
-        if not (region_df['Value'].cast(pl.Float64, strict=False).fill_null(0) != 0).any():
-            continue
-        out_path = OUTPUT_DIR / f'transportation_freight_{region.lower()}.csv'
-        region_df.write_csv(out_path)
-        print(f'  Wrote {len(region_df):,} rows -> {out_path.name}')
-        written += 1
+    written_regions = write_per_region_csvs(
+        output, OUTPUT_DIR, 'transportation_freight', skip_if_all_zero=True, report_written=True
+    )
 
     print(f'\n Transportation Freight calibration complete')
     print(f'   Total rows:  {len(output):,}')
-    print(f'   Files:       {written} (one per region)')
+    print(f'   Files:       {len(written_regions)} (one per region)')
 
     return output
 
