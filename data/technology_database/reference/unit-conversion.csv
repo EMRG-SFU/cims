@@ -1,0 +1,39 @@
+from-unit,to-unit,factor,offset,note
+fraction,%,100,0,"same quantity, different scale"
+fraction/yr,%/yr,100,0,
+MJ/unit,GJ/unit,0.001,0,
+MMBtu,GJ,1.0551,0,HHV-neutral energy conversion
+MMBtu/hr,MW,0.29307,0,1 MMBtu/hr = 0.29307 MW
+Btu/kWh,GJ/GJ,0.00029307,0,"heat rate to energy ratio: 1 Btu/kWh = 1.055056e-6 GJ / 0.0036 GJ (was 0.29307, 1000x too large, until 2026-10-05)"
+kW,MW,0.001,0,
+kWh,GJ,0.0036,0,
+degF,degC,0.5555556,-17.777778,"(F - 32) x 5/9, written as F x 5/9 - 17.7778"
+psig,bar,0.0689476,0,gauge pressure; 1 psi = 0.0689476 bar
+psi,bar,0.0689476,0,
+kg/GJ,t/GJ,0.001,0,
+kgCO2/unit,t/unit,0.001,0,
+kgeCO2/unit,t/unit,0.001,0,UKERC spelling of kg CO2-equivalent per unit of output
+lb/MMBtu,t/GJ,0.000429904274476353,0,"lb to t, then per-MMBtu to per-GJ"
+months,years,0.08333333333333333,0,
+Nm3/unit,m3/unit,1,0,normal cubic metres kept as m3; conditions noted per source
+kg/unit,t/unit,0.001,0,species is carried in the target column
+t/d,kt/yr,0.365,0,"365 operating days per year (user, 2026-09-10): a nameplate rating, deliberately not derated - capacity-factor carries availability separately, and 330 d/yr would count it twice."
+kWh/t,GJ/t,0.0036,0,
+MWh/t,GJ/t,3.6,0,
+COP,%,100,0,"Coefficient of performance is useful energy out per unit in, so it is an efficiency; x100 puts it on the same % basis as a combustion efficiency. Values exceed 100% because the device moves heat rather than making it."
+MJ/t,GJ/t,0.001,0,
+kg,t,0.001,0,mass numerator; the denominator is carried unchanged
+g,t,0.000001,0,mass numerator
+MJ,GJ,0.001,0,energy numerator
+MWh,GJ,3.6,0,energy numerator
+kt/PJ,t/GJ,0.001,0,1 kt per PJ = 1000 t per 1e6 GJ
+GJ/h,MW,0.277778,0,1 GJ/h = 1/3.6 MW
+MWh/yr,GJ,3.6,0,annual energy; the per-year is implicit in annual-output
+ratio,dimensionless,1,0,"same quantity, different label"
+K,degC,1,-273.15,"kelvin to Celsius, exact (added 2026-10-02)"
+ng/J,t/GJ,1e-06,0,"1 ng/J = 1 g/GJ = 1e-6 t/GJ (added 2026-10-13, S108; factor corrected from 0.001 2026-10-23, S133)"
+MPa,bar,10,0,"1 MPa = 10 bar (added 2026-10-13, S108)"
+m3,1000-m3,0.001,0,1000-m3 = a thousand cubic metres (e3m3 in regulator notation; added 2026-10-23)
+Nm3,1000-m3,0.001,0,1000-m3 = a thousand cubic metres (e3m3 in regulator notation; added 2026-10-23)
+long-ton-per-d,kt/yr,0.370857,0,"1 long ton = 1.016047 t, x 365 d (capacity recovery 2026-10-28; Gary 2007 sulphur plant)"
+t/yr anode copper,kt/yr,0.001,0,"t/yr of the stated product (anode copper), a spelling of t/yr (capacity recovery 2026-10-28; Coursol 2015)"

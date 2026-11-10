@@ -8,6 +8,9 @@ calibration/**/*.csv
 model_inputs/**/*.csv
 model_inputs/**/*.xlsx
 
+# The technology database build also writes markdown reviews and a workbook beside its CSVs
+processed_data/technology_database/
+
 # Python cache
 __pycache__/
 *.py[cod]

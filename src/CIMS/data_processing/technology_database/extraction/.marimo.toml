@@ -1,0 +1,9 @@
+# marimo project configuration
+# Placed beside the notebook so launching marimo from this folder uses it.
+
+[runtime]
+# Re-run dependent cells automatically when you interact with a widget or
+# click a button (instead of waiting for you to press the cell's play arrow).
+on_cell_change = "autorun"
+# Run all cells automatically when the notebook is opened.
+auto_instantiate = true

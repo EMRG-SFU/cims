@@ -1,0 +1,23 @@
+source-id,record-id,basis,evidence,decided
+van-geene_2024_001,,output,"MIDDEN cards state direct CO2 per GJ of main output (the extractor writes ""direct fossil CO2 per GJ of main output"" on every such row)",Brad 2026-10-21
+ieaghg_2013_003,tp-ieaghg_2013_003-0176,output,Derived: 869.5 kg CO2/t HRC captured from boiler flue gas / 3.7535 GJ steam per t HRC from the plant. High because BFG carries CO2 into the boiler. [869.5/3.7535],Brad 2026-10-21
+ieaghg_2013_003,tp-ieaghg_2013_003-0177,output,Derived: residual steam plant CO2 96.61 kg/t HRC / 3.7535 GJ steam per t HRC. [96.61/3.7535],Brad 2026-10-21
+ieaghg_2007_001,tp-ieaghg_2007_001-0005,output,CO2 emission 5.156 kg/s per 50 MWth steam output; fossil [5.156/50*1000],Brad 2026-10-21
+ieaghg_2007_001,tp-ieaghg_2007_001-0017,output,CO2 emission combustion coal & NG 0.679 kg/s per 50 MWth steam (not captured); excludes indirect emissions from electricity [0.679/50*1000],Brad 2026-10-21
+ieaghg_2007_001,tp-ieaghg_2007_001-0018,output,CO2 for storage 4.304 kg/s per 50 MWth steam [4.304/50*1000],Brad 2026-10-21
+ieaghg_2007_001,tp-ieaghg_2007_001-0032,output,CO2 emission combustion coal & NG 0.094 kg/s per 50 MWth steam (not captured); excludes indirect emissions from electricity [0.094/50*1000],Brad 2026-10-21
+ieaghg_2007_001,tp-ieaghg_2007_001-0033,output,CO2 for storage 5.104 kg/s per 50 MWth steam [5.104/50*1000],Brad 2026-10-21
+ieaghg_2007_001,tp-ieaghg_2007_001-0047,output,CO2 emission 1.066 kg/s after capture per 50 MWth steam [1.066/50*1000],Brad 2026-10-21
+ieaghg_2007_001,tp-ieaghg_2007_001-0048,output,CO2 for storage 6.043 kg/s per 50 MWth steam [6.043/50*1000],Brad 2026-10-21
+ieaghg_2007_001,tp-ieaghg_2007_001-0065,output,CO2 emission 0.22 kg/s per MWth heat output; fossil [0.22/2.0*1000],Brad 2026-10-21
+ieaghg_2007_001,tp-ieaghg_2007_001-0075,output,CO2 emission 0.022 kg/s per MWth heat output; fossil [0.022/1.9*1000],Brad 2026-10-21
+ieaghg_2007_001,tp-ieaghg_2007_001-0113,output,CO2 emission 0.94 kg/s per MWth heat output; fossil [0.94/9.71*1000],Brad 2026-10-21
+ieaghg_2007_001,tp-ieaghg_2007_001-0132,output,CO2 emission 5.65 kg/s per 50 MWth [5.65/50*1000],Brad 2026-10-21
+ieaghg_2007_001,tp-ieaghg_2007_001-0140,output,Net CO2 emission 0.37 kg/s per 50 MWth [0.37/50*1000],Brad 2026-10-21
+ieaghg_2007_001,tp-ieaghg_2007_001-0149,output,CO2 emission 0.3 kg/s per 5 MWth [0.3/5.0*1000],Brad 2026-10-21
+ieaghg_2007_001,tp-ieaghg_2007_001-0168,output,CO2 emission 0.056 kg/s per MWth heat output; fossil [0.056/0.35*1000],Brad 2026-10-21
+pembina_2021_001,tp-pembina_2021_001-0004,output,"Plant operation GHG intensity (direct emissions at the hydrogen plant after capture), per GJ H2 on HHV (mass-to-energy conversion with HHV of hydrogen and natur",Brad 2026-10-21
+pembina_2021_001,tp-pembina_2021_001-0006,output,"Plant operation GHG intensity (direct emissions at the hydrogen plant after capture), per GJ H2 on HHV (mass-to-energy conversion with HHV of hydrogen and natur",Brad 2026-10-21
+pembina_2021_001,tp-pembina_2021_001-0008,output,"Plant operation GHG intensity (direct emissions at the hydrogen plant after capture), per GJ H2 on HHV (mass-to-energy conversion with HHV of hydrogen and natur",Brad 2026-10-21
+pembina_2021_001,tp-pembina_2021_001-0010,output,"Plant operation GHG intensity (direct emissions at the hydrogen plant after capture), per GJ H2 on HHV (mass-to-energy conversion with HHV of hydrogen and natur",Brad 2026-10-21
+johansson_2012_001,tp-johansson_2012_001-0137,output,"CO2 from steam production 88,089 t/y over 44 MWth LP steam x 8000 h/y (per GJ LP steam) [88089/(44*8000*3.6)]",Brad 2026-10-21

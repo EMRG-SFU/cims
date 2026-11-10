@@ -1,0 +1,26 @@
+product,density-factor,energy-content-factor,note
+ethanol,cf-ethanol-density,cf-ethanol-hhv-mass,
+biodiesel,cf-fame-density,cf-fame-hhv-mass,
+renewable diesel and sustainable aviation fuel,cf-paraffinic-diesel-density,cf-paraffinic-diesel-hhv-mass,
+liquid fuels,cf-paraffinic-diesel-density,cf-paraffinic-diesel-hhv-mass,
+methanol,cf-methanol-density,cf-methanol-hhv-mass,
+ammonia,cf-ammonia-density,cf-ammonia-hhv-mass,
+hydrogen,cf-h2-density,cf-h2-hhv-mass,
+hydrogen delivered,cf-h2-density,cf-h2-hhv-mass,
+renewable natural gas,cf-methane-density,cf-methane-hhv-mass,
+biomethane,cf-methane-density,cf-methane-hhv-mass,
+synthetic natural gas,cf-methane-density,cf-methane-hhv-mass,
+methane,cf-methane-density,cf-methane-hhv-mass,
+biogas,,cf-biogas-raw-energy,
+liquefied natural gas,,cf-lng-energy,
+crude,cf-crude-volume,,density from the crude-oil factor (an average conventional crude); refined products and synthetic crude are close to it but lighter
+refined petroleum products,cf-crude-volume,,density from the crude-oil factor (an average conventional crude); refined products and synthetic crude are close to it but lighter
+refined products or synthetic crude,cf-crude-volume,,density from the crude-oil factor (an average conventional crude); refined products and synthetic crude are close to it but lighter
+carbon dioxide,cf-co2-density,,
+oxygen,cf-oxygen-density,,
+steam,,cf-steam-enthalpy,
+gasoline,cf-gasoline-density,cf-gasoline-hhv-mass,
+pyrolysis oil,cf-paraffinic-diesel-density,cf-paraffinic-diesel-hhv-mass,"the archetype upgrades the oil (hydroprocessing) to gasoline and diesel blendstocks, so its sources print the upgraded fuel; the paraffinic diesel factors stand in for those blendstocks (PB014, 2026-10-28)"
+crude oil,cf-crude-volume,,"as crude (OG019, 2026-10-28)"
+dimethyl ether,,cf-dme-hhv-mass,"capacity conversion 2026-10-28"
+methylal,,cf-methylal-hhv-mass,"capacity conversion 2026-10-28"

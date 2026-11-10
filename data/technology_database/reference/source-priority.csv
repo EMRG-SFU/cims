@@ -1,0 +1,629 @@
+﻿source-id,short-name,breadth,year,rank,note
+ukerc_2013_001,UKERC 2013,cross-sector,2013,1,Whole-sector UK technology tables across five sectors and every end use. Broadest source held.
+bataille_2017_001,Bataille 2017,cross-sector,2017,2,"UKTM investment costs across eight sectors and 390 technologies, plus a literature survey. Broad in coverage but narrow in parameters - essentially capex alone. Ranked above the single-technology briefs on breadth and below UKERC, which carries energy, emissions and adoption as well."
+ipcc_2022_001,Bashmakov et al. 2022,cross-sector,2022,3,"Assessed, cross-sector and the most recent broad source held. Ranked below UKERC and Bataille only because its parameters barely overlap theirs: it gives abatement costs and reduction potentials, not capex and efficiencies, so it rarely competes for the same cell."
+epa_2017_001,US EPA 2017,multi-technology,2017,4,"CHP catalogue covering five prime movers, size-resolved. Recent."
+epa_2007_001,US EPA 2007,multi-technology,2007,5,"Biomass CHP catalogue covering boilers, gasifiers and four prime movers."
+etsap_2010_002,Van Wortswinkel and Nijs 2010 (ETSAP I02),multi-technology,2010,6,"Iron and steel only, but 16 technologies across every step of the sector - blast furnace, smelting reduction, direct reduction, EAF, BOF, coking, sintering, pelletisation - with per-tonne material and energy flows as well as costs. Ranked above LBNL 2021 and ETSAP I01 on that breadth and below the cross-industry catalogues; LBNL and I01 moved down one place to make room. Its costs come in two denominations (EUR2010 for the blast furnace and COREX columns, USD2000 for everything else) and the brief gives no way to reconcile them."
+etsap_2010_003,Cochez and Nijs 2010 (ETSAP I03),multi-technology,2010,6,"Cement only, but 16 technologies covering every clinker kiln type, the grate cooler, both state-of-the-art grinding mills and two alternative binders, with thermal energy, capacity, air flow, costs and the full emissions block. Tied with ETSAP I02 at 6: the two sector briefs are the same kind of source and cover disjoint sectors, so they never compete for the same cell. Costs come in EUR2010 and EUR2007, and the brief states the IEA costs per tonne of cement while its own summary table heads them per tonne of clinker - see the meta file."
+etsap_2015_001,Hagberg Börjesson and Ahlgren 2015 (ETSAP I07),multi-technology,2015,6,"Pulp and paper only, but nine products with a full per-tonne energy breakdown and eight kraft-mill energy investment options. Tied with ETSAP I02 and I03 at 6 - same kind of source, disjoint sectors. The most recent ETSAP brief held. Two cautions: the energy block is Swedish mill averages, not world averages, and the investment cost carries no currency year at all."
+etsap_2012_001,Rosenberg 2012 (ETSAP I10),multi-technology,2012,6,"Aluminium only; ten technologies across electrolysis, alumina refining, anode production, casting and secondary melting. Tied with ETSAP I02, I03 and I07 at 6. Its strength is the emissions block - seven pollutants over five cell configurations, which nothing else held comes close to. Its weakness is cost: two cost rows only, with no currency year stated anywhere in the brief, and an operating cost that explicitly EXCLUDES fuel in the one industry where power is the dominant cost."
+lbnl_2021_001,Zuberi et al. 2021,single-technology,2021,7,Boiler electrification only. Recent but narrow.
+etsap_2010_001,Van Wortswinkel and Nijs 2010 (ETSAP I01),single-technology,2010,8,Industrial combustion boilers only.
+ct_2011_001,Carbon Trust 2011,multi-technology,2011,4,held since 2026-10-06 (_medium intake); was ranked via UKERC while not held
+mckane-hasanbeigi_2010_001,McKane and Hasanbeigi 2010,via-ukerc,2010,1,original cited by UKERC 2013. Ranked with UKERC because the selection and harmonisation were UKERC's editorial work; the number is this source's.
+mckane-hasanbeigi_2010_001,McKane and Hasanbeigi 2010,multi-technology,2010,5,intake 2026-10-03 _high
+us-epa_2010_001,US EPA 2010,via-ukerc,2010,1,original cited by UKERC 2013. Ranked with UKERC because the selection and harmonisation were UKERC's editorial work; the number is this source's.
+ren_2009_001,Ren 2009,via-ukerc,2009,1,original cited by UKERC 2013. Ranked with UKERC because the selection and harmonisation were UKERC's editorial work; the number is this source's.
+ren_2009_001,Ren 2009,multi-technology,2009,5,intake 2026-10-03 _high
+ct_2010_002,Carbon Trust 2010a,multi-technology,2010,4,held since 2026-10-06 (_medium intake); was ranked via UKERC while not held
+worrell_1999_001,Worrell et al. 1999,via-ukerc,1999,1,original cited by UKERC 2013. Ranked with UKERC because the selection and harmonisation were UKERC's editorial work; the number is this source's.
+johansson_2012_001,Johansson et al. 2012,multi-technology,2012,4,held since 2026-10-06 (_medium intake); was ranked via UKERC while not held
+ct_2010_003,CT 2010b,via-ukerc,2010,1,original cited by UKERC 2013. Ranked with UKERC because the selection and harmonisation were UKERC's editorial work; the number is this source's.
+ieaghg_2008_001,IEAGHG 2008,via-ukerc,2008,1,original cited by UKERC 2013. Ranked with UKERC because the selection and harmonisation were UKERC's editorial work; the number is this source's.
+ieaghg_2008_001,IEAGHG 2008,multi-technology,2008,4,intake 2026-10-03 _high
+nedo_2008_001,NEDO 2008,multi-technology,2008,5,held since 2026-10-06 (_low intake); was ranked via UKERC while not held
+iisi_1998_001,IISI 1998,via-ukerc,1998,1,original cited by UKERC 2013. Ranked with UKERC because the selection and harmonisation were UKERC's editorial work; the number is this source's.
+itp_2012_001,ITP 2012,via-ukerc,2012,1,original cited by UKERC 2013. Ranked with UKERC because the selection and harmonisation were UKERC's editorial work; the number is this source's.
+ecra_2009_001,ECRA 2009,via-ukerc,2009,1,original cited by UKERC 2013. Ranked with UKERC because the selection and harmonisation were UKERC's editorial work; the number is this source's.
+ippc_2012_001,IPPC 2012,via-ukerc,2012,1,original cited by UKERC 2013. Ranked with UKERC because the selection and harmonisation were UKERC's editorial work; the number is this source's.
+ecra_2009_002,ECRA 2009a,via-ukerc,2009,1,original cited by UKERC 2013. Ranked with UKERC because the selection and harmonisation were UKERC's editorial work; the number is this source's.
+ieaghg_2013_003,IEAGHG 2013 (steel CCS),via-ukerc,2013,1,original cited by UKERC 2013. Ranked with UKERC because the selection and harmonisation were UKERC's editorial work; the number is this source's.
+ieaghg_2013_003,IEAGHG 2013 (steel CCS),multi-technology,2013,4,batch m 2026-10-01
+ieaghg_2000_001,IEAGHG 2000,via-ukerc,2000,1,original cited by UKERC 2013. Ranked with UKERC because the selection and harmonisation were UKERC's editorial work; the number is this source's.
+aea_2000_001,AEA 2000,via-ukerc,2000,1,original cited by UKERC 2013. Ranked with UKERC because the selection and harmonisation were UKERC's editorial work; the number is this source's.
+link_2008_001,Link 2008,via-ukerc,2008,1,original cited by UKERC 2013. Ranked with UKERC because the selection and harmonisation were UKERC's editorial work; the number is this source's.
+ieaghg_2013_001,IEAGHG 2013,via-ukerc,2013,1,original cited by UKERC 2013. Ranked with UKERC because the selection and harmonisation were UKERC's editorial work; the number is this source's.
+collodi-wheeler_2010_001,Collodi and Wheeler 2010,via-ukerc,2010,1,original cited by UKERC 2013. Ranked with UKERC because the selection and harmonisation were UKERC's editorial work; the number is this source's. SUPERSEDED by collodi_2010_001 2026-08-29.
+collodi_2010_001,Collodi 2010,multi-technology,2010,4,held since 2026-10-06 (_low intake); was ranked via UKERC while not held
+martin_2000_003,Martin et al. 2000b,via-ukerc,2000,1,original cited by UKERC 2013. Ranked with UKERC because the selection and harmonisation were UKERC's editorial work; the number is this source's.
+flsmidth_2006_001,FLSmidth 2006,via-ukerc,2006,1,original cited by UKERC 2013. Ranked with UKERC because the selection and harmonisation were UKERC's editorial work; the number is this source's.
+walenta_2011_001,Walenta 2011,via-ukerc,2011,1,original cited by UKERC 2013. Ranked with UKERC because the selection and harmonisation were UKERC's editorial work; the number is this source's.
+fritzson_2006_002,Fritzson et al. 2006a,via-ukerc,2006,1,original cited by UKERC 2013. Ranked with UKERC because the selection and harmonisation were UKERC's editorial work; the number is this source's.
+carbon-trust_2004_001,Carbon Trust 2004,via-ukerc,2004,1,original cited by UKERC 2013. Ranked with UKERC because the selection and harmonisation were UKERC's editorial work; the number is this source's.
+aea_2011_001,AEA 2011,via-ukerc,2011,1,original cited by UKERC 2013. Ranked with UKERC because the selection and harmonisation were UKERC's editorial work; the number is this source's.
+fritzson_2006_003,Fritzson et al. 2006b,via-ukerc,2006,1,original cited by UKERC 2013. Ranked with UKERC because the selection and harmonisation were UKERC's editorial work; the number is this source's.
+khatir_2012_002,Khatir et al. 2012a,via-ukerc,2012,1,original cited by UKERC 2013. Ranked with UKERC because the selection and harmonisation were UKERC's editorial work; the number is this source's.
+khatir_2012_003,Khatir et al. 2012b,via-ukerc,2012,1,original cited by UKERC 2013. Ranked with UKERC because the selection and harmonisation were UKERC's editorial work; the number is this source's.
+mpa_2011_001,MPA 2011,via-ukerc,2011,1,original cited by UKERC 2013. Ranked with UKERC because the selection and harmonisation were UKERC's editorial work; the number is this source's.
+nbf_2007_001,NBF 2007,via-ukerc,2007,1,original cited by UKERC 2013. Ranked with UKERC because the selection and harmonisation were UKERC's editorial work; the number is this source's.
+carbon-trust_2007_001,Carbon Trust 2007,via-ukerc,2007,1,original cited by UKERC 2013. Ranked with UKERC because the selection and harmonisation were UKERC's editorial work; the number is this source's.
+birat_2008_001,Birat et al. 2008,via-ukerc,2008,1,original cited by UKERC 2013. Ranked with UKERC because the selection and harmonisation were UKERC's editorial work; the number is this source's.
+iisi_1996_001,IISI 1996,via-ukerc,1996,1,original cited by UKERC 2013. Ranked with UKERC because the selection and harmonisation were UKERC's editorial work; the number is this source's.
+doe_1984_001,DoE 1984,via-ukerc,1984,1,original cited by UKERC 2013. Ranked with UKERC because the selection and harmonisation were UKERC's editorial work; the number is this source's.
+ec_2012_001,EC 2012,via-ukerc,2012,1,original cited by UKERC 2013. Ranked with UKERC because the selection and harmonisation were UKERC's editorial work; the number is this source's.
+ng_2012_001,Ng et al. 2012,via-ukerc,2012,1,original cited by UKERC 2013. Ranked with UKERC because the selection and harmonisation were UKERC's editorial work; the number is this source's.
+ietd_2013_001,IETD 2013,multi-technology,2013,4,held since 2026-10-07 (_medium intake); was ranked via UKERC while not held
+aea_2012_003,AEA 2012b,via-ukerc,2012,1,original cited by UKERC 2013. Ranked with UKERC because the selection and harmonisation were UKERC's editorial work; the number is this source's.
+ecra_2009_003,ECRA 2009b,via-ukerc,2009,1,original cited by UKERC 2013. Ranked with UKERC because the selection and harmonisation were UKERC's editorial work; the number is this source's.
+novacem_2011_001,Novacem 2011,via-ukerc,2011,1,original cited by UKERC 2013. Ranked with UKERC because the selection and harmonisation were UKERC's editorial work; the number is this source's.
+novacem_2011_002,Novacem 2011a,via-ukerc,2011,1,original cited by UKERC 2013. Ranked with UKERC because the selection and harmonisation were UKERC's editorial work; the number is this source's.
+novacem_2011_003,Novacem 2011b,via-ukerc,2011,1,original cited by UKERC 2013. Ranked with UKERC because the selection and harmonisation were UKERC's editorial work; the number is this source's.
+von-weizsacker_2009_001,Von Weizsacker 2009,via-ukerc,2009,1,original cited by UKERC 2013. Ranked with UKERC because the selection and harmonisation were UKERC's editorial work; the number is this source's.
+stemmermann_2010_001,Stemmermann et al. 2010,via-ukerc,2010,1,original cited by UKERC 2013. Ranked with UKERC because the selection and harmonisation were UKERC's editorial work; the number is this source's.
+nera_2009_001,NERA 2009,via-ukerc,2009,1,original cited by UKERC 2013. Ranked with UKERC because the selection and harmonisation were UKERC's editorial work; the number is this source's.
+nera-ea_2009_001,NERA and EA 2009,via-ukerc,2009,1,original cited by UKERC 2013. Ranked with UKERC because the selection and harmonisation were UKERC's editorial work; the number is this source's.
+iip_2012_001,IIP 2012,via-ukerc,2012,1,original cited by UKERC 2013; ranked with UKERC because the selection was UKERC's editorial work
+amin_2011_001,Amin et al. 2011,via-ipcc,2011,3,original cited by IPCC AR6 Chapter 11. Ranked with IPCC because the selection and harmonisation were the chapter's editorial work; the number is this source's.
+armijo-philibert_2020_001,Armijo and Philibert 2020,via-ipcc,2020,3,original cited by IPCC AR6 Chapter 11. Ranked with IPCC because the selection and harmonisation were the chapter's editorial work; the number is this source's.
+ashik_2015_001,Ashik et al. 2015,via-ipcc,2015,3,original cited by IPCC AR6 Chapter 11. Ranked with IPCC because the selection and harmonisation were the chapter's editorial work; the number is this source's.
+axelson_2018_001,Axelson et al. 2018,via-ipcc,2018,3,original cited by IPCC AR6 Chapter 11. Ranked with IPCC because the selection and harmonisation were the chapter's editorial work; the number is this source's.
+birat_2012_001,Birat 2012,via-ipcc,2012,3,original cited by IPCC AR6 Chapter 11. Ranked with IPCC because the selection and harmonisation were the chapter's editorial work; the number is this source's.
+fasihi_2019_001,Fasihi et al. 2019,via-ipcc,2019,3,original cited by IPCC AR6 Chapter 11. Ranked with IPCC because the selection and harmonisation were the chapter's editorial work; the number is this source's.
+fechner-kray_2012_001,Fechner and Kray 2012,via-ipcc,2012,3,original cited by IPCC AR6 Chapter 11. Ranked with IPCC because the selection and harmonisation were the chapter's editorial work; the number is this source's.
+habert_2020_001,Habert et al. 2020,via-ipcc,2020,3,original cited by IPCC AR6 Chapter 11. Ranked with IPCC because the selection and harmonisation were the chapter's editorial work; the number is this source's.
+iea_2018_001,IEA 2018 (petrochemicals),via-ipcc,2018,3,original cited by IPCC AR6 Chapter 11. Ranked with IPCC because the selection and harmonisation were the chapter's editorial work; the number is this source's.
+iea_2019_002,IEA 2019,via-ipcc,2019,3,original cited by IPCC AR6 Chapter 11. Ranked with IPCC because the selection and harmonisation were the chapter's editorial work; the number is this source's.
+lehne-preston_2018_001,Lehne and Preston 2018,via-ipcc,2018,3,original cited by IPCC AR6 Chapter 11. Ranked with IPCC because the selection and harmonisation were the chapter's editorial work; the number is this source's.
+leeson_2017_001,Leeson et al. 2017,via-ipcc,2017,3,original cited by IPCC AR6 Chapter 11. Ranked with IPCC because the selection and harmonisation were the chapter's editorial work; the number is this source's.
+li_2019_001,Li et al. 2019,via-ipcc,2019,3,original cited by IPCC AR6 Chapter 11. Ranked with IPCC because the selection and harmonisation were the chapter's editorial work; the number is this source's.
+moore_2017_001,Moore 2017,via-ipcc,2017,3,original cited by IPCC AR6 Chapter 11. Ranked with IPCC because the selection and harmonisation were the chapter's editorial work; the number is this source's.
+philibert_2017_001,Philibert 2017a,via-ipcc,2017,3,original cited by IPCC AR6 Chapter 11. Ranked with IPCC because the selection and harmonisation were the chapter's editorial work; the number is this source's.
+philibert_2017_002,Philibert 2017b,via-ipcc,2017,3,original cited by IPCC AR6 Chapter 11. Ranked with IPCC because the selection and harmonisation were the chapter's editorial work; the number is this source's.
+van-der-meijden_2011_001,van der Meijden et al. 2011,via-ipcc,2011,3,original cited by IPCC AR6 Chapter 11. Ranked with IPCC because the selection and harmonisation were the chapter's editorial work; the number is this source's.
+vogl_2018_001,Vogl et al. 2018,via-ipcc,2018,3,original cited by IPCC AR6 Chapter 11. Ranked with IPCC because the selection and harmonisation were the chapter's editorial work; the number is this source's.
+wilson_2003_001,Wilson et al. 2003,via-ipcc,2003,3,original cited by IPCC AR6 Chapter 11. Ranked with IPCC because the selection and harmonisation were the chapter's editorial work; the number is this source's.
+iea_2024_001,IEA 2024,cross-sector,2024,3,"Readiness levels only, but 640 technologies across every sector with a 2020-2024 series. Ranked with IPCC: recent and broad, and it competes for no other cell. NOTE its scale runs to 11, not the 1-9 NASA scale."
+iea_2026_001,IEA 2026 (ETP),cross-sector,2026,9,"Deployment, manufacturing and trade. Assessed 2026-08-29 and found to carry no extractable technology parameters; see its assessment note. Ranked last so it never supplies a central estimate."
+caelp_2024_001,Smillie et al. 2024,multi-technology,2024,5,"Seven indirect-heat technologies (heat pumps by temperature band, electric and fuel boilers, TES, CHP) with capex, O&M, TRL and COP for US manufacturing. Costs mostly from Energy Innovation 2022-2023."
+rtc_2023_001,RTC 2023,multi-technology,2023,7,"BCG slide deck: temperatures, LCOH assumptions and a few printed LCOH values; most numbers are unlabelled charts."
+dea_2026_001,DEA 2026 (process heat),multi-technology,2026,4,"Danish Energy Agency catalogue: 15 industrial heat-supply technologies with capex, O&M, efficiency, lifetime and uncertainty ranges on one consistent 2025 EUR basis."
+humbert_2024_001,Humbert et al. 2024,multi-technology,2024,7,Four iron-making routes on one consistent bottom-up capex basis; the only held source for iron electrowinning.
+siyambalapitiya_2026_001,Siyambalapitiya et al. 2026,multi-technology,2026,7,Three billet-reheating routes compared on one plant; recent.
+svensson_2021_001,Svensson et al. 2021,single-technology,2021,7,"Electric (plasma) lime kiln with the rotary kiln it replaces, on one basis."
+kuparinen_2017_001,Kuparinen and Vakkilainen 2017,multi-technology,2017,7,Lime-kiln fuel-switch options for kraft mills with investment costs.
+kiss_2012_001,Kiss et al. 2012,single-technology,2012,7,Heat-pumped distillation: COP across 27 compiled cases.
+smith_2020_001,Smith et al. 2020,single-technology,2020,7,Haber-Bosch energy use and development status of low-pressure variants.
+layritz_2021_001,Layritz et al. 2021,multi-technology,2021,7,Electrified steam cracker cost and levelized ethylene cost.
+brinkmann_2014_001,Brinkmann et al. 2014 (CAK BREF),multi-technology,2014,6,EU plant-survey energy data for chlor-alkali; sector only.
+jrc_2007_001,EC 2007 (LVIC-S BREF),multi-technology,2007,6,EU BREF for solid inorganics; sodium chlorate electrolysis energy.
+epa_2010_001,US EPA 2010 (nitric acid),multi-technology,2010,7,"N2O abatement performance in nitric acid, from CDM project data."
+rissman_2022_001,Rissman 2022,multi-technology,2022,5,"Original of the CAELP boiler, CHP and heat-pump capex; equipment-only basis stated."
+uekert_2023_001,Uekert et al. 2023,multi-technology,2023,7,PET chemical recycling routes on one Aspen/cash-flow basis (NREL).
+onarheim_2017_002,Onarheim et al. 2017b,single-technology,2017,7,Capture-plant and compression installed costs per source at a Kraft pulp mill.
+onarheim_2017_001,Onarheim et al. 2017a,single-technology,2017,7,Capture-plant steam and electricity per source at a Kraft pulp mill.
+dea_2024_002,DEA 2024,multi-technology,2024,4,"DEA catalogue for capture, transport and storage on one 2020 EUR basis."
+dea_2026_003,DEA 2026 (renewable fuels),multi-technology,2026,4,DEA catalogue of fuel-production technologies on a consistent basis.
+dea_2026_004,DEA 2026 (energy storage),multi-technology,2026,4,DEA catalogue of storage technologies incl. thermal storage and Carnot batteries.
+mpp_2022_001,MPP 2022,multi-technology,2022,7,"Whole-route steel capex per t, but no currency year or basis; mostly for review."
+rissman_2023_001,Rissman and Gimon 2023,multi-technology,2023,5,Original of the thermal-battery costs reprinted by CAELP.
+zuberi_2022_001,Zuberi et al. 2022,multi-technology,2022,7,batch w1 2026-09-30
+zuberi_2023_001,Zuberi et al. 2023,multi-technology,2023,7,batch w1 2026-09-30
+kong_2016_001,Kong et al. 2016,multi-technology,2016,7,batch w1 2026-09-30
+fleiter_2012_001,Fleiter et al. 2012,multi-technology,2012,7,batch w1 2026-09-30
+lipiainen_2022_001,Lipiainen et al. 2022,multi-technology,2022,7,batch w1 2026-09-30
+hasanbeigi_2014_001,Hasanbeigi et al. 2014,multi-technology,2014,7,batch w1 2026-09-30
+hasanbeigi_2013_001,Hasanbeigi et al. 2013,multi-technology,2013,6,batch w1 2026-09-30
+ren_2006_001,Ren et al. 2006,multi-technology,2006,7,batch w1 2026-09-30
+neelis_2008_001,Neelis et al. 2008,multi-technology,2008,6,batch w1 2026-09-30
+ieaghg_2018_001,IEAGHG 2018,multi-technology,2018,6,batch w1 2026-09-30
+hughes_2023_001,Hughes and Zoelle 2023,multi-technology,2023,5,batch w1 2026-09-30
+van-geene_2025_001,Van Geene 2025,multi-technology,2025,6,batch w1 2026-09-30
+negri_2021_001,Negri and Ligthart 2021,multi-technology,2021,6,batch w1 2026-09-30
+haque_2023_001,Haque and Lamboo 2023,multi-technology,2023,6,batch w1 2026-09-30
+van-geene_2024_001,Van Geene et al. 2024 (MIDDEN),cross-sector,2024,3,"Cross-sector plant-level database for the Netherlands: capex, O&M, energy, materials and emissions per technology card for conventional and decarbonisation options in every MIDDEN sector. Capex basis mostly assumed installed."
+worrell_2010_001,Worrell et al. 2010,multi-technology,2010,6,batch w2 2026-09-30
+epa_2010_002,US EPA 2010 (pulp and paper),multi-technology,2010,7,batch w2 2026-09-30
+epa_2012_001,US EPA 2012,multi-technology,2012,7,batch w2 2026-09-30
+iea_2020_002,IEA 2020,multi-technology,2020,5,batch w2 2026-09-30
+larson_2006_001,Larson et al. 2006,multi-technology,2006,6,batch w2 2026-09-30
+khrushch_1999_001,Khrushch et al. 1999,multi-technology,1999,7,batch w2 2026-09-30
+app_2010_001,APP 2010,multi-technology,2010,7,batch w2 2026-09-30
+doe_2023_001,US DOE 2023 (Liftoff industrial),multi-technology,2023,6,"batch q1 2026-10-01; costs mostly with no price year, MACC values include IRA credits"
+doe_2025_001,US DOE 2025 (Liftoff chemicals),multi-technology,2025,6,batch q1 2026-10-01
+boulamanti_2017_001,Boulamanti and Moya 2017,multi-technology,2017,4,"batch q1 2026-10-01; JRC chemicals process tables (SEC, capex, opex)"
+kramer_2009_001,Kramer et al. 2009,multi-technology,2009,6,batch q1 2026-10-01
+falcke_2017_001,Falcke et al. 2017 (LVOC BREF),multi-technology,2017,4,batch q1 2026-10-01; EU data collection ranges
+jrc_2022_001,Aries et al. 2022 (FMP BREF),multi-technology,2022,4,batch q1 2026-10-01; EU data collection ranges
+remus_2013_001,Remus et al. 2013 (IS BREF),multi-technology,2013,4,batch q1 2026-10-01
+suhr_2015_001,Suhr et al. 2015 (PP BREF),multi-technology,2015,4,batch q1 2026-10-01
+jrc_2007_002,EC 2007 (LVIC-AAF BREF),multi-technology,2007,5,batch q1 2026-10-01
+jrc_2007_003,EC 2007 (POL BREF),multi-technology,2007,5,batch q1 2026-10-01
+doe_2023_002,US DOE 2023 (Liftoff cement),multi-technology,2023,6,batch q2a 2026-10-01
+schorcht_2013_001,Schorcht et al. 2013 (CLM BREF),multi-technology,2013,4,batch q2a 2026-10-01
+csi-ecra_2017_001,CSI and ECRA 2017,multi-technology,2017,4,batch q2a 2026-10-01
+iea_2018_002,IEA 2018 (cement roadmap),multi-technology,2018,5,batch q2a 2026-10-01
+voldsund_2019_001,Voldsund et al. 2019,multi-technology,2019,4,batch q2a 2026-10-01
+worrell_2013_001,Worrell et al. 2013,multi-technology,2013,6,batch q2a 2026-10-01
+kermeli_2011_001,Kermeli et al. 2011,multi-technology,2011,7,batch q2a 2026-10-01
+scalet_2013_001,Scalet et al. 2013 (GLS BREF),multi-technology,2013,4,batch q2a 2026-10-01
+worrell_2008_001,Worrell et al. 2008,multi-technology,2008,6,batch q2a 2026-10-01
+jrc_2007_004,EC 2007 (CER BREF),multi-technology,2007,5,batch q2a 2026-10-01
+barthe_2015_001,Barthe et al. 2015 (REF BREF),multi-technology,2015,4,batch q2a 2026-10-01
+worrell_2015_001,Worrell et al. 2015,multi-technology,2015,6,batch q2a 2026-10-01
+kermeli_2016_001,Kermeli et al. 2016,multi-technology,2016,6,batch q2a 2026-10-01
+aries_2024_001,Aries et al. 2024 (SF BREF),multi-technology,2024,4,batch q2a 2026-10-01
+cusano_2017_001,Cusano et al. 2017 (NFM BREF),multi-technology,2017,4,batch q2b 2026-10-01
+lecomte_2017_001,Lecomte et al. 2017 (LCP BREF),multi-technology,2017,4,batch q2b 2026-10-01
+giner-santonja_2019_001,Giner Santonja et al. 2019 (FDM BREF),multi-technology,2019,4,batch q2b 2026-10-01
+masanet_2012_001,Masanet et al. 2012,multi-technology,2012,6,batch q2b 2026-10-01
+stuckrath_2022_001,Stuckrath and Worrell 2022,multi-technology,2022,6,batch q2b 2026-10-01
+galitsky_2003_001,Galitsky et al. 2003 (breweries),multi-technology,2003,7,batch q2b 2026-10-01
+galitsky_2003_002,Galitsky et al. 2003 (corn wet milling),multi-technology,2003,7,batch q2b 2026-10-01
+galitsky_2008_001,Galitsky et al. 2008,multi-technology,2008,7,batch q2b 2026-10-01
+brinkmann_2016_001,Brinkmann et al. 2016 (CWW BREF),multi-technology,2016,5,batch q2b 2026-10-01
+daginnus_2023_001,Daginnus et al. 2023 (WGC BREF),multi-technology,2023,6,batch q2b 2026-10-01
+stubdrup_2016_001,Stubdrup et al. 2016 (WBP BREF),multi-technology,2016,5,batch q2b 2026-10-01
+neuwahl_2019_001,Neuwahl et al. 2019 (WI BREF),multi-technology,2019,4,batch q2b 2026-10-01
+pinasseau_2018_001,Pinasseau et al. 2018 (WT BREF),multi-technology,2018,5,batch q2b 2026-10-01
+dea_2026_006,DEA 2026 (electricity and district heating),multi-technology,2026,3,batch q2b 2026-10-01
+dea_2026_007,DEA 2026 (heating installations),multi-technology,2026,4,batch q2b 2026-10-01
+dea_2026_005,Dockweiler and Vang 2026,multi-technology,2026,5,batch q2b 2026-10-01
+joshi_2022_001,Joshi and Bolech 2022,multi-technology,2022,6,batch q2b 2026-10-01
+ager_2023_001,Ager and Sallstrom 2023,multi-technology,2023,7,batch m 2026-10-01
+agora_2021_001,Agora Energiewende 2021,multi-technology,2021,5,batch m 2026-10-01
+allanore_2015_001,Allanore 2015,multi-technology,2015,7,batch m 2026-10-01
+arens_2017_001,Arens et al. 2017,multi-technology,2017,7,batch m 2026-10-01
+bhaskar_2020_001,Bhaskar et al. 2020,multi-technology,2020,7,batch m 2026-10-01
+bhp_2023_001,Gadd et al. 2023,multi-technology,2023,7,batch m 2026-10-01
+cancio-diaz_2017_001,Cancio Díaz et al. 2017,multi-technology,2017,7,batch m 2026-10-01
+ciambellotti_2024_001,Ciambellotti et al. 2024,multi-technology,2024,7,batch m 2026-10-01
+devlin_2023_001,Devlin et al. 2023,multi-technology,2023,7,batch m 2026-10-01
+draxler_2021_001,Draxler et al. 2021,multi-technology,2021,6,batch m 2026-10-01
+epa_2013_001,US EPA 2013,multi-technology,2013,7,batch m 2026-10-01
+fpinnovations_2026_001,FPInnovations 2026,multi-technology,2026,7,batch m 2026-10-01
+francis_2002_001,Francis et al. 2002,multi-technology,2002,5,batch m 2026-10-01
+golder_2021_001,Golder 2021,multi-technology,2021,5,batch m 2026-10-01
+hamaguchi_2012_001,Hamaguchi et al. 2012,multi-technology,2012,7,batch m 2026-10-01
+iea_2013_001,IEA 2013,multi-technology,2013,7,batch m 2026-10-01
+ieaghg_2016_001,IEAGHG 2016,multi-technology,2016,4,batch m 2026-10-01
+kearns_2021_001,Kearns et al. 2021,multi-technology,2021,5,batch m 2026-10-01
+kim_2022_001,Kim et al. 2022,multi-technology,2022,7,batch m 2026-10-01
+kiss_2017_001,Kiss and Infante Ferreira 2017,multi-technology,2017,5,batch m 2026-10-01
+kuparinen_2019_001,Kuparinen et al. 2019,multi-technology,2019,7,batch m 2026-10-01
+material-economics_2019_001,Material Economics 2019,multi-technology,2019,6,batch m 2026-10-01
+moya_2013_001,Moya and Pardo 2013,multi-technology,2013,6,batch m 2026-10-01
+mynko_2023_001,Mynko et al. 2023,multi-technology,2023,7,batch m 2026-10-01
+nrcan_2008_001,NRCan 2008,multi-technology,2008,4,batch m 2026-10-01
+otto_2017_001,Otto et al. 2017,multi-technology,2017,7,batch m 2026-10-01
+owttrim_2022_001,Owttrim et al. 2022,multi-technology,2022,7,batch m 2026-10-01
+pardo_2013_001,Pardo and Moya 2013,multi-technology,2013,5,batch m 2026-10-01
+perez-ramirez_2003_001,Pérez-Ramírez et al. 2003,multi-technology,2003,7,batch m 2026-10-01
+provides_2018_001,ISPT 2018,multi-technology,2018,7,batch m 2026-10-01
+rechberger_2020_001,Rechberger et al. 2020,multi-technology,2020,7,batch m 2026-10-01
+riedewald_2021_001,Riedewald et al. 2021,multi-technology,2021,7,batch m 2026-10-01
+rouwenhorst_2019_001,Rouwenhorst et al. 2019,multi-technology,2019,7,batch m 2026-10-01
+sabah_2026_001,Sabah et al. 2026,multi-technology,2026,7,batch m 2026-10-01
+sanchez-berriel_2016_001,Sánchez Berriel et al. 2016,multi-technology,2016,7,batch m 2026-10-01
+saygin_2011_001,Saygin et al. 2011,multi-technology,2011,4,batch m 2026-10-01
+schneider_2015_001,Schneider 2015,multi-technology,2015,7,batch m 2026-10-01
+singh_2021_001,Singh et al. 2021,multi-technology,2021,7,batch m 2026-10-01
+solis_2020_001,Solis and Silveira 2020,multi-technology,2020,7,batch m 2026-10-01
+spees_2023_001,Spees et al. 2023,multi-technology,2023,6,batch m 2026-10-01
+talaei_2018_001,Talaei et al. 2018,multi-technology,2018,7,batch m 2026-10-01
+talaei_2020_001,Talaei et al. 2020,multi-technology,2020,7,batch m 2026-10-01
+toktarova_2020_001,Toktarova et al. 2020,multi-technology,2020,7,batch m 2026-10-01
+vakkilainen_2006_001,Vakkilainen 2006,multi-technology,2006,7,batch m 2026-10-01
+epa_2006_001,US EPA 2006 (Natural Gas STAR LL),multi-technology,2006,7,batch natural-gas-star 2026-10-02; per-installation partner-experience costs
+epa_2011_001,US EPA 2011 (Natural Gas STAR PRO),multi-technology,2011,7,batch natural-gas-star 2026-10-02; per-installation partner-experience costs
+arpagaus_2018_001,Arpagaus et al. 2018,multi-technology,2018,6,_high intake 2026-10-02
+deloitte_2022_001,Deloitte 2022,multi-technology,2022,7,_high intake 2026-10-02
+eia_2024_001,Sargent and Lundy 2024,multi-technology,2024,4,_high intake 2026-10-02
+element-energy_2018_001,Element Energy 2018,multi-technology,2018,4,_high intake 2026-10-02
+element-energy_2020_001,Element Energy 2020,multi-technology,2020,7,_high intake 2026-10-02
+gardarsdottir_2019_001,Gardarsdottir et al. 2019,multi-technology,2019,4,_high intake 2026-10-02
+haas_2006_001,Haas et al. 2006,multi-technology,2006,6,_high intake 2026-10-02
+humbird_2011_001,Humbird et al. 2011,multi-technology,2011,4,_high intake 2026-10-02
+iea-hpt_2023_001,Zuhlsdorf et al. 2023,multi-technology,2023,4,_high intake 2026-10-02
+iea_2025_001,IEA 2025,multi-technology,2025,5,_high intake 2026-10-02
+ieaghg_2017_001,IEAGHG 2017 (SMR hydrogen),multi-technology,2017,4,_high intake 2026-10-02
+ieaghg_2017_002,IEAGHG 2017 (refinery retrofit),multi-technology,2017,4,_high intake 2026-10-02
+irena_2020_001,IRENA 2020,multi-technology,2020,4,_high intake 2026-10-02
+jadun_2017_001,Jadun et al. 2017,multi-technology,2017,6,_high intake 2026-10-02
+jones_2013_001,Jones et al. 2013,multi-technology,2013,4,_high intake 2026-10-02
+jrc_2009_001,EC 2009 (ENE BREF),multi-technology,2009,4,_high intake 2026-10-02
+kwiatkowski_2006_001,Kwiatkowski et al. 2006,multi-technology,2006,6,_high intake 2026-10-02
+madeddu_2020_001,Madeddu et al. 2020,multi-technology,2020,6,_high intake 2026-10-02
+mantei_2021_001,Mantei et al. 2021,multi-technology,2021,6,_high intake 2026-10-02
+martin_2000_001,Martin et al. 2000 (emerging technologies),multi-technology,2000,6,_high intake 2026-10-02
+mcmillan_2021_001,McMillan et al. 2021,multi-technology,2021,6,_high intake 2026-10-02
+mpp_2023_001,MPP 2023,multi-technology,2023,5,_high intake 2026-10-02
+netl_2022_002,Lewis et al. 2022,multi-technology,2022,4,_high intake 2026-10-02
+nrel_2025_001,NREL 2025 (ATB),multi-technology,2025,4,_high intake 2026-10-02
+rehfeldt_2018_001,Rehfeldt et al. 2018,multi-technology,2018,6,_high intake 2026-10-02
+rehfeldt_2024_001,Rehfeldt et al. 2024,multi-technology,2024,5,_high intake 2026-10-02
+sanchez_2018_001,Sanchez et al. 2018,multi-technology,2018,6,_high intake 2026-10-02
+saw_2023_001,Saw et al. 2023,multi-technology,2023,5,_high intake 2026-10-02
+schemme_2020_001,Schemme et al. 2020,multi-technology,2020,6,_high intake 2026-10-02
+schoeneberger_2022_001,Schoeneberger et al. 2022,multi-technology,2022,6,_high intake 2026-10-02
+simoni_2022_001,Simoni et al. 2022,multi-technology,2022,6,_high intake 2026-10-02
+tao_2017_001,Tao et al. 2017,multi-technology,2017,6,_high intake 2026-10-02
+vattenfall_2018_001,Vattenfall 2018,multi-technology,2018,6,_high intake 2026-10-02
+west_2008_001,West et al. 2008,multi-technology,2008,6,_high intake 2026-10-02
+wsp_2015_001,WSP and DNV GL 2015 (cement),multi-technology,2015,7,_high intake 2026-10-02
+wsp_2015_002,WSP and DNV GL 2015 (ceramics),multi-technology,2015,7,_high intake 2026-10-02
+wsp_2015_003,WSP and DNV GL 2015 (glass),multi-technology,2015,7,_high intake 2026-10-02
+wsp_2015_004,WSP and DNV GL 2015 (chemicals),multi-technology,2015,7,_high intake 2026-10-02
+wsp_2015_005,WSP and DNV GL 2015 (refining),multi-technology,2015,7,_high intake 2026-10-02
+wsp_2015_006,WSP and DNV GL 2015 (food and drink),multi-technology,2015,7,_high intake 2026-10-02
+wsp_2015_007,WSP and DNV GL 2015 (iron and steel),multi-technology,2015,7,_high intake 2026-10-02
+wsp_2015_008,WSP and DNV GL 2015 (pulp and paper),multi-technology,2015,7,_high intake 2026-10-02
+zier_2021_001,Zier et al. 2021,multi-technology,2021,6,_high intake 2026-10-02
+abou-jaoude_2024_001,Abou-Jaoude et al. 2024,multi-technology,2024,4,intake 2026-10-02 wave 2
+ahluwalia_2023_001,Ahluwalia et al. 2023,multi-technology,2023,6,intake 2026-10-02 wave 2
+alcoa_2024_001,Russell 2024,multi-technology,2024,6,intake 2026-10-02 wave 2
+almeida-benalcazar_2022_001,Almeida Benalcazar et al. 2022,multi-technology,2022,6,intake 2026-10-02 wave 2
+anl_2025_001,Elgowainy et al. 2025,multi-technology,2025,4,intake 2026-10-02 wave 2
+ballantyne_2014_001,Ballantyne and Powell 2014,multi-technology,2014,6,intake 2026-10-02 wave 2
+bc-hydro_2004_001,BC Hydro 2004,multi-technology,2004,6,intake 2026-10-02 wave 2
+bcs_2007_001,BCS 2007,multi-technology,2007,4,intake 2026-10-02 wave 2
+blair_2000_001,Blair 2000,multi-technology,2000,6,intake 2026-10-02 wave 2
+brandt_2022_001,Brandt et al. 2022,multi-technology,2022,4,intake 2026-10-02 wave 2
+brown_2020_001,Brown et al. 2020,multi-technology,2020,5,intake 2026-10-02 wave 2
+ceri_2017_001,Millington 2017,multi-technology,2017,4,intake 2026-10-02 wave 2
+ceri_2017_002,Nduagu et al. 2017,multi-technology,2017,4,intake 2026-10-02 wave 2
+concawe_2019_001,Gudde et al. 2019 (CO2 technologies),multi-technology,2019,5,intake 2026-10-02 wave 2
+coursol_2015_001,Coursol et al. 2015,multi-technology,2015,6,intake 2026-10-02 wave 2
+de-beer_1998_001,de Beer et al. 1998,multi-technology,1998,6,intake 2026-10-02 wave 2
+doe_2000_001,Energetics 2000 (iron and steel profile),multi-technology,2000,6,intake 2026-10-02 wave 2
+doe_2002_001,US DOE 2002,multi-technology,2002,6,intake 2026-10-02 wave 2
+doe_2024_001,US DOE 2024 (Liftoff hydrogen),multi-technology,2024,4,intake 2026-10-02 wave 2
+eccc_2025_001,ECCC 2025,multi-technology,2025,4,intake 2026-10-02 wave 2
+efma_2000_001,EFMA 2000,multi-technology,2000,6,intake 2026-10-02 wave 2
+eia_1996_001,EIA 1996,multi-technology,1996,6,intake 2026-10-02 wave 2
+ellis_2020_001,Ellis et al. 2020,multi-technology,2020,6,intake 2026-10-02 wave 2
+ens_2015_001,DEA 2015 (savings potential),multi-technology,2015,6,intake 2026-10-02 wave 2
+ens_2015_002,DEA 2015 (energy use),multi-technology,2015,6,intake 2026-10-02 wave 2
+epa_1999_001,US EPA 1999,multi-technology,1999,6,intake 2026-10-02 wave 2
+epa_2001_001,US EPA 2001,multi-technology,2001,6,intake 2026-10-02 wave 2
+epa_2019_001,US EPA 2019,multi-technology,2019,4,intake 2026-10-02 wave 2
+epa_2023_001,US EPA 2023 (regulatory impact analysis),multi-technology,2023,4,intake 2026-10-02 wave 2
+esmap_2001_001,ESMAP 2001,multi-technology,2001,6,intake 2026-10-02 wave 2
+geleynse_2018_001,Geleynse et al. 2018,multi-technology,2018,6,intake 2026-10-02 wave 2
+gielen_1997_001,Gielen 1997 (ceramics),multi-technology,1997,6,intake 2026-10-02 wave 2
+gielen_2002_001,Gielen and Moriguchi 2002,multi-technology,2002,6,intake 2026-10-02 wave 2
+hedman_2008_001,Hedman 2008,multi-technology,2008,5,intake 2026-10-02 wave 2
+hills_2017_001,Hills et al. 2017,multi-technology,2017,6,intake 2026-10-02 wave 2
+hornby-anderson_2002_001,Hornby Anderson et al. 2002,multi-technology,2002,6,intake 2026-10-02 wave 2
+icf_2015_001,ICF 2015,multi-technology,2015,4,intake 2026-10-02 wave 2
+iea_2026_006,IEA 2026 (electrification),multi-technology,2026,6,intake 2026-10-02 wave 2
+interlab_1997_001,Interlaboratory Working Group 1997,multi-technology,1997,6,intake 2026-10-02 wave 2
+jacobs_2006_001,Jacobs 2006,multi-technology,2006,4,intake 2026-10-02 wave 2
+jrc_2014_001,Carlsson and Vellei 2014,multi-technology,2014,4,intake 2026-10-02 wave 2
+kcb_2017_001,KCB 2017,multi-technology,2017,6,intake 2026-10-02 wave 2
+keesom_2018_001,Keesom and Gieseman 2018,multi-technology,2018,5,intake 2026-10-02 wave 2
+keith_2018_001,Keith et al. 2018,multi-technology,2018,4,intake 2026-10-02 wave 2
+kranz_2001_001,Kranz and Worrell 2001,multi-technology,2001,5,intake 2026-10-02 wave 2
+kukkonen_2017_001,Kukkonen 2017,multi-technology,2017,6,intake 2026-10-02 wave 2
+lazard_2021_001,Lazard 2021,multi-technology,2021,5,intake 2026-10-02 wave 2
+lazard_2023_001,Lazard 2023,multi-technology,2023,5,intake 2026-10-02 wave 2
+lazard_2024_001,Lazard 2024,multi-technology,2024,5,intake 2026-10-02 wave 2
+leblanc_2014_001,Leblanc et al. 2014,multi-technology,2014,6,intake 2026-10-02 wave 2
+lemar_2001_001,Lemar 2001,multi-technology,2001,5,intake 2026-10-02 wave 2
+mccann_2000_001,T. J. McCann 2000,multi-technology,2000,6,intake 2026-10-02 wave 2
+mueller_2013_001,Mueller and Kwik 2013,multi-technology,2013,6,intake 2026-10-02 wave 2
+nccp_1999_001,AAC 1999,multi-technology,1999,6,intake 2026-10-02 wave 2
+nccp_1999_002,NCCP 1999 (magnesium options),multi-technology,1999,6,intake 2026-10-02 wave 2
+nccp_1999_003,NCCP 1999 (foundation paper),multi-technology,1999,6,intake 2026-10-02 wave 2
+nccp_1999_004,Hatch 1999,multi-technology,1999,6,intake 2026-10-02 wave 2
+nccp_1999_005,NCCP Upstream Oil and Gas 1999,multi-technology,1999,6,intake 2026-10-02 wave 2
+nccp_2000_001,Beddows and Hatch 2000,multi-technology,2000,6,intake 2026-10-02 wave 2
+nelson_2011_001,Nelson et al. 2011,multi-technology,2011,4,intake 2026-10-02 wave 2
+norgate_2010_001,Norgate and Haque 2010,multi-technology,2010,6,intake 2026-10-02 wave 2
+nrcan_2001_001,NRCan 2001,multi-technology,2001,4,intake 2026-10-02 wave 2
+nrcan_2005_001,NRCan 2005 (underground mines),multi-technology,2005,4,intake 2026-10-02 wave 2
+pca_2002_001,PCA 2002,multi-technology,2002,6,intake 2026-10-02 wave 2
+pca_2003_001,PCA 2003,multi-technology,2003,6,intake 2026-10-02 wave 2
+pembina_2000_001,Pape et al. 2000,multi-technology,2000,6,intake 2026-10-02 wave 2
+pfeifer_2002_001,Pfeifer and Kirschen 2002,multi-technology,2002,6,intake 2026-10-02 wave 2
+plaza_2020_001,Plaza et al. 2020,multi-technology,2020,6,intake 2026-10-02 wave 2
+price_2000_001,Price et al. 2000,multi-technology,2000,6,intake 2026-10-02 wave 2
+raj_2016_001,Raj et al. 2016,multi-technology,2016,6,intake 2026-10-02 wave 2
+rightor_2020_001,Rightor et al. 2020,multi-technology,2020,6,intake 2026-10-02 wave 2
+riotinto_2022_001,Rio Tinto 2022,multi-technology,2022,6,intake 2026-10-02 wave 2
+rubini_2022_001,Rubini et al. 2022,multi-technology,2022,6,intake 2026-10-02 wave 2
+schlosser_2020_001,Schlosser et al. 2020,multi-technology,2020,6,intake 2026-10-02 wave 2
+sezgen_1995_001,Sezgen et al. 1995,multi-technology,1995,6,intake 2026-10-02 wave 2
+sezgen_1995_002,Sezgen and Koomey 1995,multi-technology,1995,6,intake 2026-10-02 wave 2
+snclavalin_2000_001,SNC-Lavalin 2000,multi-technology,2000,6,intake 2026-10-02 wave 2
+songhurst_2018_001,Songhurst 2018,multi-technology,2018,5,intake 2026-10-02 wave 2
+thomson_2000_001,Thomson et al. 2000,multi-technology,2000,6,intake 2026-10-02 wave 2
+tokac_2025_001,Tokac et al. 2025,multi-technology,2025,6,intake 2026-10-02 wave 2
+topolski_2022_001,Topolski et al. 2022,multi-technology,2022,6,intake 2026-10-02 wave 2
+wade_2003_001,WADE 2003,multi-technology,2003,5,intake 2026-10-02 wave 2
+wallace_2021_001,Wallace 2021,multi-technology,2021,6,intake 2026-10-02 wave 2
+wang_2013_001,Wang et al. 2013,multi-technology,2013,6,intake 2026-10-02 wave 2
+warren_2021_001,Warren 2021,multi-technology,2021,6,intake 2026-10-02 wave 2
+world-bank_1996_001,World Bank 1996,multi-technology,1996,6,intake 2026-10-02 wave 2
+worrell_2000_001,Worrell et al. 2000,multi-technology,2000,6,intake 2026-10-02 wave 2
+zhang_2003_001,Zhang et al. 2003 (part 2),multi-technology,2003,6,intake 2026-10-02 wave 2
+zier_2023_001,Zier et al. 2023,multi-technology,2023,6,intake 2026-10-02 wave 2
+zuhlsdorf_2019_001,Zuhlsdorf et al. 2019,multi-technology,2019,6,intake 2026-10-02 wave 2
+aranda_2014_001,Aranda et al. 2014,multi-technology,2014,4,intake 2026-10-02 _low
+carbo_2011_001,Carbo et al. 2011,multi-technology,2011,6,intake 2026-10-02 _low
+eccc_2022_001,ECCC 2022,multi-technology,2022,4,intake 2026-10-02 _low
+habert_2010_001,Habert et al. 2010,multi-technology,2010,6,intake 2026-10-02 _low
+hallbar_2017_001,Hallbar 2017,multi-technology,2017,6,intake 2026-10-02 _low
+handler_2016_001,Handler et al. 2016,multi-technology,2016,6,intake 2026-10-02 _low
+ieaghg_2007_001,IEAGHG 2007,multi-technology,2007,4,intake 2026-10-02 _low
+irlam_2017_001,Irlam 2017,multi-technology,2017,4,intake 2026-10-02 _low
+kaiser_2017_001,Kaiser 2017,multi-technology,2017,5,intake 2026-10-02 _low
+larsen_2019_001,Larsen et al. 2019,multi-technology,2019,5,intake 2026-10-02 _low
+liberty_2020_001,Aune et al. 2020,multi-technology,2020,5,intake 2026-10-02 _low
+minea_2012_001,Minea 2012,multi-technology,2012,5,intake 2026-10-02 _low
+mishra_2026_001,Mishra et al. 2026,multi-technology,2026,6,intake 2026-10-02 _low
+robben_2019_001,Robben and Wotruba 2019,multi-technology,2019,6,intake 2026-10-02 _low
+rtc_2022_001,RTC 2022,multi-technology,2022,6,intake 2026-10-02 _low
+scrivener_2018_001,Scrivener et al. 2018,multi-technology,2018,6,intake 2026-10-02 _low
+smith_2001_001,Smith and Klosek 2001,multi-technology,2001,6,intake 2026-10-02 _low
+tomani_2010_001,Tomani 2010,multi-technology,2010,6,intake 2026-10-02 _low
+toro_2021_001,Toro 2021,multi-technology,2021,4,intake 2026-10-02 _low
+vera_2023_001,Vera et al. 2023,multi-technology,2023,6,intake 2026-10-02 _low
+wiencke_2018_001,Wiencke et al. 2018,multi-technology,2018,6,intake 2026-10-02 _low
+kildahl_2023_001,Kildahl et al. 2023,multi-technology,2023,4,intake 2026-10-03 CIMS/JCIMS folders
+hu_2009_001,Hu et al. 2009,multi-technology,2009,4,intake 2026-10-03 CIMS/JCIMS folders
+bataille_2021_001,Bataille et al. 2021,multi-technology,2021,4,intake 2026-10-03 CIMS/JCIMS folders
+nrcan_2007_001,NRCan 2007,multi-technology,2007,4,intake 2026-10-03 CIMS/JCIMS folders
+fertilizer-canada_2023_001,Fertilizer Canada 2023,multi-technology,2023,4,intake 2026-10-03 CIMS/JCIMS folders
+anl_2017_001,ANL 2017,multi-technology,2017,4,intake 2026-10-03 CIMS/JCIMS folders
+dunsky_2023_001,Dunsky 2023,multi-technology,2023,4,intake 2026-10-03 CIMS/JCIMS folders
+zhang_2020_001,Zhang et al. 2020,multi-technology,2020,4,intake 2026-10-03 CIMS/JCIMS folders
+pospisil_2019_001,Pospisil et al. 2019,multi-technology,2019,4,intake 2026-10-03 CIMS/JCIMS folders
+clearstone_2018_001,Clearstone 2018,multi-technology,2018,4,intake 2026-10-03 CIMS/JCIMS folders
+shell_2024_001,Shell Canada 2024,multi-technology,2024,4,intake 2026-10-03 CIMS/JCIMS folders
+intergroup_2017_001,InterGroup 2017,multi-technology,2017,4,intake 2026-10-03 CIMS/JCIMS folders
+doe_2006_001,US DOE 2006 (backpressure turbogenerator tip sheet),multi-technology,2006,4,intake 2026-10-03 CIMS/JCIMS folders
+doe_2012_002,US DOE 2012 (backpressure turbine tip sheet),multi-technology,2012,4,intake 2026-10-03 CIMS/JCIMS folders
+doe_2020_001,Vickers et al. 2020,multi-technology,2020,4,intake 2026-10-03 CIMS/JCIMS folders
+gccsi_2021_001,Zapantis 2021,multi-technology,2021,4,intake 2026-10-03 CIMS/JCIMS folders
+pembina_2021_001,Gorski et al. 2021,multi-technology,2021,4,intake 2026-10-03 CIMS/JCIMS folders
+nrel_2013_001,Ramsden et al. 2013,multi-technology,2013,4,intake 2026-10-03 CIMS/JCIMS folders
+nrel_2009_001,Ramsden et al. 2009,multi-technology,2009,4,intake 2026-10-03 CIMS/JCIMS folders
+worrell_2022_001,Worrell and Boyd 2022,multi-technology,2022,4,intake 2026-10-03 CIMS/JCIMS folders
+ceri_2018_001,Millington 2018,multi-technology,2018,4,intake 2026-10-03 CIMS/JCIMS folders
+gielen_1997_002,Gielen 1997 (building materials),multi-technology,1997,4,intake 2026-10-03 CIMS/JCIMS folders
+joosten_1998_001,Joosten 1998,multi-technology,1998,4,intake 2026-10-03 CIMS/JCIMS folders
+hekkert_1997_001,Hekkert and Worrell 1997,multi-technology,1997,4,intake 2026-10-03 CIMS/JCIMS folders
+gielen_1997_003,Gielen and van Dril 1997,multi-technology,1997,4,intake 2026-10-03 CIMS/JCIMS folders
+gielen_1996_001,Gielen et al. 1996,multi-technology,1996,4,intake 2026-10-03 CIMS/JCIMS folders
+doe_2001_001,Onsite Energy 2001,multi-technology,2001,4,intake 2026-10-03 CIMS/JCIMS folders
+ekbom_2003_001,Ekbom et al. 2003,multi-technology,2003,4,intake 2026-10-03 CIMS/JCIMS folders
+hugill_2001_001,Hugill et al. 2001,multi-technology,2001,4,intake 2026-10-03 CIMS/JCIMS folders
+lindley_1997_001,Lindley 1997,multi-technology,1997,4,intake 2026-10-03 CIMS/JCIMS folders
+doe_2000_002,Energetics 2000 (chemicals profile),multi-technology,2000,4,intake 2026-10-03 CIMS/JCIMS folders
+nccp_1999_006,NCCP 1999 (industrial minerals options),multi-technology,1999,4,intake 2026-10-03 CIMS/JCIMS folders
+martin_1999_001,Martin et al. 1999,multi-technology,1999,4,intake 2026-10-03 CIMS/JCIMS folders
+daniels_2002_001,Daniels 2002,multi-technology,2002,4,intake 2026-10-03 CIMS/JCIMS folders
+morrey_2002_001,Morrey 2002,multi-technology,2002,4,intake 2026-10-03 CIMS/JCIMS folders
+neill-gunter_1999_001,Neill and Gunter 1999,multi-technology,1999,4,intake 2026-10-03 CIMS/JCIMS folders
+clearstone_2004_001,Clearstone 2004,multi-technology,2004,4,intake 2026-10-03 CIMS/JCIMS folders
+doe_1998_001,Energetics 1998,multi-technology,1998,4,intake 2026-10-03 CIMS/JCIMS folders
+worrell_2004_002,Worrell and Galitsky 2004,multi-technology,2004,4,intake 2026-10-03 CIMS/JCIMS folders
+purvin-gertz_2004_001,Purvin and Gertz 2004,multi-technology,2004,4,intake 2026-10-03 CIMS/JCIMS folders
+nccp_1999_007,NCCP 1999 (cement options),multi-technology,1999,4,intake 2026-10-03 CIMS/JCIMS folders
+nrel_2018_003,NREL 2018,multi-technology,2018,4,intake 2026-10-03 CIMS/JCIMS folders
+surup_2020_001,Surup et al. 2020,multi-technology,2020,6,intake 2026-10-02 _low
+concawe_2019_002,Gudde et al. 2019 (Refinery 2050),multi-technology,2019,5,intake 2026-10-03 _high
+nrcan_2005_002,NRCan 2005 (open-pit mines),multi-technology,2005,4,intake 2026-10-03 _high
+nrel_2026_001,NREL 2026,multi-technology,2026,4,intake 2026-10-03 _high
+martin_2000_002,Martin et al. 2000 (pulp and paper),multi-technology,2000,4,held since 2026-10-06 (_low intake); was ranked via UKERC while not held
+element-energy_2021_001,Element Energy 2021,multi-technology,2021,4,user-supplied workbook 2026-10-03; was background (PDF only)
+etsap_2012_002,Edberg et al. 2012 (ETSAP R02),multi-technology,2012,6,background source extracted 2026-10-03
+etsap_2012_003,Watson et al. 2012 (ETSAP R04),multi-technology,2012,6,background source extracted 2026-10-03
+epa_2010_003,US EPA 2010 (wastewater),multi-technology,2010,7,background source extracted 2026-10-03
+ornl_2004_001,Oland 2004,multi-technology,2004,7,background source extracted 2026-10-03
+nrel_2016_001,McMillan et al. 2016,multi-technology,2016,7,background source extracted 2026-10-03
+gary_2007_001,Gary et al. 2007,multi-technology,2007,4,intake 2026-10-06 _high (to-get downloads)
+abella_2012_001,Abella and Bergerson 2012,multi-technology,2012,5,intake 2026-10-06 _medium (to-get downloads)
+gpsa_2004_001,GPSA 2004,multi-technology,2004,4,intake 2026-10-06 _medium (to-get downloads)
+kidnay_2019_001,Kidnay et al. 2019,multi-technology,2019,4,intake 2026-10-06 _medium (to-get downloads)
+schlesinger_2011_001,Schlesinger et al. 2011,multi-technology,2011,4,intake 2026-10-06 _medium (to-get downloads)
+crundwell_2011_001,Crundwell et al. 2011,multi-technology,2011,4,intake 2026-10-06 _medium (to-get downloads)
+epa_2023_002,US EPA 2023 (final TSD),multi-technology,2023,4,intake 2026-10-06 _medium (to-get downloads)
+epa_2022_002,US EPA 2022 (supplemental TSD),multi-technology,2022,4,intake 2026-10-06 _medium (to-get downloads)
+epa_2021_001,US EPA 2021 (proposal TSD),multi-technology,2021,4,intake 2026-10-06 _medium (to-get downloads)
+carbon-limits_2016_001,Carbon Limits 2016,multi-technology,2016,4,intake 2026-10-06 _medium (to-get downloads)
+carbon-limits_2021_001,Carbon Limits 2021,multi-technology,2021,4,intake 2026-10-06 _medium (to-get downloads)
+iea_2026_004,IEA 2026 (methane tracker),multi-technology,2026,5,intake 2026-10-06 _medium (to-get downloads)
+ipieca_2025_001,IPIECA 2025,multi-technology,2025,5,intake 2026-10-06 _medium (to-get downloads)
+mccoy_2014_001,McCoy and Douglass 2014,multi-technology,2014,4,intake 2026-10-06 _medium (to-get downloads)
+doe_2014_002,US DOE 2014 (motor sourcebook),multi-technology,2014,5,intake 2026-10-06 _medium (to-get downloads)
+doe_2012_003,US DOE 2012 (motor tip sheet 1),multi-technology,2012,5,intake 2026-10-06 _medium (to-get downloads)
+doe_2012_004,US DOE 2012 (motor tip sheet 11),multi-technology,2012,5,intake 2026-10-06 _medium (to-get downloads)
+xenergy_1998_001,XENERGY 1998,multi-technology,1998,4,intake 2026-10-06 _medium (to-get downloads)
+rao_2021_001,Rao et al. 2021,multi-technology,2021,4,intake 2026-10-06 _medium (to-get downloads)
+rao_2022_001,Rao et al. 2022,multi-technology,2022,4,intake 2026-10-06 _medium (to-get downloads)
+iea_2009_001,IEA 2009,multi-technology,2009,4,intake 2026-10-06 _medium (to-get downloads)
+stork_2014_001,Stork et al. 2014,multi-technology,2014,4,intake 2026-10-06 _medium (to-get downloads)
+mccollum_2006_001,McCollum and Ogden 2006,multi-technology,2006,5,intake 2026-10-06 _low (to-get downloads)
+emanuelsson_2022_001,Emanuelsson and Johnsson 2022,multi-technology,2022,5,intake 2026-10-06 _low (to-get downloads)
+burns_2024_001,Burns and Davila Gomez 2024,multi-technology,2024,6,intake 2026-10-06 _low (to-get downloads)
+carbon-trust_2003_001,Carbon Trust 2003,multi-technology,2003,5,intake 2026-10-06 _low (to-get downloads)
+alcoa_2022_001,Chatfield 2022 (MVR evaporation),multi-technology,2022,4,intake 2026-10-06 _medium (to-get downloads)
+alcoa_2022_002,Chatfield 2022 (MVR retrofit),multi-technology,2022,4,intake 2026-10-06 _medium (to-get downloads)
+iai_2026_001,IAI 2026,multi-technology,2026,4,intake 2026-10-06 _medium (to-get downloads)
+paraszczak_2014_001,Paraszczak et al. 2014,multi-technology,2014,5,intake 2026-10-06 _medium (to-get downloads)
+drebenstedt_2014_001,Drebenstedt and Singhal 2014,multi-technology,2014,5,intake 2026-10-06 _medium (to-get downloads)
+zhang_2003_002,Zhang et al. 2003 (part 1),multi-technology,2003,4,intake 2026-10-06 _low (to-get downloads)
+van-der-stricht_2020_001,Van der Stricht et al. 2020,multi-technology,2020,6,intake 2026-10-06 _low (to-get downloads)
+ajsi_2016_001,AJSI 2016,multi-technology,2016,5,intake 2026-10-06 _low (to-get downloads)
+ricardo-aea_2013_001,Haydock and Napp 2013,multi-technology,2013,5,intake 2026-10-06 _low (to-get downloads)
+irena_2014_001,Kempener and Saygin 2014,multi-technology,2014,5,intake 2026-10-06 _low (to-get downloads)
+iea_2026_003,IEA 2026 (heat pump monitor),multi-technology,2026,5,intake 2026-10-06 _low (to-get downloads)
+iea_2026_005,IEA 2026 (methane abatement model),multi-technology,2026,5,intake 2026-10-07 _high
+purola_2021_001,Purola 2021,multi-technology,2021,5,intake 2026-10-07 _medium
+tijani_2022_001,Tijani et al. 2022,multi-technology,2022,5,intake 2026-10-07 _medium
+abella_2022_001,Abella et al. 2022,multi-technology,2022,4,intake 2026-10-07 _medium
+doe_2006_002,US DOE 2006 (pumping sourcebook),multi-technology,2006,4,intake 2026-10-07 _medium
+doe_2003_002,US DOE 2003,multi-technology,2003,4,intake 2026-10-07 _medium
+doe_2016_002,US DOE 2016,multi-technology,2016,4,intake 2026-10-07 _medium
+van-der-stricht_2025_001,Van der Stricht and Manocha 2025,multi-technology,2025,5,intake 2026-10-07 _low
+denis-ryan_2016_001,Denis-Ryan et al. 2016,multi-technology,2016,5,intake 2026-10-07 _low
+gcca_2024_001,GCCA 2024,multi-technology,2024,4,intake 2026-10-07 _medium
+meyers_1997_001,Meyers 1997,multi-technology,1997,4,intake 2026-10-08 _medium
+jones_2006_001,Jones and Pujadó 2006,multi-technology,2006,5,intake 2026-10-08 _medium
+challis_2020_001,Challis 2020,multi-technology,2020,5,intake 2026-10-08 _medium
+challis_2017_001,Challis et al. 2017,multi-technology,2017,5,intake 2026-10-08 _medium
+kulterer_2020_001,Kulterer et al. 2020,multi-technology,2020,5,intake 2026-10-08 _low
+weidmann_2013_001,Weidmann 2013,multi-technology,2013,5,intake 2026-10-08 _low
+rootzen_2017_001,Rootzén and Johnsson 2017,multi-technology,2017,5,intake 2026-10-08 _low
+bataille_2019_001,Bataille 2019,,2019,,short name added 2026-10-08 (short-name review); not ranked
+doe_2012_001,US DOE 2012 (MECS footprints),,2012,,short name added 2026-10-08 (short-name review); not ranked
+doe_2014_001,US DOE 2014 (MECS footprints),,2014,,short name added 2026-10-08 (short-name review); not ranked
+doe_2015_001,US DOE 2015 (iron and steel bandwidth),,2015,,short name added 2026-10-08 (short-name review); not ranked
+doe_2015_002,US DOE 2015 (refining bandwidth),,2015,,short name added 2026-10-08 (short-name review); not ranked
+doe_2015_003,US DOE 2015 (pulp and paper bandwidth),,2015,,short name added 2026-10-08 (short-name review); not ranked
+doe_2015_004,US DOE 2015 (chemicals bandwidth),,2015,,short name added 2026-10-08 (short-name review); not ranked
+doe_2017_001,US DOE 2017 (aluminum bandwidth),,2017,,short name added 2026-10-08 (short-name review); not ranked
+doe_2017_002,US DOE 2017 (cement bandwidth),,2017,,short name added 2026-10-08 (short-name review); not ranked
+doe_2017_003,US DOE 2017 (food and beverage bandwidth),,2017,,short name added 2026-10-08 (short-name review); not ranked
+doe_2018_001,US DOE 2018 (MECS footprints),,2018,,short name added 2026-10-08 (short-name review); not ranked
+doe_2021_001,US DOE 2021 (MECS footprints),,2021,,short name added 2026-10-08 (short-name review); not ranked
+doe_2022_001,US DOE 2022,,2022,,short name added 2026-10-08 (short-name review); not ranked
+eia_2005_001,EIA 2005 (MECS),,2005,,short name added 2026-10-08 (short-name review); not ranked
+eia_2010_001,EIA 2010 (MECS),,2010,,short name added 2026-10-08 (short-name review); not ranked
+eia_2013_001,EIA 2013 (MECS),,2013,,short name added 2026-10-08 (short-name review); not ranked
+eia_2017_001,EIA 2017 (MECS),,2017,,short name added 2026-10-08 (short-name review); not ranked
+eia_2021_001,EIA 2021 (MECS),,2021,,short name added 2026-10-08 (short-name review); not ranked
+eia_2023_001,EIA 2023,,2023,,short name added 2026-10-08 (short-name review); not ranked
+eia_2025_001,EIA 2025,,2025,,short name added 2026-10-08 (short-name review); not ranked
+epa_2022_001,US EPA 2022 (waste heat to power),,2022,,short name added 2026-10-08 (short-name review); not ranked
+etsap_2010_004,Lako 2010 (ETSAP E04),,2010,,short name added 2026-10-08 (short-name review); not ranked
+etsap_2010_005,Lako 2010 (ETSAP E05),,2010,,short name added 2026-10-08 (short-name review); not ranked
+etsap_2010_006,Lako 2010 (ETSAP E07),,2010,,short name added 2026-10-08 (short-name review); not ranked
+etsap_2010_007,Simbolotti 2010 (ETSAP E14),,2010,,short name added 2026-10-08 (short-name review); not ranked
+etsap_2010_008,Seebregts 2010 (ETSAP E02),,2010,,short name added 2026-10-08 (short-name review); not ranked
+etsap_2010_010,Seljom 2010 (ETSAP P02),,2010,,short name added 2026-10-08 (short-name review); not ranked
+etsap_2010_011,Blesl and Bruchof 2010 (ETSAP P05),,2010,,short name added 2026-10-08 (short-name review); not ranked
+etsap_2010_012,Blesl and Bruchof 2010 (ETSAP P06),,2010,,short name added 2026-10-08 (short-name review); not ranked
+etsap_2011_001,Seljom 2011 (ETSAP P03),,2011,,short name added 2026-10-08 (short-name review); not ranked
+etsap_2013_001,Simbolotti 2013 (ETSAP E10),,2013,,short name added 2026-10-08 (short-name review); not ranked
+etsap_2013_002,Nishihata 2013 (ETSAP E19),,2013,,short name added 2026-10-08 (short-name review); not ranked
+etsap_2013_004,Hawkes and Brett 2013 (ETSAP E13),,2013,,short name added 2026-10-08 (short-name review); not ranked
+etsap_2013_005,Hauer 2013 (ETSAP E17),,2013,,short name added 2026-10-08 (short-name review); not ranked
+etsap_2013_007,Broeren 2013 (ETSAP I09),,2013,,short name added 2026-10-08 (short-name review); not ranked
+etsap_2013_008,Isaka 2013 (ETSAP I12),,2013,,short name added 2026-10-08 (short-name review); not ranked
+etsap_2013_009,Broeren 2013 (ETSAP I13),,2013,,short name added 2026-10-08 (short-name review); not ranked
+etsap_2013_010,Labriet 2013 (ETSAP P09),,2013,,short name added 2026-10-08 (short-name review); not ranked
+etsap_2013_011,Simbolotti 2013 (ETSAP P10),,2013,,short name added 2026-10-08 (short-name review); not ranked
+etsap_2013_012,Labriet 2013 (ETSAP P11),,2013,,short name added 2026-10-08 (short-name review); not ranked
+etsap_2014_001,Vaillancourt 2014 (ETSAP P04),,2014,,short name added 2026-10-08 (short-name review); not ranked
+etsap_2014_002,Vaillancourt 2014 (ETSAP P07/08),,2014,,short name added 2026-10-08 (short-name review); not ranked
+etsap_2014_003,Zoulias 2014 (ETSAP P12),,2014,,short name added 2026-10-08 (short-name review); not ranked
+iea_2021_001,IEA 2021,,2021,,short name added 2026-10-08 (short-name review); not ranked
+netl_2022_001,NETL 2022,,2022,,short name added 2026-10-08 (short-name review); not ranked
+nrcan_2025_001,NRCan 2025,,2025,,short name added 2026-10-08 (short-name review); not ranked
+nrel_2018_002,McMillan and Narwade 2018,,2018,,short name added 2026-10-08 (short-name review); not ranked
+nrel_2019_001,McMillan 2019,,2019,,short name added 2026-10-08 (short-name review); not ranked
+roemer_2026_001,Roemer et al. 2026,,2026,,short name added 2026-10-08 (short-name review); not ranked
+sharp_2014_001,Sharp 2014,multi-technology,2014,4,_low intake 2026-10-11
+doe_2024_002,U.S. Department of Energy 2024,multi-technology,2024,4,_low intake 2026-10-11
+doe_2015_005,U.S. Department of Energy 2015,multi-technology,2015,4,_low intake 2026-10-11
+zuberi_2022_002,Zuberi 2022,multi-technology,2022,4,_low intake 2026-10-11
+ldes-council_2022_001,LDES Council and McKinsey & Company 2022,multi-technology,2022,4,_low intake 2026-10-11
+iea-shc_2024_001,Pag 2024,multi-technology,2024,4,_low intake 2026-10-11
+marzouk_2025_001,Marzouk 2025,multi-technology,2025,4,_low intake 2026-10-11
+iea_2025_002,IEA 2025,multi-technology,2025,4,_low intake 2026-10-11
+iea_2024_002,IEA 2024,multi-technology,2024,4,_low intake 2026-10-11
+johnson_2016_001,Johnson 2016,multi-technology,2016,4,_low intake 2026-10-11
+clearstone_2019_001,Clearstone Engineering Ltd. 2019,multi-technology,2019,4,_low intake 2026-10-11
+iea_2025_003,IEA 2025 (Renewables for Industry),multi-technology,2025,4,intake 2026-10-13 _high
+jrc_2026_001,JRC-IDEES-2023,multi-technology,2026,5,intake 2026-10-13 _medium
+eia_2023_002,EIA 2023 (buildings equipment),multi-technology,2023,5,intake 2026-10-14 _low
+eia_2013_002,EIA 2013 (buildings equipment),multi-technology,2013,5,intake 2026-10-14 _low
+canadian-natural_2024_001,Canadian Natural 2024 (Kirby SE-SAGD pilot),single-technology,2024,5,"intake 2026-10-16: operator Directive 054 performance filing, measured scheme operations (Canada)"
+canadian-natural_2025_001,Canadian Natural 2025 (Jackfish),single-technology,2025,5,"intake 2026-10-16: operator Directive 054 performance filing, measured scheme operations (Canada)"
+canadian-natural_2025_002,Canadian Natural 2025 (Kirby),single-technology,2025,5,"intake 2026-10-16: operator Directive 054 performance filing, measured scheme operations (Canada)"
+canadian-natural_2025_003,Canadian Natural 2025 (Primrose and Wolf Lake),single-technology,2025,5,"intake 2026-10-16: operator Directive 054 performance filing, measured scheme operations (Canada)"
+canadian-natural_2025_004,Canadian Natural 2025 (Peace River),single-technology,2025,5,"intake 2026-10-16: operator Directive 054 performance filing, measured scheme operations (Canada)"
+cenovus_2025_001,Cenovus 2025 (Christina Lake),single-technology,2025,5,"intake 2026-10-16: operator Directive 054 performance filing, measured scheme operations (Canada)"
+cenovus_2025_002,Cenovus 2025 (Foster Creek),single-technology,2025,5,"intake 2026-10-16: operator Directive 054 performance filing, measured scheme operations (Canada)"
+conocophillips_2025_001,ConocoPhillips 2025 (Surmont),single-technology,2025,5,"intake 2026-10-16: operator Directive 054 performance filing, measured scheme operations (Canada)"
+imperial_2025_001,Imperial 2025 (Cold Lake),single-technology,2025,5,"intake 2026-10-16: operator Directive 054 performance filing, measured scheme operations (Canada)"
+meg_2025_001,MEG 2026 (Christina Lake),single-technology,2026,5,"intake 2026-10-16: operator Directive 054 performance filing, measured scheme operations (Canada)"
+suncor_2025_001,Suncor 2025 (Firebag),single-technology,2025,5,"intake 2026-10-16: operator Directive 054 performance filing, measured scheme operations (Canada)"
+suncor_2025_002,Suncor 2025 (MacKay River),single-technology,2025,5,"intake 2026-10-16: operator Directive 054 performance filing, measured scheme operations (Canada)"
+petrinex_2026_001,Petrinex 2026,multi-technology,2026,3,"intake 2026-10-21: measured volumes for every reporting facility in Alberta and Saskatchewan (graded sourced, Brad 2026-10-21); ranked above the single-study sources so the measured stock leads where fewer than three examples pool"
+aer_2026_001,AER ST39 2026,multi-technology,2026,5,"intake 2026-10-21: regulator facility statistics, Canadian stock (graded sourced, Brad 2026-10-21)"
+aer_2026_003,AER ST50A 2026,multi-technology,2026,5,"intake 2026-10-21: regulator facility statistics, Canadian stock (graded sourced, Brad 2026-10-21)"
+aer_2026_005,AER ST59/ST49 2026,multi-technology,2026,5,"intake 2026-10-21: regulator facility statistics, Canadian stock (graded sourced, Brad 2026-10-21)"
+aer_2025_001,AER ST60B 2025,multi-technology,2025,5,"intake 2026-10-21: regulator facility statistics, Canadian stock (graded sourced, Brad 2026-10-21)"
+bcer_2026_001,BCER 2026,multi-technology,2026,5,"intake 2026-10-21: regulator facility statistics, Canadian stock (graded sourced, Brad 2026-10-21)"
+abbas-wan-daud_2010_001,Abbas and Wan Daud 2010,via-ipcc,2010,3,original cited by IPCC AR6 Chapter 11. Ranked with IPCC because the selection and harmonisation were the chapter's editorial work; the number is this source's.
+abbas-wan-daud_2010_001,Abbas and Wan Daud 2010,multi-technology,2010,6,to-process intake 2026-11-04
+aea_2010_001,AEA 2010,via-ukerc,2010,1,original cited by UKERC 2013. Ranked with UKERC because the selection and harmonisation were UKERC's editorial work; the number is this source's.
+aea_2010_001,AEA 2010,cross-sector,2010,6,to-process intake 2026-11-04
+bazzanella-ausfelder_2017_001,Bazzanella and Ausfelder 2017,via-ipcc,2017,3,original cited by IPCC AR6 Chapter 11. Ranked with IPCC because the selection and harmonisation were the chapter's editorial work; the number is this source's.
+bazzanella-ausfelder_2017_001,Bazzanella and Ausfelder 2017,multi-technology,2017,6,to-process intake 2026-11-04
+bishop_2026_001,Bishop et al. 2026,single-technology,2026,6,to-process intake 2026-11-04
+ce-delft_2010_001,CE Delft 2010,via-ukerc,2010,1,original cited by UKERC 2013. Ranked with UKERC because the selection and harmonisation were UKERC's editorial work; the number is this source's.
+ce-delft_2010_001,CE Delft 2010,cross-sector,2010,6,to-process intake 2026-11-04
+dalsgard_2000_001,Dalsgard et al. 2000,via-ukerc,2000,1,original cited by UKERC 2013. Ranked with UKERC because the selection and harmonisation were UKERC's editorial work; the number is this source's.
+dalsgard_2000_001,Dalsgard et al. 2000,single-technology,2000,6,to-process intake 2026-11-04
+de-luna_2019_001,De Luna et al. 2019,via-ipcc,2019,3,original cited by IPCC AR6 Chapter 11. Ranked with IPCC because the selection and harmonisation were the chapter's editorial work; the number is this source's.
+de-luna_2019_001,De Luna et al. 2019,multi-technology,2019,6,to-process intake 2026-11-04
+decc_2013_001,DECC 2013,via-ukerc,2013,1,original cited by UKERC 2013. Ranked with UKERC because the selection and harmonisation were UKERC's editorial work; the number is this source's.
+decc_2013_001,DECC 2013,cross-sector,2013,6,to-process intake 2026-11-04
+duxon_2007_001,Duxon 2007,via-ukerc,2007,1,original cited by UKERC 2013. Ranked with UKERC because the selection and harmonisation were UKERC's editorial work; the number is this source's.
+duxon_2007_001,Duxson et al. 2007,single-technology,2007,6,to-process intake 2026-11-04
+eeca_2010_001,EECA 2010,cross-sector,2010,6,to-process intake 2026-11-04
+einstein_2001_001,Einstein et al. 2001,via-ukerc,2001,1,original cited by UKERC 2013. Ranked with UKERC because the selection and harmonisation were UKERC's editorial work; the number is this source's.
+einstein_2001_001,Einstein et al. 2001,cross-sector,2001,6,to-process intake 2026-11-04
+faber_2019_001,Faber et al. 2019,single-technology,2019,6,to-process intake 2026-11-04
+favier_2018_001,Favier et al. 2018,multi-technology,2018,6,to-process intake 2026-11-04
+feliciano-bruzual-mathews_2013_001,Feliciano-Bruzual and Mathews 2013,multi-technology,2013,6,to-process intake 2026-11-04
+fischedick_2014_001,Fischedick et al. 2014,via-ipcc,2014,3,original cited by IPCC AR6 Chapter 11. Ranked with IPCC because the selection and harmonisation were the chapter's editorial work; the number is this source's.
+fischedick_2014_001,Fischedick et al. 2014,multi-technology,2014,6,to-process intake 2026-11-04
+fritzson-berntsson_2006_002,Fritzson and Berntsson 2006a,via-ukerc,2006,1,original cited by UKERC 2013; ranked with UKERC because the selection was UKERC's editorial work
+fritzson-berntsson_2006_002,Fritzson and Berntsson 2006a,multi-technology,2006,6,to-process intake 2026-11-04
+fritzson-berntsson_2006_003,Fritzson and Berntsson 2006b,via-ukerc,2006,1,original cited by UKERC 2013; ranked with UKERC because the selection was UKERC's editorial work
+fritzson-berntsson_2006_003,Fritzson and Berntsson 2006b,multi-technology,2006,6,to-process intake 2026-11-04
+hita_2011_001,Hita et al. 2011,via-ukerc,2011,1,original cited by UKERC 2013. Ranked with UKERC because the selection and harmonisation were UKERC's editorial work; the number is this source's.
+hita_2011_001,Hita et al. 2011,single-technology,2011,6,to-process intake 2026-11-04
+hptstcj_2010_001,HPTSTCJ 2010,via-ukerc,2010,1,original cited by UKERC 2013. Ranked with UKERC because the selection and harmonisation were UKERC's editorial work; the number is this source's.
+hptstcj_2010_001,HPTSTCJ 2010,multi-technology,2010,6,to-process intake 2026-11-04
+huang_2025_001,Huang et al. 2025,single-technology,2025,6,to-process intake 2026-11-04
+iea_2009_002,IEA 2009b,cross-sector,2009,6,to-process intake 2026-11-04
+iea_2012_001,IEA 2012,via-ukerc,2012,1,original cited by UKERC 2013. Ranked with UKERC because the selection and harmonisation were UKERC's editorial work; the number is this source's.
+iea_2012_001,IEA 2012,multi-technology,2012,6,to-process intake 2026-11-04
+ieaghg_2013_002,IEAGHG 2013a,multi-technology,2013,6,to-process intake 2026-11-04
+khatir_2013_001,Khatir et al. 2013,single-technology,2013,6,to-process intake 2026-11-04
+matschegg_2023_001,Matschegg et al. 2023,multi-technology,2023,6,to-process intake 2026-11-04
+motelica_2012_001,Motelica et al. 2012,via-ukerc,2012,1,original cited by UKERC 2013. Ranked with UKERC because the selection and harmonisation were UKERC's editorial work; the number is this source's.
+motelica_2012_001,Motelica et al. 2012,multi-technology,2012,6,to-process intake 2026-11-04
+nera-aea_2009_001,NERA and AEA 2009,via-ukerc,2009,1,original cited by UKERC 2013. Ranked with UKERC because the selection and harmonisation were UKERC's editorial work; the number is this source's.
+nera-aea_2009_001,NERA and AEA 2009,multi-technology,2009,6,to-process intake 2026-11-04
+norgate-langberg_2009_001,Norgate and Langberg 2009,via-ukerc,2009,1,original cited by UKERC 2013. Ranked with UKERC because the selection and harmonisation were UKERC's editorial work; the number is this source's.
+norgate-langberg_2009_001,Norgate and Langberg 2009,multi-technology,2009,6,to-process intake 2026-11-04
+norman_2013_001,Norman 2013,via-ukerc,2013,1,original cited by UKERC 2013; ranked with UKERC because the selection was UKERC's editorial work
+norman_2013_001,Norman 2013,multi-technology,2013,6,to-process intake 2026-11-04
+ploegmakers_2013_001,Ploegmakers et al. 2013,via-ukerc,2013,1,original cited by UKERC 2013. Ranked with UKERC because the selection and harmonisation were UKERC's editorial work; the number is this source's.
+ploegmakers_2013_001,Ploegmakers et al. 2013,single-technology,2013,6,to-process intake 2026-11-04
+polusani_2025_001,Polusani et al. 2025,single-technology,2025,6,to-process intake 2026-11-04
+premkumar-rangaiah_2009_001,Premkumar and Rangaiah 2009,via-ukerc,2009,1,original cited by UKERC 2013. Ranked with UKERC because the selection and harmonisation were UKERC's editorial work; the number is this source's.
+premkumar-rangaiah_2009_001,Premkumar and Rangaiah 2009,multi-technology,2009,6,to-process intake 2026-11-04
+saygin_2012_001,Saygin et al. 2012,via-ukerc,2012,1,original cited by UKERC 2013. Ranked with UKERC because the selection and harmonisation were UKERC's editorial work; the number is this source's.
+saygin_2012_001,Saygin 2012,cross-sector,2012,6,to-process intake 2026-11-04
+schroder_2020_001,Schroder et al. 2020,single-technology,2020,6,to-process intake 2026-11-04
+shafiei_2023_001,Shafiei et al. 2023,single-technology,2023,6,to-process intake 2026-11-04
+sharp_1999_001,Sharp et al. 1999,via-ukerc,1999,1,original cited by UKERC 2013. Ranked with UKERC because the selection and harmonisation were UKERC's editorial work; the number is this source's.
+sharp_1999_001,Sharp et al. 1999,single-technology,1999,6,to-process intake 2026-11-04
+stengel_2009_001,Stengel et al. 2009,single-technology,2009,6,to-process intake 2026-11-04
+stubbles_2000_001,Stubbles 2000,multi-technology,2000,6,to-process intake 2026-11-04
+van-den-brink_2002_001,van den Brink et al. 2002,via-ukerc,2002,1,original cited by UKERC 2013. Ranked with UKERC because the selection and harmonisation were UKERC's editorial work; the number is this source's.
+van-den-brink_2002_001,van den Brink et al. 2002,multi-technology,2002,6,to-process intake 2026-11-04
+walenta-gartner_2011_001,Walenta and Gartner 2011,via-ukerc,2011,1,original cited by UKERC 2013. Ranked with UKERC because the selection and harmonisation were UKERC's editorial work; the number is this source's.
+walenta-gartner_2011_001,Li et al. 2007,single-technology,2007,6,to-process intake 2026-11-04
+bisaka_2016_001,Bisaka et al. 2016,single-technology,2016,5,titanium-slag search 2026-11-05 (held 2026-11-05)
+song_2025_001,Song et al. 2025,single-technology,2025,4,titanium-slag search 2026-11-05 (held 2026-11-05)
+pistorius_2009_001,Pistorius et al. c. 2009,single-technology,2009,6,"titanium intake 2026-11-05; a rounded typical figure, below the measured industrial and pilot values"

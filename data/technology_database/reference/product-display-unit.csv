@@ -1,0 +1,11 @@
+product,home-unit,product-shown,product-unit,factor,note
+hydrogen,GJ,,t,per cf-h2-hhv-mass,"Brad 2026-10-29: hydrogen is discussed per kg (USD/kg, kWh/kg) and plants are rated in t/d; the home unit stays GJ, the CIMS basis"
+hydrogen delivered,GJ,,t,per cf-h2-hhv-mass,as hydrogen
+ethanol,GJ,,m3,per cf-ethanol-hhv-mass x cf-ethanol-density,"Brad 2026-10-29: liquid biofuels are discussed per litre and plants rated in ML/yr; the home unit stays GJ, the CIMS biofuels basis"
+biodiesel,GJ,,m3,per cf-fame-hhv-mass x cf-fame-density,as ethanol
+renewable diesel and sustainable aviation fuel,GJ,,m3,per cf-paraffinic-diesel-hhv-mass x cf-paraffinic-diesel-density,as ethanol
+liquid fuels,GJ,,m3,per cf-paraffinic-diesel-hhv-mass x cf-paraffinic-diesel-density,"Brad 2026-10-29: synthetic liquids per m3, as refined petroleum products (GTL and coal-to-liquids plants are stated in bbl/d)"
+gasoline,GJ,,m3,per cf-gasoline-hhv-mass x cf-gasoline-density,as liquid fuels
+pyrolysis oil,GJ,,t,per cf-paraffinic-diesel-hhv-mass,"Brad 2026-10-29: per t, as the other pyrolysis-oil archetype; the paraffinic-diesel HHV stands in for the upgraded oil (product-property.csv)"
+synthetic natural gas,GJ,,1000-m3,0.001 per cf-natural-gas-hhv-volume,"Brad 2026-10-29: per 1000 m3, as gas processed and gas handled (15 degC, 101.325 kPa)"
+crude transport (m3-km),m3-km,crude pumped 1000 km,m3,0.001,"Brad 2026-10-29: pump stations shown per m3 pumped 1000 km, the service the crude pipeline requests; 1000 m3-km per m3 at 1000 km"

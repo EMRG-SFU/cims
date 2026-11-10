@@ -1,0 +1,74 @@
+list,term,note
+capacity-basis,thermal-input,
+capacity-basis,thermal-output,
+capacity-basis,product-output,
+capacity-basis,electric-output,
+capacity-basis,electric-input,"rated on the electricity it draws (an electrolyser, an electric boiler or heat pump); a cost per unit of it is put on output by the efficiency bridge"
+commodity-class,energy,
+commodity-class,material,
+commodity-class,emission,
+confidence,high,
+confidence,medium,
+confidence,low,
+constraint,current-adoption-share,
+constraint,max-adoption-share,
+constraint,market-share-new-max,
+constraint,market-share-new-min,
+constraint,market-share-total,
+constraint,growth-rate-max,
+constraint,applicability-to-stock,
+constraint,retirement-rate,
+constraint,capacity-max,
+constraint,capacity-min,
+constraint,refit-required,
+constraint-basis,of-baseline-stock,
+constraint-basis,of-new-sales,
+constraint-basis,of-sector-output,
+constraint-basis,absolute,
+cost-basis,equipment,
+cost-basis,installed,
+cost-basis,total-plant,
+cost-basis,overnight,
+cost-basis,not-applicable,
+cost-basis,incremental,"the cost of adding a measure or add-on to an existing plant, not a whole plant; set aside until a host-plant cost is known"
+direction,input,
+direction,output,
+parameter-class,technical,
+parameter-class,cost,
+parameter-class,emissions,
+parameter-class,deployment,
+state-of-development,existing,
+state-of-development,commercial,
+state-of-development,pilot,
+state-of-development,r-and-d,
+state-of-development,conceptual,
+heat-tier,low-temp,
+heat-tier,medium-temp,
+heat-tier,high-temp,
+heat-tier,not-applicable,
+trl-scale,trl-1-9,
+trl-scale,nasa-1-9,
+trl-scale,iea-etp,
+uncertainty-type,reported-range,
+uncertainty-type,assumed-range,
+uncertainty-type,standard-deviation,
+uncertainty-type,percent-of-central,
+uncertainty-type,expert-judgement,
+value-type,reported,
+value-type,derived,
+value-type,assumed,
+value-type,proxy,
+value-type,placeholder,
+yes-no,yes,
+yes-no,no,
+type,conventional,the incumbent in Canadian stock
+type,efficient variant,a major step on a conventional technology
+type,alternative,commercial (TRL 9) but not common in Canada
+type,prospective,TRL 5-8
+type,component,a part priced only to assemble whole-plant costs (records/reference/whole-plant-assembly.csv); not offered to the model and serves no hierarchy node
+type,reference,an option kept for its numbers where the CIMS hierarchy does not resolve the step; serves no hierarchy node
+status,draft,as extracted
+status,review,needs a decision before it is pooled
+status,unquantified,the source rates the option without a number
+status,final,checked
+status,superseded,"kept for the record, not used"

@@ -1,0 +1,20 @@
+record-id,species,gwp-source,note
+tp-nccp_1999_002-0002,sf6,23900,"SF6 cover gas only; the paper uses a GWP of 23,900 (IPCC SAR)"
+tp-nccp_1999_002-0004,sf6,23900,"SF6 cover gas only; the paper uses a GWP of 23,900 (IPCC SAR)"
+tp-nccp_1999_002-0006,sf6,23900,"SF6 cover gas only; the paper uses a GWP of 23,900 (IPCC SAR)"
+tp-nccp_1999_002-0008,sf6,23900,"SF6 cover gas only; the paper uses a GWP of 23,900 (IPCC SAR)"
+tp-nccp_1999_002-0010,sf6,23900,"SF6 cover gas only; the paper uses a GWP of 23,900 (IPCC SAR)"
+tp-perez-ramirez_2003_001-0012,n2o,310,N2O abatement only; the paper uses a GWP of 310 (IPCC SAR)
+tp-perez-ramirez_2003_001-0013,n2o,310,N2O abatement only; the paper uses a GWP of 310 (IPCC SAR)
+tp-perez-ramirez_2003_001-0014,n2o,310,N2O abatement only; the paper uses a GWP of 310 (IPCC SAR)
+tp-perez-ramirez_2003_001-0015,n2o,310,N2O abatement only; the paper uses a GWP of 310 (IPCC SAR)
+tp-perez-ramirez_2003_001-0016,n2o,310,N2O abatement only; the paper uses a GWP of 310 (IPCC SAR)
+tp-perez-ramirez_2003_001-0018,n2o,310,N2O abatement only; the paper uses a GWP of 310 (IPCC SAR)
+tp-perez-ramirez_2003_001-0019,n2o,310,N2O abatement only; the paper uses a GWP of 310 (IPCC SAR)
+tp-perez-ramirez_2003_001-0020,n2o,310,N2O abatement only; the paper uses a GWP of 310 (IPCC SAR)
+tp-perez-ramirez_2003_001-0021,n2o,310,N2O abatement only; the paper uses a GWP of 310 (IPCC SAR)
+tp-epa_2019_001-0177,ch4,25,methane abatement only; the EPA 2019 non-CO2 MAC report uses AR4 GWPs (CH4 25)
+tp-epa_2019_001-0180,ch4,25,methane abatement only; the EPA 2019 non-CO2 MAC report uses AR4 GWPs (CH4 25)
+tp-epa_2019_001-0182,ch4,25,methane abatement only; the EPA 2019 non-CO2 MAC report uses AR4 GWPs (CH4 25)
+tp-epa_2019_001-0183,ch4,25,methane abatement only; the EPA 2019 non-CO2 MAC report uses AR4 GWPs (CH4 25)
+tp-epa_2019_001-0184,ch4,25,methane abatement only; the EPA 2019 non-CO2 MAC report uses AR4 GWPs (CH4 25)

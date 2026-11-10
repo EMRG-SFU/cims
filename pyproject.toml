@@ -43,6 +43,8 @@ dynamic = ["version"]
 
 [project.optional-dependencies]
 notebooks = ['marimo>=0.24.0']
+# the technology database build (data_processing/technology_database) writes an Excel workbook
+technology-database = ['openpyxl']
 
 [project.urls]
 Repository = "https://github.com/EMRG-SFU/cims"
