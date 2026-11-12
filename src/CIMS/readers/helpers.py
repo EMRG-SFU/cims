@@ -28,6 +28,12 @@ REQUIRED_COLUMNS = (COL.branch, COL.region, COL.sector, COL.year, COL.value)
 # non-CSV content) without paying for a full parse of every file at collection.
 SCAN_PROBE_ROWS = 200
 
+# Parameters whose content older CSVs keep in Context rather than Value (mirrors
+# data_processing.utils.flatten_fixed_data.CONTEXT_TO_VALUE_PARAMETERS).
+CONTEXT_TO_VALUE_PARAMETERS = {
+    PARAM.competition_type, PARAM.market_share_class, PARAM.dcc_class, PARAM.dic_class,
+}
+
 
 def _glob_csvs(directory: Path) -> List[Path]:
     """List every CSV file directly inside directory.
@@ -470,6 +476,31 @@ def _report_unloadable(unloadable: List[Tuple[str, Exception]]) -> None:
         print(f"            {type(exc).__name__}: {reason}")
 
 
+def _context_to_value(df: pd.DataFrame) -> pd.DataFrame:
+    """Move a class name held in Context into Value for the parameters that carry it there.
+
+    Fixed data goes through flatten_fixed_data, which already does this
+    (CONTEXT_TO_VALUE_PARAMETERS). Policy and other update files written in the old
+    layout (e.g. ``Biodiesel, market_share_class, Diesel_Industrial, ..., <blank>``)
+    do not, so their techs would join no class: get_param reads Value, and the
+    market share class min/max limits would be skipped. Only rows with a Context
+    and no Value are changed.
+    """
+    if not {COL.parameter, COL.context, COL.value} <= set(df.columns):
+        return df
+    mask = (
+        df[COL.parameter].isin(CONTEXT_TO_VALUE_PARAMETERS)
+        & df[COL.value].isna()
+        & df[COL.context].notna()
+    )
+    if not mask.any():
+        return df
+    df = df.copy()
+    df.loc[mask, COL.value] = df.loc[mask, COL.context]
+    df.loc[mask, COL.context] = None
+    return df.drop_duplicates(ignore_index=True)
+
+
 def filter_model_data(
     paths: Iterable[str],
     region_list: Iterable,
@@ -535,6 +566,7 @@ def filter_model_data(
         collected = _collect_frames(lazy_frames)
 
     df = collected.to_pandas().replace({np.nan: None, "": None})
+    df = _context_to_value(df)
 
     meta_cols = [c for c in df.columns if c not in (COL.year, COL.value) and c in col_list]
     return df[meta_cols + [COL.year, COL.value]]
