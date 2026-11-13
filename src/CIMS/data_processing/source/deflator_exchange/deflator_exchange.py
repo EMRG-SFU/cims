@@ -33,6 +33,13 @@ ecb_2026_euro-reference-rates.csv
     of that currency per one euro; "N/A" where a currency is not quoted. Used
     only for currencies the Bank of Canada does not publish against CAD
     (ECB_VIA_EUR_CURRENCIES, currently DKK).
+oecd_2026_gdp-deflator-forecast.csv
+    OECD Economic Outlook 117 long-term scenarios (dataflow
+    OECD.ECO.MAD:DSD_EO_LTB@DF_EO_LTB), annual to 2100, filtered at download to
+    the PGDP measure (GDP at market prices, deflator) and the BAU1 scenario.
+    It extends the deflators past the last historical year; see "Forecast
+    years" below. The OECD's PPP measure was left out of the download: a
+    purchasing power parity is not a market exchange rate.
 
 Both exchange files quote Canadian dollars per one unit of the foreign currency,
 i.e. CAD_per_<X>. They overlap in early 2017; the current series takes precedence
@@ -76,6 +83,21 @@ All directed pairs among the currencies that have deflator coverage are written,
 because ``_exchange_factor`` looks up the exact ``<TARGET>_per_<SOURCE>`` key and
 does not invert or chain rates itself.
 
+Forecast years
+--------------
+Values quoted in future dollar-years (e.g. 2030_USD) need a deflator for that
+future year, and nothing else: conversion_factor exchanges only at the target
+year, which is historical. Each currency's deflator is therefore extended past
+its last historical year H with the OECD PGDP growth path, spliced at H:
+
+    deflator[X][y] = deflator[X][H] * oecd[X][y] / oecd[X][H]    for y > H
+
+Historical values are never replaced, so no existing conversion changes; the
+OECD series contributes only its year-on-year growth, not its level or base.
+NLG and DEM follow the Dutch and German national deflators, as their history
+does. The exchange table is not extended, so a TARGET year past the last
+complete year of exchange rates still fails, by design.
+
 Usage
 -----
     python -m CIMS.data_processing.source.deflator_exchange.deflator_exchange
@@ -103,6 +125,8 @@ ECB_FX_FILE = RAW_DIR / 'ecb_2026_euro-reference-rates.csv'
 FX_LEGACY_FILE = RAW_DIR / 'bank-of-canada_2026_fx-rates-pre-2017.csv'
 FX_CURRENT_FILE = RAW_DIR / 'can-statcan_2026_fx-rates-post-2017.csv'
 
+OECD_FORECAST_FILE = RAW_DIR / 'oecd_2026_gdp-deflator-forecast.csv'
+
 DEFLATOR_OUT = OUT_DIR / 'currency_deflator.csv'
 EXCHANGE_OUT = OUT_DIR / 'currency_exchange.csv'
 
@@ -123,6 +147,31 @@ WORLD_BANK_CURRENCIES = {
     # pre-euro legacy currencies: national deflator; CAD rate through the fixed euro rate
     'Netherlands': 'NLG',
     'Germany': 'DEM',
+}
+
+# OECD EO117 long-term scenario used for forecast deflators: BAU1 =
+# business-as-usual energy transition, median climate damage curve, no carbon
+# mitigation costs. The raw file holds only this scenario and measure; the loader
+# still filters on both, so a re-download with more series cannot slip through.
+# The six EO117 scenarios agree to within about 0.5% on deflators through 2050.
+OECD_SCENARIO = 'BAU1'
+OECD_DEFLATOR_MEASURE = 'PGDP'
+
+# ISO currency code -> OECD REF_AREA whose deflator forecast extends it.
+OECD_AREAS = {
+    'CAD': 'CAN',
+    'USD': 'USA',
+    'EUR': 'EA17',
+    'GBP': 'GBR',
+    'JPY': 'JPN',
+    'INR': 'IND',
+    'CNY': 'CHN',
+    'DKK': 'DNK',
+    'AUD': 'AUS',
+    'SEK': 'SWE',
+    'CHF': 'CHE',
+    'NLG': 'NLD',
+    'DEM': 'DEU',
 }
 
 # The euro area deflator comes from the ECB rather than the World Bank, because
@@ -250,23 +299,94 @@ def load_ecb_deflator(path: Path = ECB_FILE) -> pd.DataFrame:
     return out.dropna(subset=['Value'])
 
 
+def load_oecd_deflator_forecast(path: Path = OECD_FORECAST_FILE,
+                                scenario: str = OECD_SCENARIO) -> pd.DataFrame:
+    """Read the OECD long-term PGDP index into Context/Year/Value rows (Value = index)."""
+    df = pd.read_csv(path)
+    df = df[(df['MEASURE'] == OECD_DEFLATOR_MEASURE) & (df['SCENARIO'] == scenario)
+            & (df['FREQ'] == 'A')]
+    if df.empty:
+        raise ValueError(
+            f'{path.name}: no annual {OECD_DEFLATOR_MEASURE} rows for scenario {scenario}. '
+            f"Available scenarios: {', '.join(sorted(pd.read_csv(path)['SCENARIO'].unique()))}"
+        )
+    area_to_cur = {a: c for c, a in OECD_AREAS.items()}
+    missing = set(OECD_AREAS.values()) - set(df['REF_AREA'])
+    if missing:
+        raise ValueError(f"{path.name} is missing expected areas: {', '.join(sorted(missing))}")
+    df = df[df['REF_AREA'].isin(area_to_cur)]
+    if df.duplicated(['REF_AREA', 'TIME_PERIOD']).any():
+        raise ValueError(f'{path.name}: duplicate (area, year) rows for {scenario}')
+    out = pd.DataFrame({
+        'Context': df['REF_AREA'].map(area_to_cur),
+        'Year': df['TIME_PERIOD'].astype(int),
+        'Value': pd.to_numeric(df['OBS_VALUE'], errors='coerce'),
+    })
+    return out.dropna(subset=['Value']).reset_index(drop=True)
+
+
+def extend_with_forecast(history: pd.DataFrame, forecast: pd.DataFrame,
+                         source_name: str, scenario: str = OECD_SCENARIO) -> pd.DataFrame:
+    """
+    Append forecast years to each currency's historical deflator.
+
+    Splices at the currency's last historical year H: for y > H,
+    value = history[H] * forecast[y] / forecast[H]. History is left untouched.
+    """
+    fc = forecast.set_index(['Context', 'Year'])['Value']
+    parts = []
+    for cur, hist in history.groupby('Context'):
+        if cur not in OECD_AREAS:
+            continue
+        last = hist.loc[hist['Year'].idxmax()]
+        h_year, h_value = int(last['Year']), float(last['Value'])
+        if (cur, h_year) not in fc.index:
+            raise ValueError(
+                f'{source_name}: no {OECD_AREAS[cur]} value for {h_year}, the last '
+                f'historical {cur} deflator year, so the forecast cannot be spliced.'
+            )
+        f = fc.loc[cur]
+        f = f[f.index > h_year]
+        if f.empty:
+            continue
+        parts.append(pd.DataFrame({
+            'Context': cur,
+            'Year': f.index.astype(int),
+            'Value': h_value * f.values / fc[(cur, h_year)],
+            'Source': (
+                f'Forecast: {last["Source"].split(";")[0]} {h_year} value, grown at the OECD '
+                f'Economic Outlook 117 long-term scenario {scenario} GDP deflator '
+                f'({OECD_DEFLATOR_MEASURE}, {OECD_AREAS[cur]}) path; from {source_name}'
+            ),
+        }))
+    return pd.concat([history] + parts, ignore_index=True)
+
+
 def _raw(default: Path, raw_dir: Path | None) -> Path:
     """A raw file: the default under RAW_DIR, or the same name under raw_dir."""
     return default if raw_dir is None else Path(raw_dir) / default.name
 
 
 def build_deflator_table(start_year: int | None = START_YEAR,
-                         raw_dir: Path | None = None) -> pd.DataFrame:
+                         raw_dir: Path | None = None,
+                         forecast: bool | None = None) -> pd.DataFrame:
     """Assemble the full deflator table, one row per (currency, year).
 
     raw_dir: read the raw files from there instead of RAW_DIR (the technology
     database keeps them in its own deposit, data/raw_data/technology_database/currency/).
+    forecast: extend past the last historical year with the OECD deflator path.
+    True requires the OECD file, False skips it, None (default) extends only if
+    the file is present, so a deposit without it still builds history alone.
     """
     table = pd.concat(
         [load_world_bank_deflator(_raw(WORLD_BANK_FILE, raw_dir)),
          load_ecb_deflator(_raw(ECB_FILE, raw_dir))],
         ignore_index=True,
     )
+    oecd_path = _raw(OECD_FORECAST_FILE, raw_dir)
+    if forecast or (forecast is None and oecd_path.exists()):
+        table = extend_with_forecast(table, load_oecd_deflator_forecast(oecd_path),
+                                     oecd_path.name)
     if start_year is not None:
         table = table[table['Year'] >= start_year]
     return table.sort_values(['Context', 'Year']).reset_index(drop=True)
@@ -537,7 +657,7 @@ def _summarise(name: str, table: pd.DataFrame) -> None:
 
 
 def main() -> None:
-    deflator = build_deflator_table()
+    deflator = build_deflator_table(forecast=True)
     exchange = build_exchange_table()
 
     _write(deflator, DEFLATOR_OUT, f'.{DEFLATOR_DECIMALS}f')
@@ -558,6 +678,14 @@ def main() -> None:
             f'{deflator_start}. Values dated before {exchange_start} still convert: '
             'conversion_factor deflates inside the source currency and exchanges only '
             f'at the target year. Only a TARGET year before {exchange_start} would fail.'
+        )
+    is_fc = deflator['Source'].str.startswith('Forecast:')
+    if is_fc.any():
+        print(
+            f'Note: deflators for {deflator.loc[is_fc, "Year"].min()}-'
+            f'{deflator.loc[is_fc, "Year"].max()} are OECD {OECD_SCENARIO} forecasts. '
+            f'Exchange rates end in {exchange["Year"].max()}, so a TARGET year after '
+            'that still fails.'
         )
 
 

@@ -16,7 +16,6 @@ Branch, Type, Region, Sector, Service, Technology, Parameter,
 Context, Sub_Context, Target, Source, Unit, Year, Value
 """
 
-import shutil
 import tempfile
 
 from pathlib import Path
@@ -27,6 +26,7 @@ import polars as pl
 import CIMS.data_processing.utils.flatten_fixed_data as _flatten_mod
 
 from CIMS.data_processing.utils.controls_conversions import BASE_PATH, DATA_START, PROJECTION_END, LAST_DATA_YEAR
+from CIMS.data_processing.utils.currency import write_model_csv
 
 # ── configuration ─────────────────────────────────────────────────────────────
 FIXED_INPUT_DIR = BASE_PATH / 'raw_data/fixed_data/dcc'
@@ -61,7 +61,7 @@ def main() -> None:
             dest = OUTPUT_DIR / f.name
             df = pl.read_csv(f, infer_schema_length=0)
             total_rows += len(df)
-            shutil.copy(f, dest)
+            write_model_csv(df, dest)
             print(f'  Wrote {len(df):,} rows -> {dest.name}')
 
     print(f'\nDCC model inputs complete')

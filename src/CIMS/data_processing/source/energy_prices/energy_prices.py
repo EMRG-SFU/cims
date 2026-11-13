@@ -36,6 +36,15 @@ RETAIL_FUEL_FILE = BASE_PATH / 'raw_data/energy_prices/alternative_fuels_data_ce
 RENEWABLE_DIESEL_FILE = BASE_PATH / 'raw_data/energy_prices/alternative_fuels_data_center/10969_renewable_diesel_prices_2-3-26.xlsx'
 OUTPUT_DIR = BASE_PATH / 'processed_data/energy_prices'
 
+# Every price is converted to this basis (with the deflator and exchange tables
+# CIMS uses; see utils/currency.py) and labelled in CIMS's YYYY_CCC form. The
+# hard-coded price assumptions in this file (e.g. SAF at 160/GJ) are in this basis,
+# so change it only together with them. The control.py currency_output_* settings
+# convert to another basis when the model inputs are written.
+PRICE_YEAR = 2025
+PRICE_CURRENCY = 'CAD'
+PRICE_UNIT = f'{PRICE_YEAR}_{PRICE_CURRENCY}/GJ'
+
 
 
 # Regions for regional energies
@@ -99,9 +108,9 @@ def process_cer_benchmark_energy(
     prices_cad_gj = convert_currency(
         prices,
         from_year=from_year,
-        to_year=2025,
+        to_year=PRICE_YEAR,
         from_currency=from_currency,
-        to_currency='CAD',
+        to_currency=PRICE_CURRENCY,
         macro_df=macro_df,
         constant_dollars=True,
     )
@@ -199,9 +208,9 @@ def process_jcims_energy(
     prices_2025 = convert_currency(
         prices,
         from_year=2005,
-        to_year=2025,
+        to_year=PRICE_YEAR,
         from_currency='CAD',
-        to_currency='CAD',
+        to_currency=PRICE_CURRENCY,
         macro_df=macro_df,
         constant_dollars=True,
     )
@@ -329,9 +338,9 @@ def process_hydrogen_regional(
     prices_2025 = convert_currency(
         prices,
         from_year=2005,
-        to_year=2025,
+        to_year=PRICE_YEAR,
         from_currency='CAD',
-        to_currency='CAD',
+        to_currency=PRICE_CURRENCY,
         macro_df=macro_df,
         constant_dollars=True,
     )
@@ -409,9 +418,9 @@ def process_afdc_energy(
     prices_2025_cad_gal = convert_currency(
         annual_avg,
         from_year=annual_avg.index[0],
-        to_year=2025,
+        to_year=PRICE_YEAR,
         from_currency='USD',
-        to_currency='CAD',
+        to_currency=PRICE_CURRENCY,
         macro_df=macro_df,
         constant_dollars=False,
     )
@@ -791,7 +800,7 @@ def create_output_dataframe(
                 rows.append({
                     'Region': region,
                     'Energy': energy,
-                    'Unit': '2025 C$/GJ',
+                    'Unit': PRICE_UNIT,
                     'Source': source if int(year) <= max_yr else 'Assumptions',
                     'Year': int(year),                    
                     'Price': price,
@@ -804,7 +813,7 @@ def create_output_dataframe(
                     rows.append({
                     'Region': region,
                     'Energy': energy,
-                    'Unit': '2025 C$/GJ',
+                    'Unit': PRICE_UNIT,
                     'Source': source if int(year) <= max_yr else 'Assumptions',
                     'Year': int(year),                    
                     'Price': price,

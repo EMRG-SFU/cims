@@ -80,6 +80,23 @@ class ModelReader:
 
         # Return
         return node_tech_defaults
+
+    def get_default_units(self):
+        """Unit of each parameter that has a default value, e.g. {'fcc': '2020_CAD'}."""
+        df = pl.read_csv(
+            self.default_values_csv,
+            use_pyarrow=False,
+            infer_schema_length=0,
+            ).to_pandas()
+        df = df.dropna(axis=0, how="all")
+        if COL.unit not in df.columns:
+            return {}
+        df = df[~df[COL.default_value].isna()]
+        return {
+            str(param).lower(): unit
+            for param, unit in zip(df[COL.parameter], df[COL.unit])
+            if isinstance(unit, str) and unit.strip()
+        }
         
     def get_inheritable_params(self):
         # Blank cells in the "Inheritable" column come back as None from _get_list;

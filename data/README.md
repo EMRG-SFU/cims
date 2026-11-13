@@ -76,9 +76,10 @@ Raw data from various sources is gathered and placed in the External-CIMS sharep
 │   │   ├── transportation passenger/
 │   │   ├── transportation freight/
 │   │   └── .../
-│   └── policies/
-│       ├── reference/          # Source policy CSVs (wide 5-year format)
-│       └── reference_annual/   # Flattened annual policy CSVs
+│   └── policies/               # One folder per policy, annual long format
+│       ├── carbon-tax_ref/     #   <policy>_<region>.csv, read by scenarios/Reference.py
+│       ├── obps_federal/       #   (built from raw_data/policies/ by utils/flatten_policies.py)
+│       └── .../
 │
 └── calibration/                # Calibration outputs — gitignored, auto-generated
     ├── commercial/

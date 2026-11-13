@@ -19,6 +19,18 @@ loader ignores:
 | `Year` | dollar-year | year the rate applies to |
 | `Value` | price index for that currency/year | units of target currency per one source currency |
 
+### Shared by the pipeline and the model
+
+The data pipeline converts currency with the same tables and the same
+`CurrencyConverter`, through `CIMS.data_processing.utils.currency`, so a value
+converted in the pipeline and one converted by `CIMS.Model` at read time agree
+exactly. Every model input the pipeline writes carries a `YYYY_CCC` unit
+(`2020_CAD`, `2025_CAD/GJ`), which is what CIMS needs to convert a row. The
+`currency_*` settings in `data/mappings_conversions/control.py` choose the year and
+currency assumed for bare `$` template units, and whether the pipeline writes
+values as tagged (CIMS converts) or converts them itself to a set output year and
+currency. Run this builder before the rest of the pipeline.
+
 ### Conversion order and why it matters
 
 A value is **deflated first, within its own (source) currency, and only then
@@ -61,12 +73,15 @@ cannot convert to the configured target.
 
 ## Coverage and sources
 
-Both tables cover **2000-2025** for **CAD, USD, EUR, GBP, JPY, INR and CNY**.
+The deflator table covers **1960-2100** (EUR from 1995) and the exchange table
+**1999-2025**, for **CAD, USD, EUR, GBP, JPY, INR, CNY, DKK, AUD, SEK and CHF**, plus
+the pre-euro **NLG** and **DEM**. Deflators after 2025 are forecasts (see below).
 
 | Table | Series | Source |
 | --- | --- | --- |
 | Deflator | GDP deflator at market prices, `NY.GDP.DEFL.ZS` | World Bank WDI (CAD, USD, GBP, JPY, INR, CNY) |
 | Deflator | Euro area GDP at market prices, deflator | ECB, `MNA.A.N.I10.W2.S1.S1.B.B1GQ._Z._Z._Z.IX.D.N` (EUR) |
+| Deflator | GDP at market prices, deflator (`PGDP`), forecast years only | OECD Economic Outlook 117 long-term scenarios, scenario `BAU1` |
 | Exchange | Monthly average rates, 2017 onward | Statistics Canada / Bank of Canada |
 | Exchange | Legacy monthly average noon rates, through 2016 | Bank of Canada (discontinued 2017-04-28) |
 
@@ -94,6 +109,32 @@ Three details are worth knowing when reading these tables:
 - **Exchange values carry 12 significant digits, not fixed decimals.** One table
   spans `CAD_per_JPY` (~0.0092) to `JPY_per_CAD` (~108); fixed decimals would strip
   the small rates to a few significant figures and break reciprocal consistency.
+
+### Forecast deflators (future dollar-years)
+
+A value quoted in a future dollar-year, such as `2030_USD`, needs only that
+currency's deflator for 2030: the exchange step happens at the target year, which
+is historical. The builder extends each currency's deflator past its last
+historical year H (2025) with the OECD long-term GDP deflator path, spliced at H:
+
+```
+deflator[X][y] = deflator[X][H] * oecd[X][y] / oecd[X][H]    for y > H
+```
+
+So the OECD series supplies growth only; historical values and base years are
+untouched, and no existing conversion changes. The `Source` column of forecast rows
+starts with `Forecast:`. When the next historical year is published, rerun the
+builder and the splice point moves forward on its own.
+
+The raw file, `oecd_2026_gdp-deflator-forecast.csv`, is the OECD download filtered
+to the `PGDP` measure and the `BAU1` scenario. The six EO117 scenarios agree to
+within about 0.5% on deflators through 2050. To use another, download that scenario
+and set `OECD_SCENARIO` in `deflator_exchange.py` to match.
+
+The download leaves out the OECD's purchasing power parity (`PPP`) measure: a PPP
+is not a market exchange rate, and conversions never need a future exchange rate
+unless the *target* year is in the future. The exchange table therefore still ends
+at the last complete year of market rates.
 
 Cross rates are derived through CAD (`A_per_B = CAD_per_B / CAD_per_A`), since the
 published rates are all quoted against the Canadian dollar.

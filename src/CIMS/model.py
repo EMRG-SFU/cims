@@ -26,7 +26,7 @@ from .readers.model_reader import ModelReader
 from .model_validation import ModelValidator, ValidationError
 from .quantities import ProvidedQuantity
 from .emissions import EmissionsCost
-from .unit_conversion import CurrencyConverter, apply_currency_conversion
+from .unit_conversion import CurrencyConverter, apply_currency_conversion, convert_default_values
 from .resource_profiler import ResourceProfiler
 
 
@@ -184,6 +184,7 @@ class Model:
             self.validator.currency_converter = self.currency_converter
             self.validator.target_currency = self.target_currency
             self.validator.target_dollar_year = self.target_dollar_year
+            self._convert_default_currency()
 
         # Track current state of the model build
         self.status = "instantiated"  # description loaded, graph not yet constructed
@@ -277,6 +278,21 @@ class Model:
         self.target_currency = target_units["currency"]
         self.target_dollar_year = target_units["dollar_year"]
         self.currency_converter = CurrencyConverter(deflator_path, exchange_path)
+
+    def _convert_default_currency(self):
+        """
+        Convert monetary parameter defaults (e.g. a '2020_CAD' fcc default) to the
+        target currency and dollar-year, as model description values are converted.
+        Called once at instantiation, after the converter is configured.
+        """
+        units = self._model_reader.get_default_units()
+        self.node_tech_defaults, converted = convert_default_values(
+            self.node_tech_defaults, units, self.currency_converter,
+            self.target_currency, self.target_dollar_year,
+        )
+        if converted:
+            print(f"  Converted {len(converted)} parameter defaults to "
+                  f"{self.target_dollar_year}_{self.target_currency}")
 
     def _convert_currency(self, node_dfs, tech_dfs, label=""):
         """

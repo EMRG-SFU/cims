@@ -450,106 +450,22 @@ def load_macro_indicators(filepath: str, scenario: str) -> pl.DataFrame:
     return pivot
 
 
-def get_deflator(macro_df: pl.DataFrame, from_year: int, to_year: int) -> pl.Series:
-    """Calculate deflator to convert prices from one year to another."""
-    deflator_col = 'Gross Domestic Product Deflator (2017=100)'
-    
-    if deflator_col not in macro_df.columns:
-        raise ValueError(f"GDP Deflator column not found in macro data")
-    
-    # Base deflator value for target year
-    base_deflator = macro_df.filter(pl.col('Year') == to_year)[deflator_col][0]
-    
-    # Calculate deflator for each year
-    deflator = base_deflator / macro_df[deflator_col]
-    
-    return deflator
-
-
-def get_exchange_rate(macro_df: pl.DataFrame, from_currency: str) -> pl.Series:
-    """Get exchange rate from foreign currency to CAD."""
-    if from_currency == 'CAD':
-        # CAD to CAD, no conversion needed
-        return pl.Series('exchange_rate', [1.0] * len(macro_df))
-    
-    # For USD, use the exchange rate column
-    if from_currency == 'USD':
-        rate_col = 'Canada-US Exchange Rate (C$/US$)'
-        if rate_col not in macro_df.columns:
-            raise ValueError(f"Exchange rate column for USD not found")
-        
-        return macro_df[rate_col]
-    
-    # For other currencies, assume 1.0
-    return pl.Series('exchange_rate', [1.0] * len(macro_df))
-
-
-def convert_currency_polars(
-    prices: pl.Series,
-    from_year: int,
-    to_year: int,
-    from_currency: str,
-    to_currency: str,
-    macro_df: pl.DataFrame,
-    constant_dollars: bool = False
-) -> pl.Series:
-    """
-    Convert prices from one currency/year to another (Polars version).
-    
-    Args:
-        prices: Price series with 'Year' column
-        from_year: Base year of input prices (only used if constant_dollars=True)
-        to_year: Target year for output prices
-        from_currency: Source currency code
-        to_currency: Target currency code
-        macro_df: Polars DataFrame with macro indicators
-        constant_dollars: If True, all prices are in constant from_year dollars.
-                         If False, each year's price is in that year's dollars (nominal).
-    """
-    if constant_dollars:
-        # All prices are in constant from_year dollars
-        # Apply single conversion factor to all values
-        deflator_col = 'Gross Domestic Product Deflator (2017=100)'
-        deflator_from = macro_df.filter(pl.col('Year') == from_year)[deflator_col][0]
-        deflator_to = macro_df.filter(pl.col('Year') == to_year)[deflator_col][0]
-        conversion_factor = deflator_to / deflator_from
-        
-        # Exchange rate (use from_year rate for constant dollars)
-        if from_currency != to_currency:
-            exchange_rate = get_exchange_rate(macro_df, from_currency)
-            year_mask = macro_df['Year'] == from_year
-            if year_mask.sum() > 0:
-                er_value = exchange_rate.filter(year_mask)[0]
-            else:
-                er_value = 1.0
-        else:
-            er_value = 1.0
-        
-        converted = prices * conversion_factor * er_value
-        
-    else:
-        # Nominal prices: each year's price is in that year's dollars
-        # This needs to work with pandas Series for compatibility
-        # Convert to dict, process, convert back
-        raise NotImplementedError("Nominal currency conversion not yet implemented for Polars. Use pandas version.")
-    
-    return converted
-
-
 def convert_currency(
     prices: pd.Series,
     from_year: int,
     to_year: int,
     from_currency: str,
     to_currency: str,
-    macro_df: pl.DataFrame,
+    macro_df: pl.DataFrame = None,
     constant_dollars: bool = False
 ) -> pd.Series:
     """
     Convert prices from one currency/year to another.
 
-    Queries macro_df directly with Polars — no to_pandas() call, so no
-    pyarrow dependency regardless of which columns are present.
+    Uses the same deflator and exchange tables, and the same method, as
+    CIMS.Model (``CIMS.unit_conversion.CurrencyConverter``): deflate within the
+    source currency, then exchange at the target year. See
+    ``CIMS.data_processing.utils.currency``.
 
     Args:
         prices: Price series indexed by year
@@ -557,57 +473,17 @@ def convert_currency(
         to_year: Target year for output prices
         from_currency: Source currency code
         to_currency: Target currency code
-        macro_df: Polars DataFrame with macro indicators (pivoted, numeric cols)
+        macro_df: Ignored. Kept so existing calls still work; the CER macro
+                  deflator and exchange rate are no longer used for currency.
         constant_dollars: If True, all prices are in constant from_year dollars.
                          If False, each year's price is in that year's dollars (nominal).
     """
-    DEFLATOR_COL  = 'Gross Domestic Product Deflator (2017=100)'
-    EXCHANGE_COL  = 'Canada-US Exchange Rate (C$/US$)'
+    from CIMS.data_processing.utils.currency import convert_series
 
-    def _scalar(col: str, year: int) -> float:
-        """Return a single float from macro_df for (col, year). No pyarrow needed."""
-        vals = macro_df.filter(pl.col('Year') == year).get_column(col).to_list()
-        if not vals:
-            raise KeyError(f"No macro data for year {year}, column '{col}'")
-        return float(vals[0])
-
-    if constant_dollars:
-        # Single conversion factor applied to all years
-        deflator_from = _scalar(DEFLATOR_COL, from_year)
-        deflator_to   = _scalar(DEFLATOR_COL, to_year)
-        conversion_factor = deflator_to / deflator_from
-
-        er_value = _scalar(EXCHANGE_COL, from_year) if from_currency != to_currency else 1.0
-
-        converted = prices * conversion_factor * er_value
-
-    else:
-        # Nominal: convert year-by-year
-        deflator_to = _scalar(DEFLATOR_COL, to_year)
-
-        # Pre-build a lookup dict for the years we need — one Polars filter per
-        # unique year is much faster than converting the whole DataFrame.
-        needed_years = [int(y) for y in prices.index]
-
-        deflator_lookup: dict[int, float] = {}
-        exchange_lookup: dict[int, float] = {}
-        for year in needed_years:
-            row = macro_df.filter(pl.col('Year') == year)
-            if len(row) == 0:
-                continue
-            deflator_lookup[year] = float(row.get_column(DEFLATOR_COL).to_list()[0])
-            if from_currency != to_currency:
-                exchange_lookup[year] = float(row.get_column(EXCHANGE_COL).to_list()[0])
-
-        converted_dict: dict[int, float] = {}
-        for year, price in prices.items():
-            year = int(year)
-            if year not in deflator_lookup:
-                continue
-            price_deflated = price * (deflator_to / deflator_lookup[year])
-            er = exchange_lookup.get(year, 1.0)
-            converted_dict[year] = price_deflated * er
-
-        converted = pd.Series(converted_dict)
-
-    return converted
+    return convert_series(
+        prices,
+        from_currency=from_currency,
+        to_year=to_year,
+        to_currency=to_currency,
+        from_year=from_year if constant_dollars else None,
+    )

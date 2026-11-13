@@ -11,7 +11,7 @@ Fixed structural parameters
     raw_data/fixed_data/fuels/fuels_CIMS.csv      (flattened + energy prices + emission factors)
 
 Energy prices  (lcc_financial rows)
-    source/energy_prices/energy_prices.py — generic production costs in 2025 C$/GJ.
+    source/energy_prices/energy_prices.py — generic production costs, labelled 2025_CAD/GJ.
     Inserted after each fuel's is_supply, TRUE row in fuels_CIMS.csv.
 
 Emission factors  (emissions / emissions_biomass rows)
@@ -45,6 +45,7 @@ import CIMS.data_processing.source.emission_factors.emission_factors as _ef_mod
 import CIMS.data_processing.sector.fuels_calibration as _fuels_cal_mod
 
 from CIMS.data_processing.utils.controls_conversions import BASE_PATH, DATA_START
+from CIMS.data_processing.utils.currency import write_model_csv
 from CIMS.data_processing.utils.collapse_constant_years import collapse_constant_years
 
 # ── configuration ──────────────────────────────────────────────────────────────
@@ -309,7 +310,7 @@ def main() -> dict[str, pl.DataFrame]:
 
             out_path = OUTPUT_DIR / f'fuels_{region.lower()}.csv'
             output = collapse_constant_years(output)
-            output.write_csv(str(out_path))
+            write_model_csv(output, str(out_path))
             print(f'  Wrote {len(output):,} rows → {out_path.name}')
             results[region] = output
 
@@ -330,7 +331,7 @@ def main() -> dict[str, pl.DataFrame]:
             output = _assemble_cims(fixed, prices_df, ef_df)
 
             out_path = OUTPUT_DIR / 'fuels_cims.csv'
-            output.write_csv(str(out_path))
+            write_model_csv(output, str(out_path))
             print(f'  Wrote {len(output):,} rows → {out_path.name}')
             results['CIMS'] = output
 

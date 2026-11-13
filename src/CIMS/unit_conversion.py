@@ -169,13 +169,49 @@ def normalize_currency_in_df(
         factor = converter.conversion_factor(str(currency), int(year), target_currency, target_dollar_year)
         df.loc[group.index, 'Value'] = numeric_values.loc[group.index] * factor
 
+    # Swap only the YYYY_CCC prefix, so the separator after it survives:
+    # '2010_USD/GJ' -> '2020_CAD/GJ', '2017_CAD_millions' -> '2020_CAD_millions'.
     new_prefix = f"{target_dollar_year}_{target_currency}"
-    new_units = extracted.loc[convertible_mask, 'physical_unit'].apply(
-        lambda pu: f"{new_prefix}/{pu}" if pd.notna(pu) and pu else new_prefix
+    new_units = (
+        df.loc[convertible_mask, 'Unit'].astype(str).str.strip()
+        .str.replace(r'^\d{4}\s*_?\s*[A-Za-z]{3}', new_prefix, n=1, regex=True)
     )
     df.loc[convertible_mask, 'Unit'] = new_units
 
     return df
+
+
+def convert_default_values(
+    defaults: dict,
+    units: dict,
+    converter: CurrencyConverter,
+    target_currency: str,
+    target_dollar_year: int,
+) -> tuple[dict, list[str]]:
+    """
+    Convert monetary parameter defaults to the target currency and dollar-year.
+
+    A default is converted when its unit (from the defaults file's Unit column)
+    carries a YYYY_CCC prefix and its value is a number. Everything else is
+    returned unchanged.
+
+    Returns
+    -------
+    tuple[dict, list[str]]
+        A converted copy of defaults, and the names of the parameters converted.
+    """
+    converted = dict(defaults)
+    changed = []
+    for param, value in defaults.items():
+        if isinstance(value, bool) or not isinstance(value, (int, float)):
+            continue
+        year, currency, _ = parse_unit_string(units.get(param))
+        if year is None:
+            continue
+        converted[param] = value * converter.conversion_factor(
+            currency, year, target_currency, target_dollar_year)
+        changed.append(param)
+    return converted, changed
 
 
 def apply_currency_conversion(

@@ -48,7 +48,7 @@ def main() -> pl.DataFrame:
 
     output = fixed.cast(pl.String).select(OUTPUT_COLS)
 
-    regions = write_per_region_csvs(output, OUTPUT_DIR, 'market_share_limits', collapse_years=True)
+    regions = write_per_region_csvs(output, OUTPUT_DIR, 'market_share_limits', collapse_years=True, finalise_currency=True)
 
     print(f'\nMarket share limits model inputs complete')
     print(f'   Total rows:  {len(output):,}')

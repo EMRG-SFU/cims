@@ -75,6 +75,7 @@ import CIMS.data_processing.source.energy_prices.energy_price_multipliers as _en
 import CIMS.data_processing.source.cer.cer_resd_demand as _cer_resd_mod
 
 from CIMS.data_processing.utils.controls_conversions import BASE_PATH
+from CIMS.data_processing.utils.currency import write_model_csv
 from CIMS.data_processing.utils.collapse_constant_years import collapse_constant_years
 from CIMS.data_processing.utils.feedstock_demand import build_feedstock_rows_all_regions
 
@@ -237,7 +238,7 @@ def main() -> pl.DataFrame:
         region_df = output.filter(pl.col('Region') == region)
         out_path = OUTPUT_DIR / f'iron_and_steel_{region.lower()}.csv'
         region_df = collapse_constant_years(region_df)
-        region_df.write_csv(out_path)
+        write_model_csv(region_df, out_path)
         print(f'  Wrote {len(region_df):,} rows → {out_path.name}')
 
     print(f'\n✅ Iron and Steel model inputs complete')

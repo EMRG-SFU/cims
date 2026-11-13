@@ -208,7 +208,7 @@ def main() -> pl.DataFrame:
         .agg(pl.col("Value").sum().alias("Value"))
         .with_columns([
             pl.lit("Light Industrial").alias("Variable"),
-            pl.lit("$M 2017 GDP").alias("Unit"),
+            pl.lit("million 2017 CAD GDP").alias("Unit"),
         ])
         .select(["Region", "Variable", "Unit", "Year", "Value"])
     )

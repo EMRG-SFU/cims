@@ -83,6 +83,7 @@ import CIMS.data_processing.source.energy_prices.energy_price_multipliers as _en
 import CIMS.data_processing.source.nrcan.ceud.residential.residential_heating_intensity as _heating_mod
 
 from CIMS.data_processing.utils.controls_conversions import BASE_PATH, DATA_START, PROJECTION_END
+from CIMS.data_processing.utils.currency import write_model_csv
 from CIMS.data_processing.utils.collapse_constant_years import collapse_constant_years
 
 # ── configuration ──────────────────────────────────────────────────────────────
@@ -1493,7 +1494,7 @@ def main() -> dict[str, pl.DataFrame]:
             output = collapse_constant_years(output)
 
             out_path = OUTPUT_DIR / f'residential_{region.lower()}.csv'
-            output.write_csv(str(out_path))
+            write_model_csv(output, str(out_path))
             print(f'  Wrote {len(output):,} rows → {out_path.name}')
             results[region] = output
 

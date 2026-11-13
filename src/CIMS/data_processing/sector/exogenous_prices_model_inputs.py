@@ -11,7 +11,7 @@ Fixed structural parameters
     Flattened from wide (2000–2050 year columns) to long format.
 
 Energy prices  (lcc_financial rows)
-    source/energy_prices/energy_prices.py — regional production costs in 2025 C$/GJ.
+    source/energy_prices/energy_prices.py — regional production costs, labelled 2025_CAD/GJ.
     Inserted after each fuel's is_supply, TRUE row.
 
 Emission factors  (emissions / emissions_biomass rows)
@@ -38,6 +38,7 @@ import CIMS.data_processing.source.energy_prices.energy_prices as _energy_prices
 import CIMS.data_processing.source.emission_factors.emission_factors as _ef_mod
 
 from CIMS.data_processing.utils.controls_conversions import BASE_PATH
+from CIMS.data_processing.utils.currency import write_model_csv
 from CIMS.data_processing.utils.collapse_constant_years import collapse_constant_years
 
 # ── configuration ──────────────────────────────────────────────────────────────
@@ -247,7 +248,7 @@ def main() -> dict[str, pl.DataFrame]:
 
             out_path = OUTPUT_DIR / f'exogenous_prices_{region.lower()}.csv'
             output = collapse_constant_years(output)
-            output.write_csv(str(out_path))
+            write_model_csv(output, str(out_path))
             print(f'  Wrote {len(output):,} rows → {out_path.name}')
             results[region] = output
 

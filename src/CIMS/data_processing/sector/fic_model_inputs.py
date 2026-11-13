@@ -24,6 +24,7 @@ import polars as pl
 from CIMS.data_processing.utils.flatten_fixed_data import read_fixed_data_file
 
 from CIMS.data_processing.utils.controls_conversions import BASE_PATH
+from CIMS.data_processing.utils.currency import write_model_csv
 from CIMS.data_processing.utils.collapse_constant_years import collapse_constant_years
 
 # ── configuration ──────────────────────────────────────────────────────────────
@@ -66,7 +67,7 @@ def main() -> dict[str, pl.DataFrame]:
 
             out_path = OUTPUT_DIR / f'fic_{region.lower()}.csv'
             output = collapse_constant_years(output)
-            output.write_csv(str(out_path))
+            write_model_csv(output, str(out_path))
             print(f'  Wrote {len(output):,} rows → {out_path.name}')
             results[region] = output
 

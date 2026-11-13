@@ -14,7 +14,7 @@ Historical Stats Can data is extended to 2050 using CER Canada-wide
 year-over-year growth rates applied uniformly to each province/territory.
 From 2051 to 2100 the 2040-2050 CAGR is carried forward with a 0.1
 dampener. GDP is converted from chained 2017 CAD to CIMS currency year
-CAD millions using convert_currency() with the CER GDP deflator.
+CAD millions using convert_currency(), with the deflator tables CIMS uses.
 """
 
 import pandas as pd
@@ -239,11 +239,11 @@ def main() -> pd.DataFrame:
         cer_unit_scale=1000.0,  # CER population is in thousands; output in persons
     )
 
-    print(f"Projecting GDP to 2100 and converting to {CIMS_YEAR}$ millions...")
+    print(f"Projecting GDP to 2100 and converting to {CIMS_YEAR}_CAD millions...")
     gdp_out = process_variable(
         gdp_hist, cer_gdp, GDP_LAST,
         variable="GDP",
-        unit=f"{CIMS_YEAR}$ millions",
+        unit=f"{CIMS_YEAR}_CAD_millions",
         source="Statistics Canada / CER",
         macro_df=macro,
         currency_from_year=2017,  # Stats Can chained 2017 dollars

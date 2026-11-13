@@ -21,7 +21,9 @@ from CIMS.data_processing.utils.data_fill import backfill_constant, interpolate_
 from CIMS.data_processing.utils.data_extensions import extend_constant
 from CIMS.data_processing.utils.extractors.cer import find_cer_file
 from CIMS.data_processing.utils.controls_conversions import DATA_START, PROJECTION_END, BASE_PATH, LAST_DATA_YEAR, ARCHIVED_DATA
-from CIMS.data_processing.source.energy_prices.energy_prices import main as get_production_costs
+from CIMS.data_processing.source.energy_prices.energy_prices import (
+    main as get_production_costs, PRICE_YEAR, PRICE_CURRENCY,
+)
 
 
 # Configuration
@@ -572,9 +574,9 @@ def calculate_jcims_multipliers(
             jcims_price_2025 = convert_currency(
                 jcims_price_series,
                 from_year=2005,
-                to_year=2025,
+                to_year=PRICE_YEAR,
                 from_currency='CAD',
-                to_currency='CAD',
+                to_currency=PRICE_CURRENCY,
                 macro_df=macro_df,
                 constant_dollars=True,
             )

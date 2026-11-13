@@ -82,6 +82,7 @@ import CIMS.data_processing.source.energy_prices.energy_price_multipliers as _en
 import CIMS.data_processing.source.cer.cer_resd_demand as _cer_resd_mod
 
 from CIMS.data_processing.utils.controls_conversions import BASE_PATH
+from CIMS.data_processing.utils.currency import write_model_csv, GDP_ACTIVITY_UNIT
 from CIMS.data_processing.utils.collapse_constant_years import collapse_constant_years
 from CIMS.data_processing.utils.drop_zero_activity import drop_zero_activity_regions
 from CIMS.data_processing.utils.feedstock_demand import build_feedstock_rows_all_regions
@@ -134,7 +135,7 @@ def _build_total_rows(light_ind: pl.DataFrame) -> pl.DataFrame:
         pl.lit('').alias('Sub_Context'),
         (pl.lit('CIMS.CAN.') + pl.col('Region') + pl.lit('.Light Industrial')).alias('Target'),
         pl.col('Source'),
-        pl.lit('M$ GDP').alias('Unit'),
+        pl.lit(GDP_ACTIVITY_UNIT).alias('Unit'),
         pl.col('Year').cast(pl.String).alias('Year'),
         pl.col('Value').cast(pl.String).alias('Value'),
     ])
@@ -228,7 +229,7 @@ def _build_feedstock_rows(light_ind: pl.DataFrame) -> pl.DataFrame:
         sector_name='Light Industrial',
         feedstock_demand=feedstock_demand,
         scale_by_region=scale_by_region,
-        scale_unit='M$ GDP',
+        scale_unit=GDP_ACTIVITY_UNIT,
     )
 
 
@@ -310,7 +311,7 @@ def main() -> pl.DataFrame:
         region_df = output.filter(pl.col('Region') == region)
         out_path = OUTPUT_DIR / f'light_industrial_{region.lower()}.csv'
         region_df = collapse_constant_years(region_df)
-        region_df.write_csv(out_path)
+        write_model_csv(region_df, out_path)
         print(f'  Wrote {len(region_df):,} rows → {out_path.name}')
 
     print(f'\n✅ Light Industrial model inputs complete')

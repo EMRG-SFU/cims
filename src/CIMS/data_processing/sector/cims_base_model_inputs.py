@@ -29,6 +29,7 @@ from CIMS.data_processing.utils.flatten_fixed_data import read_fixed_data_file
 import CIMS.data_processing.source.stats_can.pop_gdp as _pg_mod
 
 from CIMS.data_processing.utils.controls_conversions import BASE_PATH, PROJECTION_END
+from CIMS.data_processing.utils.currency import write_model_csv
 from CIMS.data_processing.utils.collapse_constant_years import collapse_constant_years
 
 # ── configuration ───────────────────────────────────────────────────────────────
@@ -147,7 +148,7 @@ def main() -> None:
         stem = f'cims_base_{suffix.lower()}'
         fixed = _flatten_fixed(stem)
         fixed_out = collapse_constant_years(fixed.select(OUTPUT_COLS))
-        fixed_out.write_csv(OUTPUT_DIR / f'{stem}.csv')
+        write_model_csv(fixed_out, OUTPUT_DIR / f'{stem}.csv')
         print(f"  {stem}: {len(fixed_out)} rows")
 
     print("\nAssembling provincial files...")
@@ -156,7 +157,7 @@ def main() -> None:
         df    = _assemble_region(region, pop_gdp)
         df    = collapse_constant_years(df)
         n_attr = len(df.filter(pl.col('Parameter') == 'attribute'))
-        df.write_csv(OUTPUT_DIR / f'{stem}.csv')
+        write_model_csv(df, OUTPUT_DIR / f'{stem}.csv')
         print(f"  {stem}: {len(df)} rows  ({n_attr} attribute)")
 
     total = len(FLATTEN_ONLY) + len(PROVINCES)

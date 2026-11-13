@@ -22,6 +22,15 @@ with app.setup(hide_code=True):
     # published source. The cer data the pipeline aligns to out to 2050 and
     # includes data like oil and gas prices and production.
     # Archive data is data used in the pipeline but not longer updated
+    #
+    # Currency (see src/CIMS/data_processing/utils/currency.py):
+    # currency_*_untagged: the dollar-year and currency assumed for template values
+    # whose unit is a bare '$' (e.g. '$' -> '2020_CAD', '$/tCO2e' -> '2020_CAD/tCO2e').
+    # currency_output_mode: "tagged" writes each monetary value in the dollar-year
+    # and currency it is labelled with, for CIMS to convert at read time;
+    # "convert" converts every monetary value to currency_output_year /
+    # currency_output_country when the model inputs are written. Both use the
+    # deflator and exchange tables in data/processed_data/deflator_exchange/.
     # -------------------------------------------------------------------------
     CONTROLS = {
         "currency_year_cims": 2025,
@@ -30,6 +39,11 @@ with app.setup(hide_code=True):
         "currency_year_cer_macro": 2017,
         "currency_year_cer_benchmark": 2022,
         "currency_country_cer_benchmark": "USD",
+        "currency_year_untagged": 2020,
+        "currency_country_untagged": "CAD",
+        "currency_output_mode": "tagged",
+        "currency_output_year": 2025,
+        "currency_output_country": "CAD",
         "cer_ef_reference_scenario": "Current Measures",
         "pipeline": {
             "data_start": 2000,
@@ -82,6 +96,11 @@ def _():
         "currency_year_cer_macro":        mo.ui.text(value=str(c["currency_year_cer_macro"]),        label="CER Macro Indicator Year"),
         "currency_year_cer_benchmark":    mo.ui.text(value=str(c["currency_year_cer_benchmark"]),    label="CER Benchmark Currency Year"),
         "currency_country_cer_benchmark": mo.ui.dropdown(options=["USD", "CAD"],                 value=c["currency_country_cer_benchmark"], label="CER Benchmark Currency Country"),
+        "currency_year_untagged":         mo.ui.text(value=str(c["currency_year_untagged"]),         label="Untagged '$' Currency Year"),
+        "currency_country_untagged":      mo.ui.text(value=c["currency_country_untagged"],           label="Untagged '$' Currency"),
+        "currency_output_mode":           mo.ui.dropdown(options=["tagged", "convert"],              value=c["currency_output_mode"], label="Currency Output Mode"),
+        "currency_output_year":           mo.ui.text(value=str(c["currency_output_year"]),           label="Output Currency Year (convert mode)"),
+        "currency_output_country":        mo.ui.text(value=c["currency_output_country"],             label="Output Currency (convert mode)"),
         "cer_ef_reference_scenario":      mo.ui.dropdown(options=["Current Measures", "Canada Net-zero"], value=c["cer_ef_reference_scenario"], label="CER EF Reference Scenario"),
     })
     params_pipeline = mo.ui.dictionary({
@@ -133,6 +152,13 @@ def _():
                 params_currency["currency_year_cer_macro"],
                 params_currency["currency_year_cer_benchmark"],
                 params_currency["currency_country_cer_benchmark"],
+            ]),
+            mo.vstack([
+                params_currency["currency_year_untagged"],
+                params_currency["currency_country_untagged"],
+                params_currency["currency_output_mode"],
+                params_currency["currency_output_year"],
+                params_currency["currency_output_country"],
             ]),
             mo.vstack([
                 params_currency["cer_ef_reference_scenario"],
@@ -214,6 +240,11 @@ def _(params_archived, params_currency, params_ldy, params_pipeline):
         "currency_year_cer_macro":        int(cv["currency_year_cer_macro"]),
         "currency_year_cer_benchmark":    int(cv["currency_year_cer_benchmark"]),
         "currency_country_cer_benchmark": cv["currency_country_cer_benchmark"],
+        "currency_year_untagged":         int(cv["currency_year_untagged"]),
+        "currency_country_untagged":      cv["currency_country_untagged"].strip().upper(),
+        "currency_output_mode":           cv["currency_output_mode"],
+        "currency_output_year":           int(cv["currency_output_year"]),
+        "currency_output_country":        cv["currency_output_country"].strip().upper(),
         "cer_ef_reference_scenario":      cv["cer_ef_reference_scenario"],
         "pipeline": {
             "data_start":     int(pv["data_start"]),

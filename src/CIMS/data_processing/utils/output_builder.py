@@ -93,6 +93,7 @@ def write_per_region_csvs(
     skip_if_all_zero: bool = False,
     collapse_years: bool = False,
     report_written: bool = False,
+    finalise_currency: bool = False,
     region_col: str = "Region",
     value_col: str = "Value",
 ) -> list[str]:
@@ -110,6 +111,10 @@ def write_per_region_csvs(
         report_written:   Return only the regions actually written (i.e.
                           excluding those skipped by skip_if_all_zero) instead
                           of every candidate region.
+        finalise_currency: Write through currency.write_model_csv, which
+                          canonicalises Unit labels and applies the
+                          control.py currency_output_* settings
+                          (model-input outputs).
         region_col:       Column to split on (default "Region").
         value_col:        Column checked by skip_if_all_zero (default "Value").
 
@@ -119,6 +124,9 @@ def write_per_region_csvs(
         where a region ends up skipped). With report_written=True, only the
         regions that were actually written.
     """
+    if finalise_currency:
+        # Imported here so calibration writers don't load currency tables/config.
+        from CIMS.data_processing.utils.currency import write_model_csv
     output_dir.mkdir(parents=True, exist_ok=True)
     regions = output[region_col].drop_nulls().unique().sort().to_list()
     written = []
@@ -131,7 +139,10 @@ def write_per_region_csvs(
         if collapse_years:
             region_df = collapse_constant_years(region_df)
         out_path = output_dir / f'{prefix}_{region.lower()}.csv'
-        region_df.write_csv(out_path)
+        if finalise_currency:
+            write_model_csv(region_df, out_path)
+        else:
+            region_df.write_csv(out_path)
         print(f'  Wrote {len(region_df):,} rows → {out_path.name}')
         written.append(region)
     return written if report_written else regions

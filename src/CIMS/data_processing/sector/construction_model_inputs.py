@@ -204,7 +204,7 @@ def main() -> pl.DataFrame:
         .select(OUTPUT_COLS)
     )
 
-    regions = write_per_region_csvs(output, OUTPUT_DIR, 'construction', collapse_years=True)
+    regions = write_per_region_csvs(output, OUTPUT_DIR, 'construction', collapse_years=True, finalise_currency=True)
 
     print(f'\n✅ Construction model inputs complete')
     print(f'   Total rows:  {len(output):,}')
