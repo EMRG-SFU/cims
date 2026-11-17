@@ -501,6 +501,37 @@ REGISTRY.register("excel_error_values", CheckSpec(
         "value directly, and re-export the CSV."
     ),
 ))
+REGISTRY.register("branch_path_missing_region", CheckSpec(
+    fn=file_errors.branch_path_missing_region,
+    phase=Phase.FILE,
+    severity=Severity.ERROR,
+    argmap={},
+    short_desc="rows have a Region that is not in their Branch path",
+    help_text=(
+        "Output: [(row_index, node, parameter, region)]\n"
+        "  Each entry is a row whose Region value is not one of the parts of its\n"
+        "  Branch (e.g. Region AB on CIMS.CAN.BC.Electricity); row_index is that\n"
+        "  row in model_df.\n\n"
+        "Reading: usually a copy-paste error from another region's rows. Correct\n"
+        "the Region column, or the Branch if the row belongs to another region."
+    ),
+))
+REGISTRY.register("branch_path_missing_sector", CheckSpec(
+    fn=file_errors.branch_path_missing_sector,
+    phase=Phase.FILE,
+    severity=Severity.ERROR,
+    argmap={},
+    short_desc="rows have a Sector that is not in their Branch path",
+    help_text=(
+        "Output: [(row_index, node, parameter, sector)]\n"
+        "  Each entry is a row whose Sector value is not one of the parts of its\n"
+        "  Branch; row_index is that row in model_df.\n\n"
+        "Reading: usually a copy-paste error from another sector's rows. Correct\n"
+        "the Sector column, or the Branch if the row belongs to another sector.\n"
+        "Nodes with a Root or Region competition type are skipped, since Sector\n"
+        "is set on their service_request rows to filter which requests are loaded."
+    ),
+))
 
 
 # ---- Warnings ----
