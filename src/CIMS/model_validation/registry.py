@@ -695,5 +695,22 @@ REGISTRY.register("market_share_total_after_base_year", CheckSpec(
         "in the list file's Interpolated column."
     ),
 ))
+REGISTRY.register("loops_aggregation_cannot_break", CheckSpec(
+    fn=graph_errors.loops_aggregation_cannot_break,
+    phase=Phase.GRAPH,
+    severity=Severity.ERROR,
+    argmap={"model": "model"},
+    short_desc="loops have no supply node or only supply nodes, so a run cannot break them",
+    help_text=(
+        "Output: [(loop, reason)]\n"
+        "  Each entry is a loop in the model graph; loop lists its nodes in order,\n"
+        "  and reason is 'no supply node' or 'only supply nodes'.\n\n"
+        "Reading: when a run aggregates quantities and emissions, it breaks each\n"
+        "loop by setting aside the loop's supply nodes and starting from one of the\n"
+        "others. A loop needs at least one supply node and at least one other node\n"
+        "for this to work. Check the service_request rows that form the loop, and\n"
+        "whether is_supply is set correctly on its nodes."
+    ),
+))
 
 # ---- Warnings ----
