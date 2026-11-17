@@ -7,6 +7,7 @@ server.watch('_book/')
 server.serve(root='_book/', port=5500)
 
 # To preview:
+# python docs/_tables/build_sectors_by_region.py
 # quarto render --profile watermark
 # uv run --with livereload python serve.py
 
