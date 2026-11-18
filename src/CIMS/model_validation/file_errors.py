@@ -590,3 +590,64 @@ def currency_table_coverage(validator):
 
     concern_desc = "currency table coverage gaps — year or currency missing from deflator/exchange tables"
     return problems, concern_desc
+
+
+EXCEL_ERROR_CODES = frozenset({
+    "#DIV/0!", "#N/A", "#VALUE!", "#REF!", "#NAME?", "#NUM!", "#NULL!", "#SPILL!", "#CALC!",
+})
+
+
+def excel_error_values(validator):
+    """
+    Identify rows whose Value is an Excel formula error (e.g. #DIV/0!, #N/A).
+
+    These appear when a sheet with a failed formula is saved as CSV. The reader keeps them
+    as text, so a numeric parameter would silently hold a string instead of a number.
+    """
+    df = validator.model_df
+    values = df[COL.value].astype("string").str.strip().str.upper()
+    flagged = df[values.isin(EXCEL_ERROR_CODES).fillna(False)]
+    errors = list(zip(flagged.index, flagged[COL.branch], flagged[COL.parameter], flagged[COL.value]))
+
+    concern_desc = "rows have an Excel formula error as their Value"
+    return errors, concern_desc
+
+
+def _branch_path_missing(validator, col, skip_competition_types=()):
+    df = validator.model_df
+    if col not in df.columns:
+        return []
+    rows = df[df[col].notna() & df[COL.branch].notna()]
+
+    if skip_competition_types:
+        comp = df[df[COL.parameter] == PARAM.competition_type]
+        comp_value = comp[COL.value].astype(str).str.strip().str.lower()
+        skip_nodes = set(comp.loc[comp_value.isin(skip_competition_types), COL.branch])
+        rows = rows[~rows[COL.branch].isin(skip_nodes)]
+
+    in_path = pd.Series([str(value).strip() in branch.split(".")
+                         for value, branch in zip(rows[col], rows[COL.branch])],
+                        index=rows.index, dtype=bool)
+    flagged = rows[~in_path]
+    return list(zip(flagged.index, flagged[COL.branch], flagged[COL.parameter], flagged[col]))
+
+
+def branch_path_missing_region(validator):
+    """
+    Identify rows whose Region is not part of their Branch path.
+
+    For example, a row on CIMS.CAN.BC.Electricity with Region AB.
+    """
+    concern_desc = "rows have a Region that is not in their Branch path"
+    return _branch_path_missing(validator, COL.region), concern_desc
+
+
+def branch_path_missing_sector(validator):
+    """
+    Identify rows whose Sector is not part of their Branch path.
+
+    Root and region nodes are skipped (identified by competition type), since Sector is set on
+    their service_request rows to load a request only when its sector is run (#512).
+    """
+    concern_desc = "rows have a Sector that is not in their Branch path"
+    return _branch_path_missing(validator, COL.sector, ("root", "region")), concern_desc

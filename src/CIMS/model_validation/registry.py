@@ -485,6 +485,53 @@ REGISTRY.register("no_structural_parent_node_exists", CheckSpec(
         "Branch name."
     ),
 ))
+REGISTRY.register("excel_error_values", CheckSpec(
+    fn=file_errors.excel_error_values,
+    phase=Phase.FILE,
+    severity=Severity.ERROR,
+    argmap={},
+    short_desc="rows have an Excel formula error (e.g. #DIV/0!, #N/A) as their Value",
+    help_text=(
+        "Output: [(row_index, node, parameter, value)]\n"
+        "  Each entry is a row whose Value is an Excel error code (#DIV/0!, #N/A,\n"
+        "  #VALUE!, #REF!, #NAME?, #NUM!, #NULL!, #SPILL!, #CALC!); row_index is\n"
+        "  that row in model_df.\n\n"
+        "Reading: the value was likely copied or exported from a spreadsheet where\n"
+        "the formula failed. Fix the formula in the source sheet, or enter the\n"
+        "value directly, and re-export the CSV."
+    ),
+))
+REGISTRY.register("branch_path_missing_region", CheckSpec(
+    fn=file_errors.branch_path_missing_region,
+    phase=Phase.FILE,
+    severity=Severity.ERROR,
+    argmap={},
+    short_desc="rows have a Region that is not in their Branch path",
+    help_text=(
+        "Output: [(row_index, node, parameter, region)]\n"
+        "  Each entry is a row whose Region value is not one of the parts of its\n"
+        "  Branch (e.g. Region AB on CIMS.CAN.BC.Electricity); row_index is that\n"
+        "  row in model_df.\n\n"
+        "Reading: usually a copy-paste error from another region's rows. Correct\n"
+        "the Region column, or the Branch if the row belongs to another region."
+    ),
+))
+REGISTRY.register("branch_path_missing_sector", CheckSpec(
+    fn=file_errors.branch_path_missing_sector,
+    phase=Phase.FILE,
+    severity=Severity.ERROR,
+    argmap={},
+    short_desc="rows have a Sector that is not in their Branch path",
+    help_text=(
+        "Output: [(row_index, node, parameter, sector)]\n"
+        "  Each entry is a row whose Sector value is not one of the parts of its\n"
+        "  Branch; row_index is that row in model_df.\n\n"
+        "Reading: usually a copy-paste error from another sector's rows. Correct\n"
+        "the Sector column, or the Branch if the row belongs to another sector.\n"
+        "Nodes with a Root or Region competition type are skipped, since Sector\n"
+        "is set on their service_request rows to filter which requests are loaded."
+    ),
+))
 
 
 # ---- Warnings ----
@@ -646,6 +693,23 @@ REGISTRY.register("market_share_total_after_base_year", CheckSpec(
         "for those years, or set lifetime to 1 in those years.\n"
         "Years without a lifetime value use the default (1), unless lifetime is\n"
         "in the list file's Interpolated column."
+    ),
+))
+REGISTRY.register("loops_aggregation_cannot_break", CheckSpec(
+    fn=graph_errors.loops_aggregation_cannot_break,
+    phase=Phase.GRAPH,
+    severity=Severity.ERROR,
+    argmap={"model": "model"},
+    short_desc="loops have no supply node or only supply nodes, so a run cannot break them",
+    help_text=(
+        "Output: [(loop, reason)]\n"
+        "  Each entry is a loop in the model graph; loop lists its nodes in order,\n"
+        "  and reason is 'no supply node' or 'only supply nodes'.\n\n"
+        "Reading: when a run aggregates quantities and emissions, it breaks each\n"
+        "loop by setting aside the loop's supply nodes and starting from one of the\n"
+        "others. A loop needs at least one supply node and at least one other node\n"
+        "for this to work. Check the service_request rows that form the loop, and\n"
+        "whether is_supply is set correctly on its nodes."
     ),
 ))
 
