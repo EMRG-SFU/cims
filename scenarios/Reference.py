@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.23.2"
+__generated_with = "0.25.0"
 app = marimo.App(width="medium")
 
 with app.setup:
@@ -24,7 +24,7 @@ def _():
     return
 
 
-@app.function(hide_code=True)
+@app.function
 def reset_model_files():
     ### Base model and standard files below are required for the model to run
     model_path = 'data/model_inputs/model'
@@ -73,8 +73,8 @@ def reset_model_files():
     ### Required model files (included in data/model_inputs/model/)
     model_req = [
         'dcc', # declining capital cost
-        'dic', # declining intangible cost (neighbour effect)
-        # 'fic', # fixed intangible cost; primarily used for calibration
+        # 'dic', # declining intangible cost (neighbour effect)
+        'fic', # fixed intangible cost; primarily used for calibration
         'market_share_limits', # use of limits should be minimised
         ]
 
@@ -214,7 +214,7 @@ def _():
         'Residential',
         'Commercial',
         'Transportation Passenger',
-        'Transportation Freight',
+        # 'Transportation Freight',
         'Waste',
         'Agriculture',
         'Forestry',
@@ -244,7 +244,7 @@ def _():
 
 
 @app.cell
-def _(model_path, update_files):
+def _(calibration_data, calibration_path, model_path, update_files):
     ### Optional model folder files (included in data/model_inputs/model/)
     model_optional = [
         'exogenous_prices',  # needed for correct calibration of historical years
@@ -252,136 +252,96 @@ def _(model_path, update_files):
         ]
 
 
-    ### Reference scenario update files (these files should always be included as the base model specification, but they can be excluded if appropriate for your scenario)
-    ref_path = 'data/model_inputs/policies/reference'
+    ### Policy files: one folder per policy under data/model_inputs/policies/
+    # (<policy>/<policy>_<region>.csv). Entries are applied in list order, so the
+    # reference policies come first, then turn-off files, then scenario files.
+    policy_path = 'data/model_inputs/policies'
+
+    ### Reference scenario policies (always included as the base model
+    # specification, but they can be excluded if appropriate for your scenario)
     ref_policies = [
     ### Economy
-        'ref_carbon_tax',
-        'ref_obps_fed',
-    ### Coal Mining
-    ### Natural Gas Production
-    ### Petroleum Crude
-    ### Mining
-    ### Electricity
-        'ref_coal_phase_out',
-        'ref_nuclear_ban',
-        'ref_nuclear_decommission',
-        'ref_clean_electricity',
-        'ref_cer',
-    ### Biodiesel
-    ### Ethanol
-    ### Hydrogen
-    ### Petroleum Refining
-    ### Industrial Minerals
-    ### Iron and Steel
-    ### Metal Smelting
-    ### Chemical Products
-    ### Pulp and Paper
-    ### Light Industrial
-    ### Residential
-        'ref_incandescent_phase_out',
-    ### Commercial
-    ### Transportation Personal
-        'ref_ldv_zev_federal', #include before Prov version
-        'ref_ldv_zev_prov',
-        'ref_renewable_fuel_content_fed', #include before Prov version
-        'ref_renewable_fuel_content_prov',
-    ### Transportation Freight
-    ### Waste
-        'ref_waste_methane_large_sites',
+    #     'carbon-tax_ref',        # federal fuel charge, BC tax (both 0 from 2025), QC cap-and-trade
+    #     'obps_federal',          # federal OBPS, May 2026 headline trajectory
+    # ### Coal Mining
+    # ### Natural Gas Production
+    # ### Petroleum Crude
+    # ### Mining
+    # ### Electricity
+    #     'coal-phase-out',
+    #     'nuclear-ban',
+    #     'nuclear-decommission',
+    #     'clean-electricity',
+    #     'cer',
+    # ### Biodiesel
+    # ### Ethanol
+    # ### Hydrogen
+    # ### Petroleum Refining
+    # ### Industrial Minerals
+    # ### Iron and Steel
+    # ### Metal Smelting
+    # ### Chemical Products
+    # ### Pulp and Paper
+    # ### Light Industrial
+    # ### Residential
+    #     'incandescent-phase-out',
+    # ### Commercial
+    # ### Transportation Personal
+    #     'ldv-zev_federal',                     # include before provincial version
+    #     'ldv-zev_provincial',
+    #     'renewable-fuel-content_federal',      # include before provincial version
+    #     'renewable-fuel-content_provincial',
+    #     # 'cfr',                               # Clean Fuel Regulations
+    # ### Transportation Freight
+    # ### Waste
+    #     'waste-methane-large-sites',
     ### Agriculture
         ]
 
 
     # These files turn off existing Reference policies starting in the first model year
     # Off files must be updated annually to reflect the last common year between a set of scenarios
-    turn_off_path = 'data/model_inputs/policies/turn off'
     turn_off_policies = [
         ### Economy
-        # 'Off_OBPS_Fed',
-        ### Coal Mining
-        ### Natural Gas Production
-        ### Petroleum Crude
-        ### Mining
-        ### Electricity
-        ### Biodiesel
-        ### Ethanol
-        ### Hydrogen
-        ### Petroleum Refining
-        ### Industrial Minerals
-        ### Iron and Steel
-        ### Metal Smelting
-        ### Chemical Products
-        ### Pulp and Paper
-        ### Light Industrial
-        ### Residential
-        ### Commercial
-        ### Transportation Personal
-        ### Transportation Freight
-        ### Waste
-        ### Agriculture
+        # 'carbon-tax_off',
+        # 'obps_federal_off',
         ]
 
 
-    ### Optional scenario update files
-    scenario_path = 'data/model_inputs/policies/net zero'    # Change this path as necessary based on current scenario
+    ### Optional scenario policies
     scenario_policies = [
         ### Economy
-        # 'NZ_carbon tax',
-        ### Coal Mining
-        ### Natural Gas Production
-        # 'NZ_natural gas',
-        ### Petroleum Crude
-        # 'NZ_petroleum crude',
-        ### Mining
-        ### Electricity
-        # 'NZ_electricity',
-        ### Biodiesel
-        ### Ethanol
-        ### Hydrogen
-        ### Petroleum Refining
-        ### Industrial Minerals
-        ### Iron and Steel
-        ### Metal Smelting
-        ### Chemical Products
-        ### Pulp and Paper
-        ### Light Industrial
-        ### Residential
-        ### Commercial
-        ### Transportation Personal
-        ### Transportation Freight
-        ### Waste
-        ### Agriculture
+        # 'carbon-tax_net-zero',   # 2026 on, 2025 CAD rising 10%/yr
         ]
 
     ### Calibration Counterfactual Files
-    calibration_path = 'data/calibration'
-    calibration_data = [
-        'agriculture',
-        'biodiesel',
-        'chemical_products',
-        'coal_mining',
-        'commercial',
-        'construction',
-        'electricity',
-        'ethanol',
-        'forestry',
-        'fuels',
-        'hydrogen',
-        'industrial_minerals',
-        'iron_and_steel',
-        'light_industrial',
-        'metal_smelting',
-        'mining',
-        'natural_gas',
-        'petroleum_crude',
-        'petroleum_refining',
-        'pulp_and_paper',
-        'residential',
-        'transportation_freight',
-        'transportation_passenger',
-        'waste'
-    ]
+    # calibration_path = 'data/calibration'
+    # calibration_data = [
+    #     'agriculture',
+    #     'biodiesel',
+    #     'chemical_products',
+    #     'coal_mining',
+    #     'commercial',
+    #     'construction',
+    #     'electricity',
+    #     'ethanol',
+    #     'forestry',
+    #     'fuels',
+    #     'hydrogen',
+    #     'industrial_minerals',
+    #     'iron_and_steel',
+    #     'light_industrial',
+    #     'metal_smelting',
+    #     'mining',
+    #     'natural_gas',
+    #     'petroleum_crude',
+    #     'petroleum_refining',
+    #     'pulp_and_paper',
+    #     'residential',
+    #     'transportation_freight',
+    #     'transportation_passenger',
+    #     'waste'
+    # ]
 
     ### Calibration Outputs (fitted FICs / lifetimes from a prior calibration pass)
     # One subfolder per sector, each with its own fitted_fics/ and fitted_lifetimes/
@@ -405,9 +365,7 @@ def _(model_path, update_files):
     # appending the list onto update_files[folder], creating it if needed.
     for _path, _files in [
         (model_path, model_optional),
-        (ref_path, ref_policies),
-        (turn_off_path, turn_off_policies),
-        (scenario_path, scenario_policies),
+        (policy_path, ref_policies + turn_off_policies + scenario_policies),
         (calibration_path, calibration_data),
         (calibration_outputs_path, calibration_outputs),
     ]:
@@ -484,7 +442,7 @@ def _(model):
 def _(model):
     #################### Show validator warnings ####################
     # change warning type as needed to view indicated nodes/techs
-    model.validator.warnings['undefined_nodes']
+    model.validator.warnings['inconsistent_tech_refs']
     return
 
 
