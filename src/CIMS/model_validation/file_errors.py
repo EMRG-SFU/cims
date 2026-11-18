@@ -648,6 +648,34 @@ def branch_path_missing_sector(validator):
 
     Root and region nodes are skipped (identified by competition type), since Sector is set on
     their service_request rows to load a request only when its sector is run (#512).
+
+    A service_request row is also accepted when its Sector is part of its Target path, or when
+    its Sector is an overlay sector: a sector whose own node sits directly under the country
+    (CIMS.<country>.<sector>) rather than inside a region. An overlay sector's rows
+    switch other sectors' requests on or off, such as the Natural Gas Market redirecting each
+    region's Natural Gas production through the national market.
+
+    TODO: declare overlay sectors explicitly (for example an "overlay" flag in
+    the sector list) instead of inferring them, and accept only service_request
+    rows tagged with a declared overlay sector.
     """
     concern_desc = "rows have a Sector that is not in their Branch path"
-    return _branch_path_missing(validator, COL.sector, ("root", "region")), concern_desc
+    flagged = _branch_path_missing(validator, COL.sector, ("root", "region"))
+    if not flagged:
+        return flagged, concern_desc
+
+    df = validator.model_df
+    national_nodes = {parts[2] for parts in (str(b).split(".") for b in df[COL.branch].dropna().unique())
+                      if len(parts) >= 3}
+
+    def _overlay_request(row_index):
+        row = df.loc[row_index]
+        if row[COL.parameter] != PARAM.service_request:
+            return False
+        sector = str(row[COL.sector]).strip()
+        target = row[COL.target]
+        if isinstance(target, str) and sector in target.split("."):
+            return True
+        return sector in national_nodes
+
+    return [entry for entry in flagged if not _overlay_request(entry[0])], concern_desc
