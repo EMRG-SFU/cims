@@ -25,7 +25,11 @@ import polars as pl
 import CIMS.data_processing.utils.flatten_fixed_data as _flatten_mod
 
 from CIMS.data_processing.utils.controls_conversions import BASE_PATH, DATA_START, PROJECTION_END, LAST_DATA_YEAR
+<<<<<<< Updated upstream
 from CIMS.data_processing.utils.currency import write_model_csv
+=======
+from CIMS.data_processing.utils.techdb_steam import drop_replaced_steam_rows
+>>>>>>> Stashed changes
 
 # ── configuration ─────────────────────────────────────────────────────────────
 FIXED_INPUT_DIR = BASE_PATH / 'raw_data/fixed_data/dic'
@@ -58,9 +62,13 @@ def main() -> None:
         total_rows = 0
         for f in output_files:
             dest = OUTPUT_DIR / f.name
-            df = pl.read_csv(f, infer_schema_length=0)
+            df = drop_replaced_steam_rows(pl.read_csv(f, infer_schema_length=0))
             total_rows += len(df)
+<<<<<<< Updated upstream
             write_model_csv(df, dest)
+=======
+            df.write_csv(dest)
+>>>>>>> Stashed changes
             print(f'  Wrote {len(df):,} rows -> {dest.name}')
 
     print(f'\nDIC model inputs complete')

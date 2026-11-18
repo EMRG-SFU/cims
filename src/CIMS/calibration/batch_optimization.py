@@ -77,7 +77,7 @@ def _():
 @app.cell
 def _():
     # Point this at the model.pkl produced by the Reference.py run for this stage
-    model_pickle_path = "results/Reference/fuel_blends.pkl"
+    model_pickle_path = "results/Reference/petroleum_refining.pkl"
     return (model_pickle_path,)
 
 
@@ -200,7 +200,7 @@ def _():
 
 @app.cell
 def _():
-    fit_kwargs_stage1 = dict()  # e.g. dict(ridge=1e-5)
+    fit_kwargs_stage1 = dict(scale_by_output=True)  # e.g. dict(ridge=1e-5)
     return (fit_kwargs_stage1,)
 
 

@@ -89,7 +89,7 @@ def _():
 def _():
     # model_pickle_path = "/path/to/your/model/here.pkl"
     # or "C:\path\to\your\model.pkl"
-    model_pickle_path = "C:/calibration/cims/results/Reference/buildings_transportation_optimized.pkl"
+    model_pickle_path = "C:/calibration/cims/results/Reference/paper_fitted.pkl"
     # model_pickle_path = "C:/_dev/data_processing_calibration/cims/results/residential/model.pkl"
     return (model_pickle_path,)
 
@@ -115,7 +115,7 @@ def _(model_pickle_path):
 
 @app.cell
 def _():
-    nodeName = "CIMS.CAN.ON.Transportation Passenger.Passenger Vehicle Motors"
+    nodeName = "CIMS.CAN.ON.Pulp and Paper.Steam"
     return (nodeName,)
 
 
@@ -156,13 +156,13 @@ def _():
 
 @app.cell
 def _(model):
-    plotRequestedQuantities.plot_requestedQuantities_line(model,"CIMS.CAN.AB.Commercial.Buildings.Shell.Transportation and Warehousing (Cold)")
+    plotRequestedQuantities.plot_requestedQuantities_line(model, "CIMS.CAN.NB.Pulp and Paper.Steam")
     return
 
 
 @app.cell
 def _(model):
-    plotMS.plot_ms_line_cims(model, "CIMS.CAN.QC.Commercial.Buildings.Shell.Transportation and Warehousing (Cold)")
+    plotMS.plot_ms_line(model, "CIMS.CAN.QC.Pulp and Paper.Steam")
     return
 
 
@@ -206,8 +206,8 @@ def _():
 
 
 @app.cell
-def _(model):
-    plotEmissions.plot_emissions_line(model, "CIMS.CAN.AB.Transportation Passenger")
+def _(model, nodeName):
+    plotEmissions.plot_emissions_line(model, nodeName)
     return
 
 

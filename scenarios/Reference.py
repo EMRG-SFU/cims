@@ -73,7 +73,7 @@ def reset_model_files():
     ### Required model files (included in data/model_inputs/model/)
     model_req = [
         'dcc', # declining capital cost
-        'dic', # declining intangible cost (neighbour effect)
+        # 'dic', # declining intangible cost (neighbour effect)
         # 'fic', # fixed intangible cost; primarily used for calibration
         'market_share_limits', # use of limits should be minimised
         ]
@@ -195,29 +195,29 @@ def _():
     # Uncomment individual sectors to calibrate one at a time
     # Must use Exogenous prices (and optional exogenous demand) file below when calibrating
     sector_list = [
-        'Coal Mining',
-        'Natural Gas', # Must run all regions due to Natural Gas Market
-        'Petroleum Crude', # Must also run 'Natural Gas' sector since shared fuel blending
+        # 'Coal Mining',
+        # 'Natural Gas', # Must run all regions due to Natural Gas Market
+        # 'Petroleum Crude', # Must also run 'Natural Gas' sector since shared fuel blending
         'Petroleum Refining',
-        'Electricity',
-        'Biodiesel',
-        'Ethanol',
-        'Hydrogen',
-        'Mining',
-        'Industrial Minerals',
-        'Iron and Steel',
-        'Metal Smelting',
-        'Chemical Products',
-        'Pulp and Paper',
-        'Light Industrial',
-        'Construction',
-        'Residential',
-        'Commercial',
-        'Transportation Passenger',
-        'Transportation Freight',
-        'Waste',
-        'Agriculture',
-        'Forestry',
+        # 'Electricity',
+        # 'Biodiesel',
+        # 'Ethanol',
+        # 'Hydrogen',
+        # 'Mining',
+        # 'Industrial Minerals',
+        # 'Iron and Steel',
+        # 'Metal Smelting',
+        # 'Chemical Products',
+        # 'Pulp and Paper',
+        # 'Light Industrial',
+        # 'Construction',
+        # 'Residential',
+        # 'Commercial',
+        # 'Transportation Passenger',
+        # 'Transportation Freight',
+        # 'Waste',
+        # 'Agriculture',
+        # 'Forestry',
     ]
     return (
         base_model,
@@ -366,7 +366,7 @@ def _(model_path, update_files):
         'electricity',
         'ethanol',
         'forestry',
-        'fuels',
+        # 'fuels',
         'hydrogen',
         'industrial_minerals',
         'iron_and_steel',
@@ -389,11 +389,16 @@ def _(model_path, update_files):
     # sectors' calibration outputs can be loaded together without overwriting each other.
     calibration_outputs_path = 'data/model_inputs/calibration_outputs'
     calibration_output_sectors = [
-        'transportation_passenger',
-        'transportation_freight',
-        'residential',
-        'commercial',
-        'fuels',
+        # 'transportation_passenger',
+        # 'transportation_freight',
+        # 'residential',
+        # 'commercial',
+        # 'fuels',
+        # 'pulp_and_paper'
+        # 'light_industrial',
+        # 'chemical_products',
+        # 'metal_smelting',
+        # 'iron_and_steel',
     ]
     calibration_outputs = [
         f'{_sector}/{_kind}'
@@ -484,7 +489,7 @@ def _(model):
 def _(model):
     #################### Show validator warnings ####################
     # change warning type as needed to view indicated nodes/techs
-    model.validator.warnings['undefined_nodes']
+    model.validator.warnings['market_share_limits_missing_class']
     return
 
 
@@ -548,7 +553,7 @@ def _(model, results_path):
     import pickle
     import gzip
 
-    with gzip.open(f"{results_path}/model.pkl", "wb") as f:
+    with gzip.open(f"{results_path}/petroleum_refining.pkl", "wb") as f:
         pickle.dump(model, f)
     return
 

@@ -43,6 +43,7 @@ from CIMS.data_processing.utils.calibration_helpers import (
 )
 from CIMS.data_processing.utils.output_builder import write_per_region_csvs
 from CIMS.data_processing.utils.mecs_steam_calibration import apply_mecs_steam
+from CIMS.data_processing.utils.techdb_steam import add_steam_market_share_targets
 
 # ── configuration ─────────────────────────────────────────────────────────────
 OUTPUT_DIR = BASE_PATH / 'calibration/chemical_products'
@@ -98,6 +99,7 @@ def main() -> pl.DataFrame:
             print(f'  Dropped {dropped_count:,} rows for regions without Chemical Products')
 
     output = filter_excluded_branches(output)
+    output = add_steam_market_share_targets(output, SECTOR_NAME)
 
     regions = write_per_region_csvs(output, OUTPUT_DIR, 'chemical_products', skip_if_all_zero=True)
 

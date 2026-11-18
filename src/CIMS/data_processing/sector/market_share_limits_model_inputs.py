@@ -22,6 +22,7 @@ from CIMS.data_processing.utils.flatten_fixed_data import read_fixed_data_folder
 
 from CIMS.data_processing.utils.controls_conversions import BASE_PATH
 from CIMS.data_processing.utils.output_builder import write_per_region_csvs
+from CIMS.data_processing.utils.techdb_steam import drop_replaced_steam_rows
 
 # ── configuration ─────────────────────────────────────────────────────────────
 FIXED_INPUT_DIR = BASE_PATH / 'raw_data/fixed_data/market_share_limits'
@@ -46,7 +47,7 @@ def main() -> pl.DataFrame:
     fixed = read_fixed_data_folder(FIXED_INPUT_DIR)
     print(f'  Rows: {len(fixed):,}')
 
-    output = fixed.cast(pl.String).select(OUTPUT_COLS)
+    output = drop_replaced_steam_rows(fixed.cast(pl.String).select(OUTPUT_COLS))
 
     regions = write_per_region_csvs(output, OUTPUT_DIR, 'market_share_limits', collapse_years=True, finalise_currency=True)
 
