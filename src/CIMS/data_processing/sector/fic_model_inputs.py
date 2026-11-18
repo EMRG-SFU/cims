@@ -26,6 +26,7 @@ from CIMS.data_processing.utils.flatten_fixed_data import read_fixed_data_file
 from CIMS.data_processing.utils.controls_conversions import BASE_PATH
 from CIMS.data_processing.utils.currency import write_model_csv
 from CIMS.data_processing.utils.collapse_constant_years import collapse_constant_years
+from CIMS.data_processing.utils.techdb_steam import drop_replaced_steam_rows
 
 # ── configuration ──────────────────────────────────────────────────────────────
 FIXED_INPUT_DIR = BASE_PATH / 'raw_data/fixed_data/fic'
@@ -63,7 +64,7 @@ def main() -> dict[str, pl.DataFrame]:
         try:
             print(f'\n{region}:')
             print('  Flattening fixed data...')
-            output = read_fixed_data_file(fixed_path).select(OUTPUT_COLS)
+            output = drop_replaced_steam_rows(read_fixed_data_file(fixed_path).select(OUTPUT_COLS))
 
             out_path = OUTPUT_DIR / f'fic_{region.lower()}.csv'
             output = collapse_constant_years(output)

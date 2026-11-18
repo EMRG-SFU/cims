@@ -74,6 +74,7 @@ import polars as pl
 
 # ── path setup ─────────────────────────────────────────────────────────────────
 from CIMS.data_processing.utils.flatten_fixed_data import read_fixed_data_folder
+from CIMS.data_processing.utils.techdb_steam import replace_steam_techs
 
 import CIMS.data_processing.source.activity.light_industrial as _light_industrial_mod
 
@@ -243,6 +244,7 @@ def main() -> pl.DataFrame:
 
     print('\nFlattening fixed structural data...')
     fixed = read_fixed_data_folder(FIXED_INPUT_DIR)
+    fixed = replace_steam_techs(fixed, 'Light Industrial')
     print(f'  Rows: {len(fixed):,}')
 
     print('Loading light industrial activity data...')

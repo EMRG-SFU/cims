@@ -195,9 +195,9 @@ def _():
     # Uncomment individual sectors to calibrate one at a time
     # Must use Exogenous prices (and optional exogenous demand) file below when calibrating
     sector_list = [
-        'Coal Mining',
-        'Natural Gas', # Must run all regions due to Natural Gas Market
-        'Petroleum Crude', # Must also run 'Natural Gas' sector since shared fuel blending
+        # 'Coal Mining',
+        # 'Natural Gas', # Must run all regions due to Natural Gas Market
+        # 'Petroleum Crude', # Must also run 'Natural Gas' sector since shared fuel blending
         'Petroleum Refining',
         'Electricity',
         'Biodiesel',
@@ -349,11 +349,16 @@ def _(calibration_data, calibration_path, model_path, update_files):
     # sectors' calibration outputs can be loaded together without overwriting each other.
     calibration_outputs_path = 'data/model_inputs/calibration_outputs'
     calibration_output_sectors = [
-        'transportation_passenger',
-        'transportation_freight',
-        'residential',
-        'commercial',
-        'fuels',
+        # 'transportation_passenger',
+        # 'transportation_freight',
+        # 'residential',
+        # 'commercial',
+        # 'fuels',
+        # 'pulp_and_paper'
+        # 'light_industrial',
+        # 'chemical_products',
+        # 'metal_smelting',
+        # 'iron_and_steel',
     ]
     calibration_outputs = [
         f'{_sector}/{_kind}'
@@ -506,7 +511,7 @@ def _(model, results_path):
     import pickle
     import gzip
 
-    with gzip.open(f"{results_path}/model.pkl", "wb") as f:
+    with gzip.open(f"{results_path}/petroleum_refining.pkl", "wb") as f:
         pickle.dump(model, f)
     return
 
