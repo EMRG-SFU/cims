@@ -381,26 +381,42 @@ def _chp_share(sector: str, region: str, fuel: str, year: int) -> float:
     return chp_share(sector, region, fuel, year)
 
 
-def _fuel_key(target: str, where: str = '') -> str:
-    """Fuel key for a calibration Target such as 'CIMS.Generic Fuels.LPG'."""
+def _fuel_key(target: str) -> str | None:
+    """Fuel key for a calibration Target such as 'CIMS.Generic Fuels.LPG', or
+    None when no steam technology burns that fuel."""
     by_name = {c: k for k, f in FUELS.items() for c in f['calib']}
-    key = by_name.get(str(target).split('.')[-1])
-    if key is None:
-        raise ValueError(f'{where}: no steam technology for calibration fuel {target!r}')
-    return key
+    return by_name.get(str(target).split('.')[-1])
 
 
 def steam_fuel_targets(calib: pd.DataFrame, sector: str, region: str) -> dict[int, dict[str, float]]:
-    """{year: {fuel key: GJ}} from the .Steam calibration_quantity_requested rows."""
+    """{year: {fuel key: GJ}} from the .Steam calibration_quantity_requested rows.
+
+    Blank and zero targets are skipped. A target for a fuel with no steam
+    technology (no entry in FUELS, e.g. Coke, Kerosene, or Black Liquor) is
+    dropped with a printed warning that gives the PJ dropped, since that steam
+    is then missing from the market shares and CHP claims built from these
+    targets. (Printed, not warnings.warn: some pipeline modules switch Python
+    warnings off at import.)
+    """
     df = calib[(calib['Branch'] == f'CIMS.CAN.{region}.{sector}.Steam')
                & (calib['Parameter'] == 'calibration_quantity_requested')]
     out: dict[int, dict[str, float]] = {}
+    dropped: dict[str, list] = {}
     for year, target, value in zip(df['Year'], df['Target'], df['Value']):
-        if pd.isna(value):
+        value = pd.to_numeric(value, errors='coerce')
+        if pd.isna(value) or value == 0:
+            continue
+        key = _fuel_key(target)
+        if key is None:
+            d = dropped.setdefault(str(target).split('.')[-1], [0.0, set()])
+            d[0] += float(value)
+            d[1].add(int(year))
             continue
         fuels = out.setdefault(int(year), {})
-        key = _fuel_key(target, f'{sector} {region} {year}')
         fuels[key] = fuels.get(key, 0.0) + float(value)
+    for fuel, (gj, years) in sorted(dropped.items()):
+        print(f'  Warning: {sector} {region}: dropped .Steam target for {fuel!r} '
+              f'(no steam technology burns it): {gj / 1e6:,.3f} PJ over {min(years)}-{max(years)}')
     return out
 
 
