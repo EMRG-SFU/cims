@@ -195,9 +195,9 @@ def _():
     # Uncomment individual sectors to calibrate one at a time
     # Must use Exogenous prices (and optional exogenous demand) file below when calibrating
     sector_list = [
-        # 'Coal Mining',
-        # 'Natural Gas', # Must run all regions due to Natural Gas Market
-        # 'Petroleum Crude', # Must also run 'Natural Gas' sector since shared fuel blending
+        'Coal Mining',
+        'Natural Gas', # Must run all regions due to Natural Gas Market
+        'Petroleum Crude', # Must also run 'Natural Gas' sector since shared fuel blending
         'Petroleum Refining',
         'Electricity',
         'Biodiesel',
@@ -214,7 +214,7 @@ def _():
         'Residential',
         'Commercial',
         'Transportation Passenger',
-        # 'Transportation Freight',
+        'Transportation Freight',
         'Waste',
         'Agriculture',
         'Forestry',
@@ -261,40 +261,40 @@ def _(calibration_data, calibration_path, model_path, update_files):
     # specification, but they can be excluded if appropriate for your scenario)
     ref_policies = [
     ### Economy
-    #     'carbon-tax_ref',        # federal fuel charge, BC tax (both 0 from 2025), QC cap-and-trade
-    #     'obps_federal',          # federal OBPS, May 2026 headline trajectory
-    # ### Coal Mining
-    # ### Natural Gas Production
-    # ### Petroleum Crude
-    # ### Mining
-    # ### Electricity
-    #     'coal-phase-out',
-    #     'nuclear-ban',
-    #     'nuclear-decommission',
-    #     'clean-electricity',
-    #     'cer',
-    # ### Biodiesel
-    # ### Ethanol
-    # ### Hydrogen
-    # ### Petroleum Refining
-    # ### Industrial Minerals
-    # ### Iron and Steel
-    # ### Metal Smelting
-    # ### Chemical Products
-    # ### Pulp and Paper
-    # ### Light Industrial
-    # ### Residential
-    #     'incandescent-phase-out',
-    # ### Commercial
-    # ### Transportation Personal
-    #     'ldv-zev_federal',                     # include before provincial version
-    #     'ldv-zev_provincial',
-    #     'renewable-fuel-content_federal',      # include before provincial version
-    #     'renewable-fuel-content_provincial',
-    #     # 'cfr',                               # Clean Fuel Regulations
-    # ### Transportation Freight
-    # ### Waste
-    #     'waste-methane-large-sites',
+        'carbon-tax_ref',        # federal fuel charge, BC tax (both 0 from 2025), QC cap-and-trade
+        'obps_federal',          # federal OBPS, May 2026 headline trajectory
+    ### Coal Mining
+    ### Natural Gas Production
+    ### Petroleum Crude
+    ### Mining
+    ### Electricity
+        'coal-phase-out',
+        'nuclear-ban',
+        'nuclear-decommission',
+        'clean-electricity',
+        'cer',
+    ### Biodiesel
+    ### Ethanol
+    ### Hydrogen
+    ### Petroleum Refining
+    ### Industrial Minerals
+    ### Iron and Steel
+    ### Metal Smelting
+    ### Chemical Products
+    ### Pulp and Paper
+    ### Light Industrial
+    ### Residential
+        'incandescent-phase-out',
+    ### Commercial
+    ### Transportation Personal
+        'ldv-zev_federal',                     # include before provincial version
+        'ldv-zev_provincial',
+        'renewable-fuel-content_federal',      # include before provincial version
+        'renewable-fuel-content_provincial',
+        # 'cfr',                               # Clean Fuel Regulations
+    ### Transportation Freight
+    ### Waste
+        'waste-methane-large-sites',
     ### Agriculture
         ]
 
@@ -349,16 +349,16 @@ def _(calibration_data, calibration_path, model_path, update_files):
     # sectors' calibration outputs can be loaded together without overwriting each other.
     calibration_outputs_path = 'data/model_inputs/calibration_outputs'
     calibration_output_sectors = [
-        # 'transportation_passenger',
-        # 'transportation_freight',
-        # 'residential',
-        # 'commercial',
-        # 'fuels',
-        # 'pulp_and_paper'
-        # 'light_industrial',
-        # 'chemical_products',
-        # 'metal_smelting',
-        # 'iron_and_steel',
+        'transportation_passenger',
+        'transportation_freight',
+        'residential',
+        'commercial',
+        'fuels',
+        'pulp_and_paper'
+        'light_industrial',
+        'chemical_products',
+        'metal_smelting',
+        'iron_and_steel',
     ]
     calibration_outputs = [
         f'{_sector}/{_kind}'
@@ -391,7 +391,7 @@ def _():
 def _():
     ### Scenario Name
     ### This will be the save location for results (i.e., results_dir/scenario_name/results_general.csv)
-    scenario_name = 'Reference'  # Set this to current scenario (e.g., "Reference", "Net Zero")
+    scenario_name = 'reference'  # Set this to current scenario (e.g., "Reference", "Net Zero")
     return (scenario_name,)
 
 
@@ -511,7 +511,7 @@ def _(model, results_path):
     import pickle
     import gzip
 
-    with gzip.open(f"{results_path}/petroleum_refining.pkl", "wb") as f:
+    with gzip.open(f"{results_path}/model.pkl", "wb") as f:
         pickle.dump(model, f)
     return
 
