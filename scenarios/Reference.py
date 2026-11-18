@@ -47,6 +47,7 @@ def reset_model_files():
         'transmission',
         'coal_mining',
         'natural_gas',
+        'natural_gas_market', # must come after natural_gas: it overrides the regional production path
         'petroleum_crude',
         'petroleum_refining',
         'electricity',
@@ -196,7 +197,9 @@ def _():
     # Must use Exogenous prices (and optional exogenous demand) file below when calibrating
     sector_list = [
         'Coal Mining',
-        'Natural Gas', # Must run all regions due to Natural Gas Market
+        'Natural Gas',
+        'Natural Gas Market', # Routes each region's production through the national market; needs 'Natural Gas' and all regions.
+                              # Off: regions supply themselves and any subset of regions can run. Prices come from Generic Fuels either way.
         'Petroleum Crude', # Must also run 'Natural Gas' sector since shared fuel blending
         'Petroleum Refining',
         'Electricity',
