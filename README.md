@@ -21,6 +21,11 @@ Contributions to CIMS are welcome, in many different forms:
 
 Any kind of contribution, whether it involves fixing a small typo, refactoring existing code, or implementing a brand new module, helps improve this project.
 
+### Naming conventions
+Name new files and folders in kebab-snake case. Use hyphens to separate words within a component, and underscores to separate components. For example, `emissions-removal_indirect-supply.md` or `results/reference_2030-check/`.
+
+Python files and identifiers are the exception. Use underscores only (for example, `revenue_recycling.py`), because Python can't import modules or reference names that contain hyphens.
+
 ## :pray: Acknowledgements
 [Brad Griffin](https://github.com/brad-griffin) and [Jillian Anderson](https://github.com/jillianderson8) are the Python project's lead researcher and lead technical developer, respectively. [Matt Sniatynski](https://github.com/matt-exmath) has provided invaluable expertise as the lead data scientist.
 
