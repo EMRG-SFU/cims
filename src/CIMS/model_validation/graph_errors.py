@@ -1,3 +1,4 @@
+from ..utils.graph.traversals import find_loops
 from ..utils.parameter import list as PARAM
 
 
@@ -28,4 +29,29 @@ def market_share_total_after_base_year(validator, model):
         concerns.extend((node, tech, ", ".join(years)) for tech, years in bad_years.items())
 
     concern_desc = "technologies have a market_share_total after the base year and a lifetime > 1"
+    return concerns, concern_desc
+
+
+def loops_aggregation_cannot_break(validator, model):
+    """
+    Identify loops that the aggregation step of a run cannot break: loops with no supply node,
+    and loops made only of supply nodes.
+
+    After each year's equilibrium, quantities and emissions are aggregated bottom-up. To break a
+    loop, loop_resolution.aggregation_resolution removes the loop's supply nodes and picks one of
+    the remaining nodes. A loop with no supply node is still a loop after that, and a loop of only
+    supply nodes leaves nothing to pick, so either one fails the run with "max() iterable argument
+    is empty" (#507).
+    """
+    supply_nodes = set(model.supply_nodes)
+
+    concerns = []
+    for loop in find_loops(model.graph):
+        n_supply = sum(node in supply_nodes for node in loop)
+        if n_supply == 0:
+            concerns.append((loop, "no supply node"))
+        elif n_supply == len(loop):
+            concerns.append((loop, "only supply nodes"))
+
+    concern_desc = "loops have no supply node or only supply nodes, so a run cannot break them"
     return concerns, concern_desc
