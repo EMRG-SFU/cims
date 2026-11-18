@@ -23,8 +23,8 @@ Number = Union[int, float]
 # leaves are always value dicts built by construction.create_value_dict() -- i.e. flat
 # dicts of scalars (context, sub_context, target, unit, year_value, param_source).
 #
-#   3 levels:  {source_branch: {ghg: {emission_type: value_dict}}}   -> _copy_3level
-#   2 levels:  {ghg: {emission_type: value_dict}}                    -> _copy_2level
+#   3 levels:  {source_branch: {ghg: {emission_type: value_dict}}}   -> _copy3
+#   2 levels:  {ghg: {emission_type: value_dict}}                    -> _copy2
 #
 # WHY NOT copy.deepcopy: profiling the Reference scenario (2026-09-10) attributed 31% of
 # total runtime to copy.deepcopy, 133M calls of it, almost all from copying these two
@@ -44,7 +44,7 @@ Number = Union[int, float]
 # ------------------------------------------------------------------------------------
 
 
-def _copy_3level(d):
+def _copy3(d):
     """Copy a {source_branch: {ghg: {emission_type: value_dict}}} structure.
 
     Drop-in replacement for copy.deepcopy on this shape -- see the note above for why it is
@@ -65,17 +65,11 @@ def _copy_3level(d):
             for sb, sbd in d.items()}
 
 
-def _copy_2level(d):
+def _copy2(d):
     """Copy a {ghg: {emission_type: value_dict}} structure.
 
-    The two-level version of _copy_3level (no source_branch level); same rationale and same
-    caveat. Used for tax_rates / removal_rates, which are keyed by GHG and emission type only.
-
-    Parameters
-    ----------
-    d : dict
-        g  / gd  -- ghg (CO2, CH4, ...) and its dict
-        et / vd  -- emission_type (Combustion, Process, Fugitive, ...) and its value dict
+    The two-level version of _copy3 (no source_branch level); same rationale and same caveat.
+    Used for tax_rates / removal_rates, which are keyed by GHG and emission type only.
 
     Returns
     -------
@@ -122,9 +116,9 @@ class EmissionsCost:
         """
         # Start by recording all the emissions from self in the result. This must be a copy,
         # not a reference: the loop below mutates the leaves in place with `+=`, so sharing
-        # them would corrupt `self`. See the module-level note on _copy_3level for why it is used
+        # them would corrupt `self`. See the module-level note on _copy3 for why it is used
         # here in place of copy.deepcopy.
-        result = EmissionsCost(_copy_3level(self.emissions_cost), num_units=self.num_units)
+        result = EmissionsCost(_copy3(self.emissions_cost), num_units=self.num_units)
 
         # Then, go through each of the emissions in other and add those to the result
         for source_branch in other.emissions_cost:
@@ -437,8 +431,11 @@ def sum_emissions_by_service(model: "CIMS.Model", emissions_param: str, node: st
     """
     child_emissions = model.get_param(param=emissions_param, node=child, year=year)
     provided_child = model.get_param(param="quantity_provided", node=child, year=year)
-    child_total_provided = provided_child.sum_provided_by_total()
-    child_provided_to_parent = provided_child.sum_provided_to_node(node)
+    # Share the child's (net) emissions across its positive requesters, by their share of the
+    # gross positive requests. A negative amount is a by-product (negative service request), and
+    # the requester of a by-product takes no emissions.
+    child_total_provided = sum(a for a in provided_child.provided_quantities.values() if a > 0)
+    child_provided_to_parent = max(provided_child.sum_provided_to_node(node), 0)
     
     if child_total_provided == 0:
         return Emissions()  # nothing to allocate
@@ -551,10 +548,14 @@ def _find_indirect_emissions_cost(model: "CIMS.Model", year: str,
     for child, req_data in services_requested.items():
         if child not in model.supply_nodes:
             req_ratio = req_data[PARAM.year_value] or model.get_parameter_default(PARAM.service_request)
+            if req_ratio <= 0:
+                # Negative request = by-product: LCC credit only, no emissions impact on the
+                # requester. The child's own output (and emissions) is reduced instead.
+                continue
             child_emissions_cost = model.get_param(PARAM.emissions_rate_cumul_cost, child, year,
                                                    dict_expected=True)
 
-            indirect_emissions_cost += child_emissions_cost * req_ratio
+            indirect_emissions_cost += child_emissions_cost * (req_ratio * _net_share(model, child, year))
 
     return indirect_emissions_cost
 
@@ -583,11 +584,15 @@ def _find_indirect_emissions(model: 'CIMS.Model', year: str, services_requested:
     indirect_emissions = Emissions()
     for child, req_data in services_requested.items():
         if child not in model.supply_nodes:
-            req_ratio = req_data[PARAM.year_value]
+            req_ratio = req_data[PARAM.year_value] or model.get_parameter_default(PARAM.service_request)
+            if req_ratio <= 0:
+                # Negative request = by-product: LCC credit only, no emissions impact on the
+                # requester. The child's own output (and emissions) is reduced instead.
+                continue
             child_emissions = model.get_param(emissions_param, child, year,
                                               dict_expected=True)
             if child_emissions is not None:
-                indirect_emissions += child_emissions * req_ratio
+                indirect_emissions += child_emissions * (req_ratio * _net_share(model, child, year))
 
     return indirect_emissions
 
@@ -685,6 +690,11 @@ def calc_competition_emissions_cost(model: 'CIMS.Model', node: str, year: str, t
                                 bio_emission_data[ghg][emission_type][PARAM.year_value] * req_val)
 
             # EMISSIONS REMOVAL child level
+            # The removal rate is taken from the child as-is and is deliberately NOT scaled by
+            # req_val. The service request to a removal (e.g. CCS) node sets how much of that
+            # service is bought, and so only determines the child's contribution to service
+            # cost. The removal rate is an effectiveness (fraction of emissions removed) that
+            # applies to this tech's emissions regardless of the quantity requested.
             if PARAM.technologies in model.graph.nodes[child_node][year]:
                 child_techs = model.graph.nodes[child_node][year][PARAM.technologies]
                 for _, tech_data in child_techs.items():
@@ -692,12 +702,13 @@ def calc_competition_emissions_cost(model: 'CIMS.Model', node: str, year: str, t
                         removal_dict = tech_data[PARAM.emissions_removal]
                         for ghg in removal_dict:
                             for emission_type in removal_dict[ghg]:
-                                removal_rates[ghg][emission_type] = \
-                                    construction.create_value_dict(
-                                        removal_dict[ghg][emission_type][PARAM.year_value])
+                                rr_val = removal_dict[ghg][emission_type][PARAM.year_value] \
+                                    or model.get_parameter_default(PARAM.emissions_removal)
+                                removal_rates.setdefault(ghg, {})[emission_type] = \
+                                    construction.create_value_dict(rr_val)
 
     # AVOIDED EMISSIONS
-    avoided_emissions = _copy_3level(gross_emissions)
+    avoided_emissions = _copy3(gross_emissions)
     for node_name in avoided_emissions:
         for ghg in avoided_emissions[node_name]:
             for emission_type in avoided_emissions[node_name][ghg]:
@@ -706,7 +717,7 @@ def calc_competition_emissions_cost(model: 'CIMS.Model', node: str, year: str, t
                     PARAM.year_value]
 
     # NEGATIVE EMISSIONS
-    negative_emissions = _copy_3level(gross_emissions)
+    negative_emissions = _copy3(gross_emissions)
     for node_name in negative_emissions:
         for ghg in negative_emissions[node_name]:
             for emission_type in negative_emissions[node_name][ghg]:
@@ -719,7 +730,7 @@ def calc_competition_emissions_cost(model: 'CIMS.Model', node: str, year: str, t
                     negative_emissions[node_name][ghg][emission_type][PARAM.year_value] = 0
 
     # NET EMISSIONS
-    net_emissions = _copy_3level(gross_emissions)
+    net_emissions = _copy3(gross_emissions)
     for node_name in net_emissions:
         for ghg in net_emissions[node_name]:
             for emission_type in net_emissions[node_name][ghg]:
@@ -727,8 +738,12 @@ def calc_competition_emissions_cost(model: 'CIMS.Model', node: str, year: str, t
                     avoided_emissions[node_name][ghg][emission_type][PARAM.year_value] + \
                     negative_emissions[node_name][ghg][emission_type][PARAM.year_value]
 
+    # EMISSIONS REMOVAL on supply requested through non-supply intermediates
+    _apply_indirect_removal(model, node, year, tech, removal_rates,
+                            avoided_emissions, negative_emissions, net_emissions)
+
     # EMISSIONS COST
-    emissions_cost = _copy_3level(net_emissions)
+    emissions_cost = _copy3(net_emissions)
     for node_name in emissions_cost:
         for ghg in emissions_cost[node_name]:
             for emission_type in emissions_cost[node_name][ghg]:
@@ -848,7 +863,7 @@ def calc_financial_emissions_cost(model: 'CIMS.Model', node: str, year: str, tec
     supply_nodes = model.supply_nodes
     tax_rates = {ghg: {em_type: construction.create_value_dict(0) for em_type in model.emission_types} for
                  ghg in model.GHGs}
-    removal_rates = _copy_2level(tax_rates)
+    removal_rates = _copy2(tax_rates)
 
     # Grab correct tax values
     if node not in supply_nodes:
@@ -926,6 +941,11 @@ def calc_financial_emissions_cost(model: 'CIMS.Model', node: str, year: str, tec
                             construction.create_value_dict(gross_bio_emission_val * req_val)
 
             # EMISSIONS REMOVAL child level
+            # The removal rate is taken from the child as-is and is deliberately NOT scaled by
+            # req_val. The service request to a removal (e.g. CCS) node sets how much of that
+            # service is bought, and so only determines the child's contribution to service
+            # cost. The removal rate is an effectiveness (fraction of emissions removed) that
+            # applies to this tech's emissions regardless of the quantity requested.
             if PARAM.technologies in model.graph.nodes[child_node][year]:
                 child_techs = model.graph.nodes[child_node][year][PARAM.technologies]
                 for _, tech_data in child_techs.items():
@@ -934,11 +954,11 @@ def calc_financial_emissions_cost(model: 'CIMS.Model', node: str, year: str, tec
                         for ghg in removal_dict:
                             for emission_type in removal_dict[ghg]:
                                 rr_val = removal_dict[ghg][emission_type][PARAM.year_value] or model.get_parameter_default(PARAM.emissions_removal)
-                                removal_rates[ghg][emission_type] = \
+                                removal_rates.setdefault(ghg, {})[emission_type] = \
                                     construction.create_value_dict(rr_val)
 
     # AVOIDED EMISSIONS
-    avoided_emissions = _copy_3level(gross_emissions)
+    avoided_emissions = _copy3(gross_emissions)
     for node_name in avoided_emissions:
         for ghg in avoided_emissions[node_name]:
             for emission_type in avoided_emissions[node_name][ghg]:
@@ -946,7 +966,7 @@ def calc_financial_emissions_cost(model: 'CIMS.Model', node: str, year: str, tec
                 avoided_emissions[node_name][ghg][emission_type][PARAM.year_value] *= em_removed
 
     # NEGATIVE EMISSIONS
-    negative_emissions = _copy_3level(gross_emissions)
+    negative_emissions = _copy3(gross_emissions)
     for node_name in negative_emissions:
         for ghg in negative_emissions[node_name]:
             for emission_type in negative_emissions[node_name][ghg]:
@@ -959,13 +979,18 @@ def calc_financial_emissions_cost(model: 'CIMS.Model', node: str, year: str, tec
                     negative_emissions[node_name][ghg][emission_type][PARAM.year_value] = 0
 
     # NET EMISSIONS
-    net_emissions = _copy_3level(gross_emissions)
+    net_emissions = _copy3(gross_emissions)
     for node_name in net_emissions:
         for ghg in net_emissions[node_name]:
             for emission_type in net_emissions[node_name][ghg]:
                 net_emissions[node_name][ghg][emission_type][PARAM.year_value] -= \
                     avoided_emissions[node_name][ghg][emission_type][PARAM.year_value] + \
                     negative_emissions[node_name][ghg][emission_type][PARAM.year_value]
+
+    # EMISSIONS REMOVAL on supply requested through non-supply intermediates
+    _apply_indirect_removal(model, node, year, tech, removal_rates,
+                            avoided_emissions, negative_emissions, net_emissions)
+
     # Save Net Emissions (Lets us do vintage-based weighting)
     model.graph.nodes[node][year][PARAM.technologies][tech][PARAM.emissions_rate_direct_net] = \
         Emissions(emissions_dict=net_emissions)
@@ -1093,3 +1118,193 @@ def _find_tax_rates(model: "CIMS.Model", node: str, year: str) -> dict[str: dict
                 continue
 
     return tax_rates
+
+
+# ------------------------------------------------------------------------------------
+# Emissions removal applied to indirectly requested supply
+#
+# A tech's removal rates (its own `emissions_removal`, or one inherited from a child node
+# whose techs carry `emissions_removal`, e.g. a CCS service node) have always been applied to
+# the emissions of supply nodes the tech requests *directly*. The helpers below extend that to
+# supply the tech reaches through non-supply intermediates (e.g. a CCS kiln requesting Heat,
+# whose boilers request Natural Gas directly or via a Methane Blend node).
+#
+# Those indirect emissions are already recorded as direct emissions at the intermediate's techs,
+# and the intermediate may serve other parents that do not capture. So the removal cannot be
+# applied at the intermediate. Instead the capturing tech records a credit on itself, keyed by
+# the original source branch:
+#
+#     avoided_indirect  = rr * fossil residual of the intermediates   (per unit of the tech)
+#     negative_indirect = rr * biogenic residual of the intermediates
+#     net_indirect      = -(avoided_indirect + negative_indirect)
+#
+# where "residual" is what an intermediate tech still emits after any removal of its own
+# (fossil: net + negative = gross - avoided; bio: bio - negative). Cumulative aggregation then
+# nets the credit against the intermediate's positive emissions, and the credit flows into the
+# emissions cost (and therefore the LCC) of the capturing tech. Because the credit is written
+# into the tech's direct net/negative rates, the same residual formula composes up the tree.
+#
+# Intermediate techs are weighted by market_share_total, as in calc_emissions_rate_cumul_cost.
+# Nodes that themselves provide removal (the CCS service nodes) are not traversed: their energy
+# emissions are already reduced by their own removal rate, as before. Supply nodes are not
+# traversed either: their emissions are already in the requester's own direct rates.
+#
+# PERFORMANCE: this runs inside every tech LCC calculation. It returns immediately for techs
+# with no active removal; otherwise the traversal memoises per-node residuals for the call
+# (shared services are reached by many paths) and accumulates plain floats into
+# {source: {ghg: {emission_type: float}}} rather than building Emissions objects, whose
+# __add__/__mul__ allocate a new nested structure on every call.
+# ------------------------------------------------------------------------------------
+
+
+def _removal_is_active(removal_rates: dict) -> bool:
+    """True if any GHG/emission type in a {ghg: {emission_type: value_dict}} has a non-zero rate."""
+    for types in removal_rates.values():
+        for vd in types.values():
+            if vd[PARAM.year_value]:
+                return True
+    return False
+
+
+def _provides_removal(model: "CIMS.Model", node: str, year: str) -> bool:
+    """True if any technology at `node` carries an `emissions_removal` parameter."""
+    techs = model.graph.nodes[node][year].get(PARAM.technologies) or {}
+    return any(PARAM.emissions_removal in tech_data for tech_data in techs.values())
+
+
+def _stored_emissions_dict(tech_data: dict, param: str) -> dict:
+    """The {source: {ghg: {type: value_dict}}} behind an Emissions rate stored on a tech, or {}."""
+    val = tech_data.get(param)
+    if isinstance(val, dict):
+        val = val.get(PARAM.year_value)
+    return val.emissions if isinstance(val, Emissions) else {}
+
+
+def _add_scaled(acc: dict, emissions_dict: dict, scale: float) -> None:
+    """acc[source][ghg][type] += value * scale, for every non-zero value-dict leaf of emissions_dict."""
+    for source, ghgs in emissions_dict.items():
+        for ghg, types in ghgs.items():
+            for emission_type, vd in types.items():
+                val = vd[PARAM.year_value]
+                if val:
+                    leaf = acc.setdefault(source, {}).setdefault(ghg, {})
+                    leaf[emission_type] = leaf.get(emission_type, 0) + val * scale
+
+
+def _add_scaled_floats(acc: dict, residuals: dict, scale: float) -> None:
+    """Same as _add_scaled, for a residuals dict whose leaves are already floats."""
+    for source, ghgs in residuals.items():
+        for ghg, types in ghgs.items():
+            for emission_type, val in types.items():
+                leaf = acc.setdefault(source, {}).setdefault(ghg, {})
+                leaf[emission_type] = leaf.get(emission_type, 0) + val * scale
+
+
+def _accumulate_indirect_residuals(model: "CIMS.Model", year: str, services_requested: dict,
+                                   scale: float, fossil: dict, bio: dict,
+                                   memo: dict, in_progress: set) -> None:
+    """
+    Add the residual (fossil, bio) emissions reachable through the non-supply, non-removal
+    children in `services_requested` into `fossil` / `bio`, multiplied by `scale`.
+    """
+    supply_nodes = model.supply_nodes
+    for child, req_data in services_requested.items():
+        if child in supply_nodes or child in in_progress:
+            continue
+        req_ratio = req_data[PARAM.year_value] or model.get_parameter_default(PARAM.service_request)
+        if req_ratio <= 0:
+            # Zero request, or a by-product (negative request): no emissions impact on the requester.
+            continue
+        child_fossil, child_bio = _node_residuals(model, child, year, memo, in_progress)
+        weight = scale * req_ratio * _net_share(model, child, year)
+        _add_scaled_floats(fossil, child_fossil, weight)
+        _add_scaled_floats(bio, child_bio, weight)
+
+
+def _net_share(model: "CIMS.Model", node: str, year: str) -> float:
+    """
+    Fraction of each positively requested unit of `node` that carries emissions: net / gross
+    provided quantity (see ProvidedQuantity.net_share). Below 1 only when some requester takes
+    `node` as a by-product (negative service request).
+    """
+    pq = model.graph.nodes[node][year].get(PARAM.provided_quantities)
+    if pq is None or pq[PARAM.year_value] is None:
+        return 1
+    return pq[PARAM.year_value].net_share()
+
+
+def _node_residuals(model: "CIMS.Model", node: str, year: str,
+                    memo: dict, in_progress: set) -> tuple[dict, dict]:
+    """
+    Residual (fossil, bio) emissions per unit of `node`, including everything reachable below it.
+
+    Results are memoised for the duration of one _apply_indirect_removal call, since shared
+    services (Machine Drive, Methane Blend, ...) are reached through many paths. `in_progress`
+    breaks request loops: a node already on the current branch contributes nothing further.
+    """
+    if node in memo:
+        return memo[node]
+
+    fossil, bio = {}, {}
+    if _provides_removal(model, node, year):
+        memo[node] = (fossil, bio)
+        return memo[node]
+
+    in_progress.add(node)
+    techs = model.graph.nodes[node][year].get(PARAM.technologies) or {}
+    if techs:
+        for tech, tech_data in techs.items():
+            ms = model.get_param(PARAM.market_share_total, node, year, tech=tech)
+            if not ms:
+                continue
+            negative = _stored_emissions_dict(tech_data, PARAM.emissions_rate_direct_negative)
+            _add_scaled(fossil, _stored_emissions_dict(tech_data, PARAM.emissions_rate_direct_net), ms)
+            _add_scaled(fossil, negative, ms)
+            _add_scaled(bio, _stored_emissions_dict(tech_data, PARAM.emissions_rate_direct_bio), ms)
+            _add_scaled(bio, negative, -ms)
+            _accumulate_indirect_residuals(model, year,
+                                           get_services_requested(model, node, year, tech=tech),
+                                           ms, fossil, bio, memo, in_progress)
+    else:
+        _accumulate_indirect_residuals(model, year, get_services_requested(model, node, year),
+                                       1.0, fossil, bio, memo, in_progress)
+    in_progress.discard(node)
+
+    memo[node] = (fossil, bio)
+    return memo[node]
+
+
+def _apply_indirect_removal(model: "CIMS.Model", node: str, year: str, tech: str,
+                            removal_rates: dict, avoided_emissions: dict,
+                            negative_emissions: dict, net_emissions: dict) -> None:
+    """
+    Apply `removal_rates` to the residual emissions of supply requested indirectly by `tech`,
+    adding the results in place to the avoided / negative / net emissions dicts
+    ({source_branch: {ghg: {emission_type: value_dict}}}). See the note above.
+    """
+    if not _removal_is_active(removal_rates):
+        return
+
+    fossil, bio = {}, {}
+    _accumulate_indirect_residuals(model, year, get_services_requested(model, node, year, tech=tech),
+                                   1.0, fossil, bio, memo={}, in_progress={node})
+
+    def _credit(residuals: dict, target: dict) -> None:
+        for source_branch, ghgs in residuals.items():
+            for ghg, types in ghgs.items():
+                ghg_rates = removal_rates.get(ghg)
+                if not ghg_rates:
+                    continue
+                for emission_type, residual in types.items():
+                    rr = ghg_rates.get(emission_type)
+                    amount = residual * ((rr[PARAM.year_value] or 0) if rr else 0)
+                    if not amount:
+                        continue
+                    for d, sign in ((target, 1), (net_emissions, -1)):
+                        leaf = d.setdefault(source_branch, {}).setdefault(ghg, {})
+                        if emission_type not in leaf:
+                            leaf[emission_type] = construction.create_value_dict(0)
+                        leaf[emission_type][PARAM.year_value] += sign * amount
+
+    _credit(fossil, avoided_emissions)
+    _credit(bio, negative_emissions)

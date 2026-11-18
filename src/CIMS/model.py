@@ -15,6 +15,7 @@ from .utils.model_description.columns_builder import build_col_list
 from .readers.helpers import collect_base_files, collect_update_files, collect_files, filter_model_data, print_file_health
 
 from . import lcc_calculation
+from . import ledger
 from . import declining_costs
 from . import stock_allocation
 from . import tax_foresight
@@ -549,6 +550,9 @@ class Model:
 
         print("\n=== Running model ===")
 
+        # Flow ledger, filled at the end of each year (see CIMS.ledger)
+        self.ledger = {}
+
         self.loops = traversals.find_loops(self.graph, warn=True)
 
         demand_nodes = graph_query.get_demand_side_nodes(self.graph)
@@ -639,6 +643,8 @@ class Model:
                 # **************
                 iteration += 1
 
+            self._warn_net_negative_provision(year)
+
             # Once we've reached an equilibrium, calculate the quantities requested by each node.
             traversals.bottom_up_traversal(self.graph,
                                             self._aggregate_requested_quantities,
@@ -661,6 +667,8 @@ class Model:
             traversals.bottom_up_traversal(self.graph,
                                             self._aggregate_distributed_supplies,
                                             year)
+
+            self.ledger[year] = ledger.build_year(self, year)
             year_timing = f" ({time.time() - year_start:.2f}s)"
             print(f"  Year {year} complete{year_timing}")
        
@@ -1247,6 +1255,30 @@ class Model:
 
     def get_parameter_default(self, parameter):
         return self.node_tech_defaults[parameter]
+
+    def _warn_net_negative_provision(self, year):
+        """
+        Warn about nodes whose by-product supply (negative service requests) exceeds the positive
+        requests made of them in `year`, checked once the year's equilibrium loop has finished.
+
+        Such a node's net provided quantity is floored at zero, so it is allocated no output and
+        the surplus by-product is dropped: it carries no quantities or emissions anywhere.
+        Always shown (not gated by show_warnings) because it means supply is being lost.
+        """
+        for node in self.graph.nodes:
+            pq_dict = self.graph.nodes[node].get(year, {}).get(PARAM.provided_quantities)
+            pq = pq_dict[PARAM.year_value] if pq_dict else None
+            if not isinstance(pq, ProvidedQuantity):
+                continue
+            amounts = pq.provided_quantities.values()
+            gross = sum(a for a in amounts if a > 0)
+            net = sum(amounts)
+            if net < -1e-9 * max(gross, 1):
+                warnings.warn(
+                    f"{year}: by-product supply to {node} exceeds demand for it "
+                    f"(positive requests {gross:.6g}, by-products {gross - net:.6g}). "
+                    f"The node's output is floored at 0 and the surplus {-net:.6g} is dropped, "
+                    f"with no quantity or emissions impact anywhere.")
 
     def get_param(self, param, node, year=None, tech=None, context=None, sub_context=None,
                   target=None, return_source=False, return_unit=False, do_calc=False,

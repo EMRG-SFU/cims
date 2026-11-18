@@ -1,0 +1,291 @@
+Timer unit: 1e-09 s
+
+Total time: 1261.58 s
+File: /home/claude/cims/src/CIMS/utils/parameter/query.py
+Function: get_param at line 37
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+    37                                           def get_param(model, param, node, year=None, tech=None, context=None, sub_context=None,
+    38                                                         target=None, return_source=False, return_unit=False, do_calc=False,
+    39                                                         check_exist=False, dict_expected=False):
+    40                                               """
+    41                                               Gets a parameter's value from the model, given a specific context (node, year, tech, context, sub-context),
+    42                                               calculating the parameter's value if needed.
+    43                                           
+    44                                               This will not re-calculate the parameter's value, but will only retrieve
+    45                                               values which are already stored in the model or obtained via inheritance, default values,
+    46                                               or estimation using the previous year's value. If return_source is True, this function will
+    47                                               also, return how this value was originally obtained (e.g. via calculation)
+    48                                           
+    49                                               Parameters
+    50                                               ----------
+    51                                               model : CIMS.Model
+    52                                                   The model containing the parameter value of interest.
+    53                                               param : str
+    54                                                   The name of the parameter whose value is being retrieved.
+    55                                               node : str
+    56                                                   The name of the node (branch notation) whose parameter you are interested in retrieving.
+    57                                               year : str
+    58                                                   The year which you are interested in. `year` must be provided for all parameters stored at
+    59                                                   the technology level, even if the parameter doesn't change year to year.
+    60                                               tech : str, optional
+    61                                                   The name of the technology you are interested in. `tech` is not required for parameters
+    62                                                   that are specified at the node level. `tech` is required to get any parameter that is
+    63                                                   stored within a technology.
+    64                                               context : str, optional
+    65                                                   Used when there is context available in the node. Analogous to the `context` column in the model description
+    66                                               sub_context : str, optional
+    67                                                   Must be used only if context is given. Analogous to the `subcontext` column in the model description
+    68                                               target : str, optional
+    69                                                   A target node name used to differentiate values for the same parameter across multiple
+    70                                                   service request lines (e.g. a node requesting services from several target nodes). Applied
+    71                                                   as a dict key lookup after `context`/`sub_context`. Can be combined with `context` for
+    72                                                   chained lookups, or used alone as an alternative to `context` when the dict keys are
+    73                                                   target node names rather than model-description context values.
+    74                                               return_source : bool, default=False
+    75                                                   Whether to return the method by which this value was originally obtained.
+    76                                               do_calc : bool
+    77                                                   applies calculation formula to calculate the parameter
+    78                                               check_exist : bool, default=False
+    79                                                   Whether to check that the parameter exists as is given the context (without
+    80                                                   calculation, inheritance, or checking past years)
+    81                                               dict_expected : bool, default=False
+    82                                                   Used to disable the warning get_param is returning a dict. Get_param should normally return a single value
+    83                                                   (float, str, etc.). If the user knows it expects a dict, then this flag is used.
+    84                                           
+    85                                               Returns
+    86                                               -------
+    87                                               float
+    88                                                   The value of the specified `param` at `node`, given the context provided by `year` and
+    89                                                   `tech`.
+    90                                               str
+    91                                                   If return_source is `True`, will return a string indicating how the parameter's value
+    92                                                   was originally obtained. Can be one of {model, initialization, inheritance, calculation,
+    93                                                   default, or previous_year}.
+    94                                               """
+    95  49991004 7439525461.0    148.8      0.6      val = None
+    96  49991004 5662531974.0    113.3      0.4      param_source = None
+    97  49991004 4626889428.0     92.6      0.4      is_exogenous = None
+    98                                           
+    99                                               # Get Parameter from Description
+   100                                               # ******************************
+   101                                               # If the parameter's value is in the model description for that node & year (if the year has
+   102                                               # been defined), use it.
+   103  49991004     1.07e+10    213.6      0.8      data = model.graph._node[node]  # _node is the dict backing graph.nodes
+   104  49991004 5244404996.0    104.9      0.4      if year:
+   105  49629555 7514140611.0    151.4      0.6          data = data[year]
+   106  49629555 5575055412.0    112.3      0.4          if tech:  # assumption: any tech node always requires a year
+   107  36713489 8212771042.0    223.7      0.7              data = data[PARAM.technologies][tech]
+   108                                           
+   109                                               # Val can be the final return result (float, string, etc) or a dict, check for other params
+   110  49991004 8908210514.0    178.2      0.7      if param in data:
+   111  33605890 6336288599.0    188.5      0.5          val = data[param]
+   112  33605890 6320803479.0    188.1      0.5          if isinstance(val, dict):
+   113  31846101 3505067969.0    110.1      0.3              if context:
+   114   2722878  256019722.0     94.0      0.0                  try:
+   115   2722878  586926209.0    215.6      0.0                      val = val[context]
+   116   1960198  207621266.0    105.9      0.0                      if sub_context:
+   117   1958680  196447498.0    100.3      0.0                          try:
+   118   1958680  430108834.0    219.6      0.0                              val = val[sub_context]
+   119    190670   32727290.0    171.6      0.0                          except KeyError:
+   120    190670   40683447.0    213.4      0.0                              val = None
+   121    762680  121788501.0    159.7      0.0                  except KeyError:
+   122    762680  142298876.0    186.6      0.0                      val = None
+   123  31846101 3434886215.0    107.9      0.3              if target and isinstance(val, dict):
+   124   3595410  377266968.0    104.9      0.0                  try:
+   125   3595410 1024421860.0    284.9      0.1                      val = val[target]
+   126     13202    3289490.0    249.2      0.0                  except KeyError:
+   127     13202    3475622.0    263.3      0.0                      val = None
+   128  31846101 6597025539.0    207.2      0.5              if not context and not target and None in val:
+   129                                                           val = val[None]
+   130                                           
+   131                                               # Grab the year_value in the dictionary if exists
+   132  49991004 4588814892.0     91.8      0.4      unit = None
+   133  49991004     1.24e+10    247.9      1.0      if isinstance(val, dict) and (PARAM.year_value in val):
+   134  30224671 4579994244.0    151.5      0.4          param_source = val[PARAM.param_source]
+   135  30224671 6934361368.0    229.4      0.5          unit = val.get(PARAM.unit)
+   136  30224671 3967287492.0    131.3      0.3          is_exogenous = param_source in ['model', 'initialization']
+   137  30224671 5869137380.0    194.2      0.5          val = val[PARAM.year_value]
+   138                                           
+   139                                               # Raise warning if user isn't using get_param correctly
+   140  49991004 9632729593.0    192.7      0.8      if isinstance(val, dict) and not dict_expected:
+   141                                                   warning_message = \
+   142                                                       f"get_param() is returning a `dict`, considering using more parameters in get_param().\
+   143                                                           \nParameter: {param if param else ''}\
+   144                                                           \nNode: {node if node else ''}\
+   145                                                           \nYear: {year if year else ''}\
+   146                                                           \nContext: {context if context else ''}\
+   147                                                           \nSub-context: {sub_context if sub_context else ''}\
+   148                                                           \nTarget: {target if target else ''}\
+   149                                                           \nTech: {tech if tech else ''}"
+   150                                           
+   151                                                   warnings.warn(warning_message)
+   152                                           
+   153  49991004 5562891710.0    111.3      0.4      if val is not None and (not do_calc or is_exogenous):
+   154  29794566     1.52e+10    510.1      1.2          return _return_val(val, param_source, unit, return_source, return_unit)
+   155                                           
+   156                                               # If check_exist is True, raise an Exception if val has not yet been returned, which means
+   157                                               # the value at the current context could not be found as is.
+   158  20196438 2057861184.0    101.9      0.2      if check_exist:
+   159    523848  241770199.0    461.5      0.0          raise Exception
+   160                                           
+   161  19672590 1888028072.0     96.0      0.1      param_source = None
+   162                                               # Calculate Parameter Value
+   163                                               # ******************************
+   164                                               # If there is a calculation for the parameter & the arguments for that calculation are present
+   165                                               # in the model description for that node & year, calculate the parameter value using this
+   166                                               # calculation.
+   167  19672590 2273795096.0    115.6      0.2      if do_calc and (param in calculation_directory):
+   168   4406064  652542050.0    148.1      0.1          param_calculator = calculation_directory[param]
+   169   4406064     7.78e+11 176549.9     61.7          val = param_calculator(model, node, year, tech)
+   170   4406064  507828096.0    115.3      0.0          param_source = 'calculation'
+   171                                           
+   172                                               # Inherit Parameter Value
+   173                                               # ******************************
+   174                                               # If the value has been defined at a structural parent node for that year, use that value.
+   175  19672590 3628252542.0    184.4      0.3      if (param_source is None) and (param in model.inheritable_params):
+   176   1213911  139421113.0    114.9      0.0          if tech:
+   177    716566   77284818.0    107.9      0.0              try:
+   178   1433132 7400768993.0   5164.1      0.6                  val, source = model.get_param(param, node, year=year, context=context,
+   179    716566   83789275.0    116.9      0.0                                                sub_context=sub_context, target=target,
+   180    716566   73546918.0    102.6      0.0                                                return_source=True)
+   181    716566  117826206.0    164.4      0.0                  assert (source in ['inheritance', 'model', 'default'])
+   182    716566   75109799.0    104.8      0.0                  assert (val is not None)
+   183    716566   94091099.0    131.3      0.0                  param_source = source
+   184                                                       except AssertionError:
+   185                                                           pass
+   186                                                   else:
+   187                                                       # If the value has been defined at a structural ancestor, it should be here with
+   188                                                       # param_source == 'inheritance'
+   189    497345   52668194.0    105.9      0.0              try:
+   190    497345  272152046.0    547.2      0.0                  val = model.graph._node[node][year][param]
+   191     13202    1849917.0    140.1      0.0                  if context:
+   192                                                               val = val[context]
+   193                                                               if sub_context:
+   194                                                                   val = val[sub_context]
+   195     13202    2782203.0    210.7      0.0                  if target and isinstance(val, dict):
+   196     13202    4824943.0    365.5      0.0                      val = val[target]
+   197                                                           if val[PARAM.param_source] == 'inheritance':
+   198                                                               param_source = 'inheritance'
+   199    497345   89284768.0    179.5      0.0              except KeyError:
+   200    497345   86664507.0    174.3      0.0                  pass
+   201                                           
+   202                                               # Use a Default Parameter Value
+   203                                               # ******************************
+   204                                               # If there is a default value defined, use this value
+   205  19672590 1862496624.0     94.7      0.1      if param_source is None:
+   206  14549960 2554477956.0    175.6      0.2          if param in model.node_tech_defaults:
+   207   6170001 2676999545.0    433.9      0.2              val = model.get_parameter_default(param)
+   208   6170001  539504118.0     87.4      0.0              param_source = 'default'
+   209                                           
+   210                                               # Use Last Year's Value
+   211                                               # ******************************
+   212                                               # Otherwise, use the value from the previous year. (If no base year value, throw an error)
+   213  19672590 1863424192.0     94.7      0.1      if param_source is None:
+   214   8379959  846182573.0    101.0      0.1          if year is not None:
+   215   8379959 3300431132.0    393.8      0.3              prev_year = str(int(year) - model.step)
+   216   8379959 2140818310.0    255.5      0.2              if int(prev_year) >= model.base_year:
+   217  13817032     2.71e+11  19617.8     21.5                  val = model.get_param(param, node,
+   218   6908516  552150957.0     79.9      0.0                                        year=prev_year,
+   219   6908516  551359334.0     79.8      0.0                                        context=context,
+   220   6908516  545820486.0     79.0      0.0                                        sub_context=sub_context,
+   221   6908516  537907267.0     77.9      0.0                                        target=target,
+   222   6908516  539372943.0     78.1      0.0                                        tech=tech,
+   223   6908516  496399725.0     71.9      0.0                                        dict_expected=dict_expected)
+   224   6908516  718460002.0    104.0      0.1                  param_source = 'previous_year'
+   225                                                       else:
+   226   1471443  155993387.0    106.0      0.0                  val = None
+   227   1471443  185090360.0    125.8      0.0                  param_source = None
+   228                                                   else:
+   229                                                       val = None
+   230                                                       param_source = None
+   231                                           
+   232  19672590     1.05e+10    535.7      0.8      return _return_val(val, param_source, unit, return_source, return_unit)
+
+Total time: 1500.18 s
+File: /home/claude/cims/src/CIMS/model.py
+Function: Model.get_param at line 1251
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+  1251                                               def get_param(self, param, node, year=None, tech=None, context=None, sub_context=None,
+  1252                                                             target=None, return_source=False, return_unit=False, do_calc=False,
+  1253                                                             check_exist=False, dict_expected=False):
+  1254                                                   """
+  1255                                                   Gets a parameter's value from the model, given a specific context (node,
+  1256                                                   year, tech, context, sub-context), calculating the parameter's value if
+  1257                                                   needed.
+  1258                                           
+  1259                                                   This will not re-calculate the parameter's value, but will only retrieve
+  1260                                                   values which are already stored in the model or obtained via
+  1261                                                   inheritance, default values, or estimation using the previous
+  1262                                                   year's value. If return_source is True, this function will also,
+  1263                                                   return how this value was originally obtained (e.g. via calculation)
+  1264                                           
+  1265                                                   Parameters
+  1266                                                   ----------
+  1267                                                   param : str
+  1268                                                       The name of the parameter whose value is being retrieved.
+  1269                                                   node : str
+  1270                                                       The name of the node (branch format) whose parameter you are
+  1271                                                       interested in retrieving.
+  1272                                                   year : str, optional
+  1273                                                       The year which you are interested in. `year` is not required
+  1274                                                       for parameters specified at the node level and which by definition
+  1275                                                       cannot change year to year (e.g. competition type).
+  1276                                                   tech : str, optional
+  1277                                                       The name of the technology you are interested in. `tech` is not
+  1278                                                       required for parameters that are specified at the node level.
+  1279                                                       `tech` is required to get any parameter that is stored within a
+  1280                                                       technology.
+  1281                                                   context : str, optional
+  1282                                                       Used when there is context available in the node. Analogous to the
+  1283                                                       `context` column in the model description
+  1284                                                   sub_context : str, optional
+  1285                                                       Must be used only if context is given. Analogous to the
+  1286                                                       `sub_context` column in the model description
+  1287                                                   target : str, optional
+  1288                                                       A target node name used to differentiate values for the same
+  1289                                                       parameter across multiple service request lines. Applied as a dict
+  1290                                                       key lookup after `context`/`sub_context`.
+  1291                                                   return_source : bool, default=False
+  1292                                                       Whether or not to return the method by which this value was
+  1293                                                       originally obtained.
+  1294                                                   do_calc : bool, default=False
+  1295                                                       If False, the function will only retrieve the value using the
+  1296                                                       current value in the model, inheritance, default, or the previous
+  1297                                                       year's value. It will _not_ calculate the parameter value. If True,
+  1298                                                       calculation is allowed.
+  1299                                                   check_exist : bool, default=False
+  1300                                                       Whether or not to check that the parameter exists as is given the
+  1301                                                       context (without calculation, inheritance, or checking past years)
+  1302                                                   dict_expected : bool, default=False
+  1303                                                       Used to disable the warning get_param is returning a dict. Get_param
+  1304                                                       should normally return a single value (float, str, etc.). If the
+  1305                                                       user knows it expects a dict, then this flag is used.
+  1306                                           
+  1307                                                   Returns
+  1308                                                   -------
+  1309                                                   any :
+  1310                                                       The value of the specified `param` at `node`, given the provided
+  1311                                                       `year` and `tech`.
+  1312                                                   str :
+  1313                                                       If return_source is `True`, returns a string indicating how the
+  1314                                                       parameter's value was originally obtained {model, initialization,
+  1315                                                       inheritance, calculation, default, or previous_year}.
+  1316                                                   """
+  1317                                           
+  1318  99974008     1.46e+12  14576.8     97.1          param_val = param_query.get_param(self, param, node, year,
+  1319  49987004 4679224772.0     93.6      0.3                                      tech=tech,
+  1320  49987004 4471468213.0     89.5      0.3                                      context=context,
+  1321  49987004 4335876461.0     86.7      0.3                                      sub_context=sub_context,
+  1322  49987004 4275910584.0     85.5      0.3                                      target=target,
+  1323  49987004 4251940332.0     85.1      0.3                                      return_source=return_source,
+  1324  49987004 4213503163.0     84.3      0.3                                      return_unit=return_unit,
+  1325  49987004 4174483594.0     83.5      0.3                                      do_calc=do_calc,
+  1326  49987004 4174141524.0     83.5      0.3                                      check_exist=check_exist,
+  1327  49987004 3871422656.0     77.4      0.3                                      dict_expected=dict_expected)
+  1328                                           
+  1329  49463156 4427695461.0     89.5      0.3          return param_val
+

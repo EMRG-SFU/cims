@@ -470,6 +470,18 @@ def _(model, results_path):
 
 @app.cell
 def _(model, results_path):
+    #################### Export Flow Ledger ####################
+    # Physical flows and direct emissions of every node/tech, for config-driven
+    # reporting (RESD, NIR). Writes results_flows.csv and results_flows_emissions.csv.
+    flows_df, flow_emissions_df = CIMS.log_ledger(
+       model=model,
+       flows_file=f'{results_path}/results_flows.csv',
+    )
+    return
+
+
+@app.cell
+def _(model, results_path):
     import pickle
     import gzip
 

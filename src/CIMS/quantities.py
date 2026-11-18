@@ -29,6 +29,22 @@ class ProvidedQuantity:
         total: Number = sum(self.provided_quantities.values())
         return total if total > 0 else 0
 
+    def net_share(self) -> Number:
+        """
+        Return net provided / gross positive provided, in [0, 1].
+
+        Negative provided quantities come from negative service requests (a requester
+        producing this service as a by-product). They reduce this node's net output, and so its
+        emissions, but the requester itself takes no quantity or emissions impact. The reduction
+        is instead shared across the positive requesters: each one is attributed
+        `net_share()` of the per-unit emissions for every unit it requests, mirroring how
+        `calculate_proportion` attributes quantities. Returns 1 when nothing is requested.
+        """
+        gross = sum(a for a in self.provided_quantities.values() if a > 0)
+        if gross <= 0:
+            return 1
+        return self.sum_provided_by_total() / gross
+
     def sum_provided_to_node(self, node: str) -> Number:
         """Return the total provided amount to a node across all technologies."""
         total = 0

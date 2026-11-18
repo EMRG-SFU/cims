@@ -159,6 +159,15 @@ def _find_cumulative_rate_via_request_provide_edge(model, agg_info, year, cumula
     emission_rates = base_emissions_class()
 
     req_ratio = model.get_param(PARAM.service_request, parent_node, year, tech=parent_tech, target=child_node)
+    if not req_ratio or req_ratio < 0:
+        # A negative request is a by-product (e.g. cogen electricity). It earns the parent an LCC
+        # credit but has no emissions impact on the parent, so nothing flows across this edge.
+        # The by-product instead reduces the child's net output; that reduction reaches the
+        # child's positive requesters through the net share below.
+        return emission_rates
+    child_pq = model.get_param(PARAM.provided_quantities, child_node, year)
+    if child_pq is not None:
+        req_ratio = req_ratio * child_pq.net_share()
     # If the child produces emissions (e.g. requests supply with emissions), we
     # multiply the child's direct emission rate by the service_request ratio.
     direct_emission_rate_param = cumulative_rate_param.replace('cumul_', 'direct_')

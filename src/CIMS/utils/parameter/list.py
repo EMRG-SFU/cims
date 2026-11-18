@@ -120,6 +120,11 @@ quantity_aggregate = "quantity_aggregate"
 # ==========================================
 # Emissions
 # ==========================================
+carbon_content = "carbon_content"
+carbon_content_biomass = "carbon_content_biomass"
+# TODO: rename `emissions` -> `emission_factor` and `emissions_biomass` -> `emission_factor_biomass`
+# (model inputs, defaults and code). They are emission factors charged to whoever uses a
+# supply node, not emissions; see tech_data/design/reporting-accounting.md, section 6.
 emissions = "emissions"
 emissions_biomass = "emissions_biomass"
 emissions_gwp = "emissions_gwp" 

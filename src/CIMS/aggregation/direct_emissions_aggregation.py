@@ -15,8 +15,8 @@ def _abstract_direct_emission_aggregation(base_emission_class, model, graph, nod
             total_ms = model.get_param(PARAM.market_share_total, node, year, tech=tech)
             direct = model.get_param(rate_param, node, year, tech=tech)
             if direct is not None:
-                total_direct = direct * provided_quantities * total_ms
-                node_total += total_direct
+                tech_total = direct * provided_quantities * total_ms
+                node_total += tech_total
             value_dict = create_value_dict(tech_total)
             graph.nodes[node][year][PARAM.technologies][tech][total_param] = value_dict
     value_dict = create_value_dict(node_total)

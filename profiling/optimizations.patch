@@ -1,0 +1,133 @@
+--- cims/src/CIMS/emissions.py	2026-07-24 21:29:43.000000000 +0000
++++ cims_opt/src/CIMS/emissions.py	2026-09-10 05:12:11.426679183 +0000
+@@ -15,6 +15,18 @@
+ from typing import Dict, Union
+ Number = Union[int, float]
+ 
++
++def _copy3(d):
++    """Fast replacement for copy.deepcopy on {branch: {ghg: {em_type: value_dict}}}."""
++    return {a: {b: {c: dict(vd) for c, vd in bd.items()} for b, bd in ad.items()}
++            for a, ad in d.items()}
++
++
++def _copy2(d):
++    """Fast replacement for copy.deepcopy on {ghg: {em_type: value_dict}}."""
++    return {a: {b: dict(vd) for b, vd in ad.items()} for a, ad in d.items()}
++
++
+ class EmissionsCost:
+     """
+     Class for storing the emission cost of a node.
+@@ -52,7 +64,11 @@
+         EmissionsCost
+         """
+         # Start by recording all the emissions from self in the result
+-        result = copy.deepcopy(self)
++        result = EmissionsCost(
++            {sb: {g: {et: dict(vd) for et, vd in gd.items()}
++                  for g, gd in sbd.items()}
++             for sb, sbd in self.emissions_cost.items()},
++            num_units=self.num_units)
+ 
+         # Then, go through each of the emissions in other and add those to the result
+         for source_branch in other.emissions_cost:
+@@ -625,7 +641,7 @@
+                                         removal_dict[ghg][emission_type][PARAM.year_value])
+ 
+     # AVOIDED EMISSIONS
+-    avoided_emissions = copy.deepcopy(gross_emissions)
++    avoided_emissions = _copy3(gross_emissions)
+     for node_name in avoided_emissions:
+         for ghg in avoided_emissions[node_name]:
+             for emission_type in avoided_emissions[node_name][ghg]:
+@@ -634,7 +650,7 @@
+                     PARAM.year_value]
+ 
+     # NEGATIVE EMISSIONS
+-    negative_emissions = copy.deepcopy(gross_emissions)
++    negative_emissions = _copy3(gross_emissions)
+     for node_name in negative_emissions:
+         for ghg in negative_emissions[node_name]:
+             for emission_type in negative_emissions[node_name][ghg]:
+@@ -647,7 +663,7 @@
+                     negative_emissions[node_name][ghg][emission_type][PARAM.year_value] = 0
+ 
+     # NET EMISSIONS
+-    net_emissions = copy.deepcopy(gross_emissions)
++    net_emissions = _copy3(gross_emissions)
+     for node_name in net_emissions:
+         for ghg in net_emissions[node_name]:
+             for emission_type in net_emissions[node_name][ghg]:
+@@ -656,7 +672,7 @@
+                     negative_emissions[node_name][ghg][emission_type][PARAM.year_value]
+ 
+     # EMISSIONS COST
+-    emissions_cost = copy.deepcopy(net_emissions)
++    emissions_cost = _copy3(net_emissions)
+     for node_name in emissions_cost:
+         for ghg in emissions_cost[node_name]:
+             for emission_type in emissions_cost[node_name][ghg]:
+@@ -776,7 +792,7 @@
+     supply_nodes = model.supply_nodes
+     tax_rates = {ghg: {em_type: construction.create_value_dict(0) for em_type in model.emission_types} for
+                  ghg in model.GHGs}
+-    removal_rates = copy.deepcopy(tax_rates)
++    removal_rates = _copy2(tax_rates)
+ 
+     # Grab correct tax values
+     if node not in supply_nodes:
+@@ -866,7 +882,7 @@
+                                     construction.create_value_dict(rr_val)
+ 
+     # AVOIDED EMISSIONS
+-    avoided_emissions = copy.deepcopy(gross_emissions)
++    avoided_emissions = _copy3(gross_emissions)
+     for node_name in avoided_emissions:
+         for ghg in avoided_emissions[node_name]:
+             for emission_type in avoided_emissions[node_name][ghg]:
+@@ -874,7 +890,7 @@
+                 avoided_emissions[node_name][ghg][emission_type][PARAM.year_value] *= em_removed
+ 
+     # NEGATIVE EMISSIONS
+-    negative_emissions = copy.deepcopy(gross_emissions)
++    negative_emissions = _copy3(gross_emissions)
+     for node_name in negative_emissions:
+         for ghg in negative_emissions[node_name]:
+             for emission_type in negative_emissions[node_name][ghg]:
+@@ -887,7 +903,7 @@
+                     negative_emissions[node_name][ghg][emission_type][PARAM.year_value] = 0
+ 
+     # NET EMISSIONS
+-    net_emissions = copy.deepcopy(gross_emissions)
++    net_emissions = _copy3(gross_emissions)
+     for node_name in net_emissions:
+         for ghg in net_emissions[node_name]:
+             for emission_type in net_emissions[node_name][ghg]:
+--- cims/src/CIMS/stock_allocation/market_share_limits.py	2026-07-24 21:29:43.000000000 +0000
++++ cims_opt/src/CIMS/stock_allocation/market_share_limits.py	2026-09-10 05:12:17.153072865 +0000
+@@ -171,9 +171,9 @@
+         min_ms, max_ms = min_max_limits[ms_class]
+         proposed_ms = ms_class_adjusted_nms[ms_class]
+ 
+-        if (not numpy.isclose(proposed_ms, min_ms)) and (proposed_ms < min_ms):
++        if (not (abs(proposed_ms - min_ms) <= 1e-8 + 1e-5 * abs(min_ms))) and (proposed_ms < min_ms):
+             return False
+-        if (not numpy.isclose(proposed_ms, max_ms)) and (proposed_ms > max_ms):
++        if (not (abs(proposed_ms - max_ms) <= 1e-8 + 1e-5 * abs(max_ms))) and (proposed_ms > max_ms):
+             return False
+         
+     return True
+@@ -334,10 +334,10 @@
+         min_nms, max_nms = min_max_limits[tech]
+         proposed_nms = new_market_shares[tech]
+ 
+-        if (not numpy.isclose( proposed_nms , min_nms)) and (proposed_nms < min_nms):
++        if (not (abs(proposed_nms - min_nms) <= 1e-8 + 1e-5 * abs(min_nms))) and (proposed_nms < min_nms):
+             return False
+ 
+-        if (not numpy.isclose( proposed_nms , max_nms)) and (proposed_nms > max_nms):
++        if (not (abs(proposed_nms - max_nms) <= 1e-8 + 1e-5 * abs(max_nms))) and (proposed_nms > max_nms):
+             return False
+ 
+     return True
