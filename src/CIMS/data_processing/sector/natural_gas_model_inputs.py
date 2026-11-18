@@ -19,8 +19,12 @@ There are three distinct file types produced:
    multiplier_price rows are still added dynamically here (below), since
    energy_price_multipliers.py already computes them for all 13 regions.
 
-3. Market/pass-through files (CAN, RoW) — all rows come from fixed data
-   only, passed through unchanged.
+3. Pass-through file (RoW) — all rows come from fixed data only, passed
+   through unchanged.
+
+4. Market file (natural_gas_market/natural_gas_market_can.csv) — the
+   national Natural Gas Market, as its own optional sector,
+   'Natural Gas Market'. See "Natural Gas Market switch" below.
 
 Sources
 -------
@@ -60,8 +64,37 @@ Fixed structural parameters
     service_request rows (Wells per 1000m3) exist in the fixed data with
     region-specific values and are retained unchanged.
 
-    CAN file (natural_gas_CAN.csv) and RoW file (natural_gas_RoW.csv) are
-    fully static and pass through unchanged.
+    The RoW file (natural_gas_RoW.csv) is fully static and passes through
+    unchanged. The CAN file (natural_gas_CAN.csv) holds the market, which
+    moves to its own sector (below).
+
+Natural Gas Market switch
+    The fixed data routes each region's production through the national
+    market: CIMS.CAN.{r}.Natural Gas.Production requests
+    CIMS.CAN.Natural Gas Market (1.0), and the market's Supply,
+    Transmission, and Distribution nodes split the national total back
+    across the regions by fixed shares. The model's sector filter can only
+    add rows for a sector that is turned on, so the switch works like this:
+
+    - Regional files hold the market-off path: Production requests its own
+      region's Supply, Transmission, and Distribution directly (1.0 each).
+      Each region then produces what its own region node requests.
+    - The market file holds the market and, for every region, overrides
+      that path: Production requests the market (1.0) and its own three
+      nodes at 0. All its rows carry Sector 'Natural Gas Market', so they
+      load only when that sector is in the notebook's sector_list.
+    - The market file must load after the natural_gas files: list
+      'natural_gas_market' after 'natural_gas' in the notebook's sector_req.
+      service_request rows replace earlier rows with the same Target.
+    - The market's Supply shares come from the regions' own production
+      requests (CIMS.CAN.{r} -> CIMS.CAN.{r}.Natural Gas), as each region's
+      share of the national total in each year, replacing the JCIMS shares.
+      With the market on, each region then supplies what it requests, as
+      it does with the market off. Transmission and Distribution keep their
+      fixed-data shares.
+    - With the market off, consumers still pay the CIMS.Generic Fuels.Natural
+      Gas price (a Supply - Fixed Price node in fuels). The market never set
+      that price; it only redistributes production between regions.
 
 Activity data  (from gas_production.py, Region/Variable/Unit/Source/Year/Value format)
     Variable mappings:
@@ -97,7 +130,7 @@ Output order — provincial files (AB, BC, SK)
 4. service_request  — extraction splits, Processing, LNG (from gas_production)
 5. rest of fixed data (service_provide null rows and drilling intensity rows retained)
 
-Output order — secondary region, CAN, and RoW files
+Output order — secondary region and RoW files
 -----------------------------------------------------
 1. fixed data pass-through (secondary regions already include their
    region-unique service_request rows, baked in from jcims)
@@ -126,6 +159,13 @@ from CIMS.data_processing.utils.feedstock_demand import build_feedstock_rows_all
 # ── configuration ──────────────────────────────────────────────────────────────
 FIXED_INPUT_DIR = BASE_PATH / 'raw_data/fixed_data/natural_gas'
 OUTPUT_DIR      = BASE_PATH / 'model_inputs/model/natural_gas'
+MARKET_OUTPUT_DIR = BASE_PATH / 'model_inputs/model/natural_gas_market'
+
+# The national market, an optional sector (see "Natural Gas Market switch")
+MARKET_SECTOR = 'Natural Gas Market'
+MARKET_BRANCH = 'CIMS.CAN.Natural Gas Market'
+MARKET_REGION = 'CAN'
+PRODUCTION_STAGES = ['Supply', 'Transmission', 'Distribution']
 
 OUTPUT_COLS = [
     'Branch', 'Type', 'Region', 'Sector', 'Service', 'Technology',
@@ -374,6 +414,126 @@ def _build_feedstock_rows(ng: pl.DataFrame) -> pl.DataFrame:
     )
 
 
+def _market_supply_shares(provincial: pl.DataFrame, passthrough: pl.DataFrame) -> pl.DataFrame:
+    """
+    Replace the market's Supply shares with each region's share of the
+    national production request, year by year.
+
+    The production request is the CIMS.CAN.{r} -> CIMS.CAN.{r}.Natural Gas
+    service_request (gas_production.py for AB, BC, and SK; fixed data for
+    the other regions). A constant row (no Year) applies to every year
+    without its own row. Returns `passthrough` with the market's Supply
+    service_request rows replaced.
+    """
+    regional = pl.concat([provincial, passthrough], how='diagonal_relaxed')
+    is_request = (
+        (pl.col('Parameter') == 'service_request')
+        & (pl.col('Branch') == pl.lit('CIMS.CAN.') + pl.col('Region'))
+        & (pl.col('Target') == pl.col('Branch') + pl.lit('.Natural Gas'))
+    )
+    requests = regional.filter(is_request).select(
+        'Region',
+        pl.col('Year').cast(pl.String).replace('', None).alias('Year'),
+        pl.col('Value').cast(pl.Float64).alias('Value'),
+    )
+    years = sorted(requests['Year'].drop_nulls().unique().to_list())
+
+    by_region = {}
+    for region in requests['Region'].unique().sort().to_list():
+        rows = requests.filter(pl.col('Region') == region)
+        constant = rows.filter(pl.col('Year').is_null())['Value']
+        values = {y: (constant[-1] if len(constant) else 0.0) for y in years}
+        values.update(dict(zip(rows.filter(pl.col('Year').is_not_null())['Year'].to_list(),
+                               rows.filter(pl.col('Year').is_not_null())['Value'].to_list())))
+        by_region[region] = values
+    totals = {y: sum(v[y] for v in by_region.values()) for y in years}
+
+    is_supply_share = (
+        (pl.col('Branch') == f'{MARKET_BRANCH}.Supply')
+        & (pl.col('Parameter') == 'service_request')
+    )
+    template = passthrough.filter(is_supply_share).head(1)
+    if template.is_empty():
+        raise ValueError(f'No {MARKET_BRANCH}.Supply service_request rows found to replace.')
+    template = template.row(0, named=True)
+
+    share_rows = [
+        {**template,
+         'Region': MARKET_REGION,
+         'Target': f'CIMS.CAN.{region}.Natural Gas.Production.Supply',
+         'Source': 'Share of regional production requests',
+         'Year': year,
+         'Value': str(values[year] / totals[year] if totals[year] else 0.0)}
+        for region, values in by_region.items()
+        for year in years
+    ]
+    shares = pl.DataFrame(share_rows, schema=passthrough.schema)
+
+    # Put the new rows where the old ones were
+    passthrough = passthrough.with_row_index('_i')
+    first = passthrough.filter(is_supply_share)['_i'].min()
+    passthrough = pl.concat([
+        passthrough.filter(~is_supply_share & (pl.col('_i') < first)).drop('_i'),
+        shares,
+        passthrough.filter(~is_supply_share & (pl.col('_i') >= first)).drop('_i'),
+    ])
+    return passthrough
+
+
+def _split_market(regional: pl.DataFrame) -> tuple[pl.DataFrame, pl.DataFrame]:
+    """
+    Separate the Natural Gas Market from the regional rows.
+
+    Returns (regional rows with the market-off path, market file rows).
+
+    Regional rows: every Production -> market request is replaced, in place,
+    by Production -> own Supply, Transmission, and Distribution (1.0 each,
+    only for nodes that exist in that region). The CAN market rows are
+    removed.
+
+    Market file rows: the CAN market rows, then for each region the original
+    Production -> market request and a 0 request for each of the direct
+    links. Every market file row gets Sector 'Natural Gas Market'.
+    """
+    to_market = (
+        (pl.col('Parameter') == 'service_request')
+        & (pl.col('Target') == MARKET_BRANCH)
+        & pl.col('Branch').str.ends_with('.Natural Gas.Production')
+    )
+    is_market_node = pl.col('Region') == MARKET_REGION
+
+    regional = regional.with_row_index('_i').with_columns(pl.col('_i').cast(pl.Float64))
+    links = regional.filter(to_market)
+    existing_branches = set(regional['Branch'].drop_nulls().to_list())
+
+    def _direct(value: str) -> pl.DataFrame:
+        parts = []
+        for k, stage in enumerate(PRODUCTION_STAGES):
+            part = links.with_columns(
+                (pl.col('Branch') + pl.lit(f'.{stage}')).alias('Target'),
+                pl.lit(value).alias('Value'),
+                pl.lit('').alias('Source'),
+                (pl.col('_i') + (k + 1) * 0.1).alias('_i'),
+            )
+            parts.append(part.filter(pl.col('Target').is_in(list(existing_branches))))
+        return pl.concat(parts)
+
+    regional_out = (
+        pl.concat([regional.filter(~to_market & ~is_market_node), _direct('1.0')])
+        .sort('_i')
+        .drop('_i')
+    )
+
+    market_nodes = regional.filter(is_market_node & ~to_market)
+    switch_rows = pl.concat([links, _direct('0')]).sort('_i')
+    market_out = (
+        pl.concat([market_nodes, switch_rows])
+        .drop('_i')
+        .with_columns(pl.lit(MARKET_SECTOR).alias('Sector'))
+    )
+    return regional_out, market_out
+
+
 # ── main ───────────────────────────────────────────────────────────────────────
 
 def main() -> pl.DataFrame:
@@ -472,9 +632,25 @@ def main() -> pl.DataFrame:
         how='diagonal_relaxed',
     ).select(OUTPUT_COLS)
 
+    # ── Natural Gas Market: its own sector and file ───────────────────────────
+    passthrough_output = _market_supply_shares(provincial_output, passthrough_output)
+    provincial_output, provincial_market = _split_market(provincial_output)
+    passthrough_output, passthrough_market = _split_market(passthrough_output)
+    market_output = pl.concat(
+        [passthrough_market.filter(pl.col('Region') == MARKET_REGION),
+         provincial_market,
+         passthrough_market.filter(pl.col('Region') != MARKET_REGION)],
+        how='diagonal_relaxed',
+    ).select(OUTPUT_COLS)
+    print(f'Natural Gas Market rows: {len(market_output):,}')
+
     # ── write outputs ──────────────────────────────────────────────────────────
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     all_outputs = []
+
+    # The CAN market now lives in its own folder; remove the old file so the
+    # natural_gas folder can't load the market twice.
+    (OUTPUT_DIR / f'natural_gas_{MARKET_REGION.lower()}.csv').unlink(missing_ok=True)
 
     for region in PROVINCIAL_REGIONS:
         region_df = provincial_output.filter(pl.col('Region') == region)
@@ -491,6 +667,13 @@ def main() -> pl.DataFrame:
         write_model_csv(region_df, out_path)
         print(f'  Wrote {len(region_df):,} rows → {out_path.name}')
         all_outputs.append(region_df)
+
+    MARKET_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    market_path = MARKET_OUTPUT_DIR / f'natural_gas_market_{MARKET_REGION.lower()}.csv'
+    market_output = collapse_constant_years(market_output)
+    write_model_csv(market_output, market_path)
+    print(f'  Wrote {len(market_output):,} rows → natural_gas_market/{market_path.name}')
+    all_outputs.append(market_output)
 
     output = pl.concat(all_outputs, how='diagonal_relaxed')
     print(f'\n✅ Natural Gas model inputs complete')
