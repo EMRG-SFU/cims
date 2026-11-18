@@ -1,6 +1,9 @@
 """
 Run all sector calibration scripts.
 
+Run process_source_data first: the six steam sectors read
+processed_data/steam/steam_fuel_targets.csv, which it writes last.
+
 Usage:
     python -m CIMS.data_processing.process_calibration
     python -m CIMS.data_processing.process_calibration --stop-on-error

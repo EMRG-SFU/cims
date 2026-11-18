@@ -51,6 +51,10 @@ MODULES = [
     f"{PACKAGE}.stats_can.biomass_demand",
     # StatCan refinery fuel (own + purchased) for petroleum refining
     f"{PACKAGE}.stats_can.refinery_fuel",
+    # Steam fuel targets for the six steam sectors (CER + MECS + the two
+    # StatCan tables above). Read by steam_chp_shares and techdb_steam in the
+    # calibration and model-input stages, so it must run before both.
+    f"{PACKAGE}.steam.steam_fuel_targets",
 ]
 
 def main() -> int:

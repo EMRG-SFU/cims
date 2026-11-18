@@ -24,8 +24,9 @@ processed_data/technology_database/
                                     emissions captured
     archetype-alternative-carrier.csv  fuel use on alternative fuels
     archetype-flow.csv              fuel use by commodity (fallback)
-calibration/{sector}/{sector}_{region}.csv
-    .Steam calibration_quantity_requested by fuel, 2000-2024 (EIA MECS steam
+processed_data/steam/steam_fuel_targets.csv (source/steam/steam_fuel_targets.py)
+    .Steam calibration_quantity_requested by fuel, 2000-2024: the same rows
+    the sector calibration scripts write (EIA MECS steam
     share x CER sector demand, fuel split from the provincial RESD mix; see
     mecs_steam_calibration.py). Pulp and Paper has black liquor removed (the
     Recovery Furnace supplies that steam) and wood waste filled first; Light
@@ -138,7 +139,6 @@ import polars as pl
 from CIMS.data_processing.utils.controls_conversions import BASE_PATH
 
 TECHDB_DIR      = BASE_PATH / 'processed_data/technology_database'
-CALIBRATION_DIR = BASE_PATH / 'calibration'
 MECS_FILE       = BASE_PATH / 'raw_data/eia/mecs/emrg_2026_mecs-footprint-metrics.csv'
 
 SECTORS = {     # CIMS sector name -> calibration folder
@@ -439,12 +439,10 @@ def smooth_fuel_mix(by_year: dict[int, dict[str, float]],
 
 @lru_cache(maxsize=None)
 def _calibration_steam_by_year(sector: str, region: str) -> dict[int, dict[str, float]]:
-    """{year: {fuel key: GJ}} .Steam fuel targets for one region (from the calibration CSV)."""
-    folder = SECTORS[sector]
-    path = CALIBRATION_DIR / folder / f'{folder}_{region.lower()}.csv'
-    if not path.exists():
-        return {}
-    return steam_fuel_targets(pd.read_csv(path), sector, region)
+    """{year: {fuel key: GJ}} .Steam fuel targets for one region, from the
+    steam fuel targets stage (processed_data/steam/steam_fuel_targets.csv)."""
+    from CIMS.data_processing.source.steam import steam_fuel_targets as _targets
+    return steam_fuel_targets(_targets.load(), sector, region)
 
 
 def _calibration_steam(sector: str, region: str, year: int) -> dict[str, float]:
