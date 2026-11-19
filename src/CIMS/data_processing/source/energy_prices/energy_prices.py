@@ -26,7 +26,9 @@ from CIMS.data_processing.utils.controls_conversions import DATA_START, PROJECTI
 
 
 # Configuration
-CER_DIR   = BASE_PATH / 'raw_data/cer'
+# Processed CER files: carbon removed from end-use prices and history back to
+# 2000 (see source/cer/cer_source_files.py and source/cer/README.md).
+CER_DIR   = BASE_PATH / 'processed_data/cer'
 MACRO_FILE          = find_cer_file(CER_DIR, 'macro-indicators')
 BENCHMARK_FILE      = find_cer_file(CER_DIR, 'benchmark-prices')
 END_USE_PRICES_FILE = find_cer_file(CER_DIR, 'end-use-prices')

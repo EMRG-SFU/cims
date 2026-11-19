@@ -28,6 +28,9 @@ TECHDB_TABLES = ["archetype-parameter.csv", "archetype-alternative-carrier.csv",
 MODULES = [
     # Currency reference tables (GDP deflators and exchange rates)
     f"{PACKAGE}.deflator_exchange.deflator_exchange",
+    # CER source files: carbon-free end-use prices and history back to 2000.
+    # Needs the deflator tables; energy_prices, multipliers and pop_gdp read its output.
+    f"{PACKAGE}.cer.cer_source_files",
     # ECCC GHG inventory
     f"{PACKAGE}.eccc.nir.nir_to_cims",
     f"{PACKAGE}.eccc.nir.nir_crosswalk_tables_cims",
