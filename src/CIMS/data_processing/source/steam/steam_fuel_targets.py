@@ -36,6 +36,9 @@ Reads
 -----
 processed_data/cer/, processed_data/eia/ and the StatCan biomass and refinery
 fuel tables, through mecs_steam_calibration (run process_source_data first).
+This stage doesn't need the technology database, but the steam code that reads
+its output (techdb_steam, steam_chp_shares) does: process_source_data runs the
+technology database build just before this stage.
 
 Writes
 ------
