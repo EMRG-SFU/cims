@@ -49,8 +49,16 @@ def extractService(node):
         return ''
 
 
+def _fic_unit(model):
+    """FICs are fitted in the model's target currency; label them so CIMS can convert them."""
+    year = getattr(model, "target_dollar_year", None)
+    currency = getattr(model, "target_currency", None)
+    return f"{year}_{currency}" if year and currency else ""
+
+
 def get_fic_file_rows(model, nodeName, source="calibration_fic_export"):
     all_years = list_years(model.graph, nodeName)
+    unit = _fic_unit(model)
     all_techs = list_techs(model.graph, nodeName)
 
     rows = []
@@ -70,7 +78,7 @@ def get_fic_file_rows(model, nodeName, source="calibration_fic_export"):
                 "Sub_Context": "",
                 "Target": "",
                 "Source": source,
-                "Unit": "",
+                "Unit": unit,
                 "Year": yy,
                 "Value": out_value,
             })
