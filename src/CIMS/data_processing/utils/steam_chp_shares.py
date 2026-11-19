@@ -31,10 +31,10 @@ raw_data/eia/mecs/emrg_2026_mecs-footprint-metrics.csv (techdb_steam.MECS_FILE)
     2002-2022 (most recent survey at or before the year; 2002 before that).
     Light Industrial biomass uses the forest-products share
     (MECS_SECTOR_FOR), since sawmill wood waste is its main user.
-calibration/{sector}/{sector}_{region}.csv
+processed_data/steam/steam_fuel_targets.csv (source/steam/steam_fuel_targets.py)
     .Steam calibration_quantity_requested by fuel, every year: the fuel each
-    sector's claim is built from. Read from disk, so rerun the steam sectors'
-    calibration scripts if the steam fuel targets change.
+    sector's claim is built from. Built from source data before any
+    calibration script runs, so no sector reads another's calibration file.
 
 Method (sector s, province p, fuel group g, year t)
 ------
@@ -272,12 +272,12 @@ def _chp_ratios(fuel: str) -> tuple[float, float]:
 @lru_cache(maxsize=1)
 def _steam_fuel() -> pd.DataFrame:
     """.Steam fuel targets (GJ) for every steam sector, region, year, fuel."""
+    from CIMS.data_processing.source.steam import steam_fuel_targets as _targets
+    targets = _targets.load()
     rows = []
     for sector in STEAM_CHP_SECTORS:
-        folder = T.SECTORS[sector]
-        for path in sorted((T.CALIBRATION_DIR / folder).glob(f'{folder}_*.csv')):
-            region = path.stem.rsplit('_', 1)[-1].upper()
-            for year, fuels in T.steam_fuel_targets(pd.read_csv(path), sector, region).items():
+        for region in _targets.regions(sector):
+            for year, fuels in T.steam_fuel_targets(targets, sector, region).items():
                 for fuel, gj in fuels.items():
                     rows.append((sector, region, year, fuel, gj))
     return pd.DataFrame(rows, columns=['sector', 'region', 'year', 'fuel', 'fuel_gj'])

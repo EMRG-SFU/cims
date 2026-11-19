@@ -4,6 +4,12 @@ Run all source pipeline scripts in the correct order.
 Usage:
     python -m CIMS.data_processing.process_source_data
     python -m CIMS.data_processing.process_source_data --stop-on-error
+    python -m CIMS.data_processing.process_source_data --use-existing-technology-database
+
+--use-existing-technology-database skips the technology database build and
+uses the tables already in processed_data/technology_database/ (for example
+one built from the tech_data repository's authoring copy). The run stops if
+those tables aren't there.
 """
 
 import os
@@ -11,7 +17,12 @@ import subprocess
 import sys
 import time
 
+from CIMS.data_processing.utils.controls_conversions import BASE_PATH
+
 PACKAGE = "CIMS.data_processing.source"
+TECHDB_BUILD = "CIMS.data_processing.technology_database.build"
+# Tables the steam code (techdb_steam) reads from the technology database build
+TECHDB_TABLES = ["archetype-parameter.csv", "archetype-alternative-carrier.csv", "archetype-flow.csv"]
 # Explicit order where dependencies matter (energy_prices before multipliers).
 # All other scripts are independent and run after.
 MODULES = [
@@ -51,10 +62,20 @@ MODULES = [
     f"{PACKAGE}.stats_can.biomass_demand",
     # StatCan refinery fuel (own + purchased) for petroleum refining
     f"{PACKAGE}.stats_can.refinery_fuel",
+    # Technology database build (processed_data/technology_database/). The
+    # steam code (techdb_steam) reads its archetype tables in the calibration
+    # and model-input stages. It has its own currency tables, so it can run
+    # anywhere in this list; it runs here, next to the steam stage it serves.
+    TECHDB_BUILD,
+    # Steam fuel targets for the six steam sectors (CER + MECS + the two
+    # StatCan tables above). Read by steam_chp_shares and techdb_steam in the
+    # calibration and model-input stages, so it must run before both.
+    f"{PACKAGE}.steam.steam_fuel_targets",
 ]
 
 def main() -> int:
     STOP_ON_ERROR = "--stop-on-error" in sys.argv[1:]
+    USE_EXISTING_TECHDB = "--use-existing-technology-database" in sys.argv[1:]
 
     GREEN = "\033[92m"
     RED   = "\033[91m"
@@ -63,10 +84,21 @@ def main() -> int:
 
     results = []
 
-    print(f"{BOLD}Running {len(MODULES)} source scripts{RESET}\n")
+    modules = MODULES
+    if USE_EXISTING_TECHDB:
+        techdb_dir = BASE_PATH / "processed_data" / "technology_database"
+        missing = [t for t in TECHDB_TABLES if not (techdb_dir / t).exists()]
+        if missing:
+            print(f"{RED}--use-existing-technology-database: {techdb_dir} lacks "
+                  f"{', '.join(missing)}.{RESET} Build it, or run without the option.")
+            return 1
+        modules = [m for m in MODULES if m != TECHDB_BUILD]
+        print(f"Using the existing technology database build in {techdb_dir}\n")
 
-    for module in MODULES:
-        label = module[len(PACKAGE) + 1:]
+    print(f"{BOLD}Running {len(modules)} source scripts{RESET}\n")
+
+    for module in modules:
+        label = module.removeprefix(f"{PACKAGE}.").removeprefix("CIMS.data_processing.")
         print(f"  {label} ... ", end="", flush=True)
         t0 = time.monotonic()
 
