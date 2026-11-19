@@ -198,8 +198,9 @@ def _():
     sector_list = [
         'Coal Mining',
         'Natural Gas',
-        'Natural Gas Market', # Routes each region's production through the national market; needs 'Natural Gas' and all regions.
-                              # Off: regions supply themselves and any subset of regions can run. Prices come from Generic Fuels either way.
+        # 'Natural Gas Market', # Routes each region's production through the national market; needs 'Natural Gas' and all regions.
+                                # Off: regions supply themselves and any subset of regions can run. Prices come from Generic Fuels either way.
+                                # Turning it on needs the #512 sector-check exemption (docs/design/natural-gas-market.md).
         'Petroleum Crude', # Must also run 'Natural Gas' sector since shared fuel blending
         'Petroleum Refining',
         'Electricity',
