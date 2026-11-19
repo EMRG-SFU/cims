@@ -354,7 +354,7 @@ def _(calibration_data, calibration_path, model_path, update_files):
         'residential',
         'commercial',
         'fuels',
-        'pulp_and_paper'
+        'pulp_and_paper',
         'light_industrial',
         'chemical_products',
         'metal_smelting',
