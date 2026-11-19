@@ -62,7 +62,12 @@ REGION_MAP: dict[str, str] = {
 # ---------------------------------------------------------------------------
 
 def _cer_series(macro_df: pl.DataFrame, col: str) -> pd.Series:
-    """Extract one CER macro variable as a year-indexed pandas Series."""
+    """Extract one CER macro variable as a year-indexed pandas Series.
+
+    Matches the column name without regard to case: CEF editions differ
+    (for example "$2017 millions" and "$2017 Millions").
+    """
+    col = next((c for c in macro_df.columns if c.lower() == col.lower()), col)
     rows = macro_df.select(["Year", col]).sort("Year")
     return pd.Series(
         rows[col].cast(pl.Float64).to_list(),

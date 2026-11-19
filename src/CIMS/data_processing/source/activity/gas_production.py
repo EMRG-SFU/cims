@@ -672,9 +672,25 @@ def main() -> pl.DataFrame:
 
     # Use the reference scenario from control config — column name is "<SCENARIO>"
     # so if SCENARIO changes in control.py this picks up the right column automatically.
-    _lng_col = f"{SCENARIO}"
+    # LNG columns are named by scenario, but not exactly: CEF2026 uses
+    # "Canada Net-zero - Volume" and "Higher" for "Canada Net-zero" and
+    # "Higher Scenario". Match the column whose name starts with the scenario
+    # (or the reverse), ignoring case.
+    _lng_df = pl.read_csv(LNG_EXPORT_FILE)
+    _scen = SCENARIO.lower()
+    _lng_matches = [
+        c for c in _lng_df.columns
+        if c not in ("Year", "Units")
+        and (c.lower().startswith(_scen) or _scen.startswith(c.lower()))
+    ]
+    if len(_lng_matches) != 1:
+        raise ValueError(
+            f"Expected one LNG column for scenario {SCENARIO!r} in {LNG_EXPORT_FILE.name}; "
+            f"found {_lng_matches} among {_lng_df.columns}"
+        )
+    _lng_col = _lng_matches[0]
     _lng_raw = (
-        pl.read_csv(LNG_EXPORT_FILE)
+        _lng_df
         .select(["Year", _lng_col])
         .rename({_lng_col: "lng_vol"})
         .with_columns(
