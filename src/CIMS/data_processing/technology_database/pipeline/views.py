@@ -74,6 +74,15 @@ def product_properties():
 NO_CONNECTION = "no connection"
 
 WIDE_NOTES = {
+    "wide-pools": (
+        "Parameters whose pooled examples spread widely: the middle half (25th to 75th percentile) "
+        "spans more than 3x (S174, Brad 2026-11-20). The central value is weaker there; read it with "
+        "the _low and _high columns and the examples behind it."),
+    "fuel-basis": (
+        "The fuel or fuels the energy use and the combustion emissions are on: the most likely "
+        "Canadian fuel (or the fuels a co-fired process needs), from the carriers on the energy sheet "
+        "(ruling 2026-11-07). Other fuels are in archetype-alternative-carrier.csv. Blank where the "
+        "archetype burns no fuel (S180, Brad 2026-11-20)."),
     "source-corrections": (
         "Parameters whose pooled value includes a figure the source prints wrongly and the "
         "modeller corrected (a slipped decimal or zero, a wrong unit or carrier label), as "
@@ -152,9 +161,14 @@ IDENT_NOTES = {
                     "missing.",
     "sources": "Short names of the sources behind the examples.",
 }
+WIDE_POOL_PARAMS = ("capex", "opex-fixed", "opex-variable", "specific-energy-consumption", "capacity")
 SPREAD_NOTES = {
-    "_low": "Lowest value any example gives for {b} (for a filled value, the low end of the fill).",
-    "_high": "Highest value any example gives for {b} (for a filled value, the high end of the fill).",
+    "_low": ("25th percentile of the examples' values for {b} where four or more examples give one; "
+             "otherwise the lowest value any example gives (for a filled value, the low end of the fill). "
+             "The full range is in archetype-parameter.csv (low)."),
+    "_high": ("75th percentile of the examples' values for {b} where four or more examples give one; "
+              "otherwise the highest value any example gives (for a filled value, the high end of the fill). "
+              "The full range is in archetype-parameter.csv (high)."),
     "_n": "Number of examples pooled into {b}; 0 for a filled value.",
 }
 
@@ -212,6 +226,24 @@ def build(records, hier, examples, summaries, flow_summaries, include_empty=True
             ex_by_arch[e["archetype"]].append(e)
     fam_order = {f: i for i, f in enumerate(records.families)}
     param_order = {p: i for i, p in enumerate(records.parameters)}
+    # S180: the named fuels behind the energy use and combustion emissions
+    NON_FUEL = {"", "fuel", "total", "not-stated", "component", "electricity", "steam", "heat",
+                "hot-water", "waste-heat", "solar", "geothermal", "nuclear", "hydrogen-feed"}
+    fuel_basis = defaultdict(list)
+    for x in summaries:
+        t = x.get("target-norm", x.get("target", "")) or ""
+        if (x.get("parameter") == "specific-energy-consumption" and t not in NON_FUEL
+                and not t.startswith(("as-sourced", "host-plant", "ccs-add-on", "calculated"))
+                and t in records.carriers):
+            try:
+                ok = float(x.get("central") or 0) > 0
+            except ValueError:
+                ok = False
+            if ok and t not in fuel_basis[x["archetype"]]:
+                fuel_basis[x["archetype"]].append(t)
+    fuel_basis = {k: "; ".join(sorted(v)) for k, v in fuel_basis.items()}
+    from .normalise import installation_factors
+    inst_of = installation_factors()
 
     # ---- archetype.csv: every archetype, with what the database holds ------
     with_data = ({s["archetype"] for s in summaries
@@ -360,7 +392,7 @@ def build(records, hier, examples, summaries, flow_summaries, include_empty=True
         spread = {b for b in keys if any(c[b].get("low") for c in cells.values() if b in c)}
         cols = list(ident)
         if name == "wide-archetype":
-            cols += ["external-conversions", "source-corrections", "filled"]
+            cols += ["fuel-basis", "external-conversions", "source-corrections", "filled", "wide-pools"]
         units, groups, notes = {}, {c: "identity" for c in cols}, dict(fill_note)
         for b in keys:
             extra = [b] + ([f"{b}_low", f"{b}_high"] if b in spread else []) + [f"{b}_n"]
@@ -373,6 +405,16 @@ def build(records, hier, examples, summaries, flow_summaries, include_empty=True
                                           "Not the product-unit: annual output and the per-capacity costs stay "
                                           "per product-unit.")
             cols += extra
+            if name == "wide-archetype" and b == "capex":
+                # S179 (Brad 2026-11-20): the equipment share of the installed capex, by class
+                cols.append("capex-equipment-share")
+                groups["capex-equipment-share"] = records.parameters.get("capex", {}).get("parameter-class", "")
+                units["capex-equipment-share"] = "fraction"
+                notes["capex-equipment-share"] = (
+                    "Rough share of the capex that is the equipment itself (1 / the installed-over-equipment "
+                    "factor of the archetype's equipment class, records/reference/installation-factor.csv): "
+                    "capex x this share gives an equipment-only cost. Capex is on the installed basis; "
+                    "equipment-only source figures were raised by the same factor before pooling (S179).")
             p = (pt.get(b) or colmeta.get(b, (b, "")))[0]
             for c in extra:
                 units[c] = ("" if c.endswith("_n") else
@@ -395,7 +437,13 @@ def build(records, hier, examples, summaries, flow_summaries, include_empty=True
                     graded.update({(a["archetype"], c): g for c in (b, f"{b}_low", f"{b}_high")})
                 row[b], row[f"{b}_n"] = ("not applicable" if g == "not-applicable" else s["central"]), s["n"]
                 if b in spread:
-                    row[f"{b}_low"], row[f"{b}_high"] = s["low"], s["high"]
+                    # the middle half of the examples where four or more carry a value
+                    # (S172, Brad 2026-11-20); the full range is in archetype-parameter.csv
+                    if (g == "sourced" and s.get("p25") not in (None, "") and s.get("p75") not in (None, "")
+                            and str(s.get("central-from", "")).startswith(("median of", "weighted median"))):
+                        row[f"{b}_low"], row[f"{b}_high"] = s["p25"], s["p75"]
+                    else:
+                        row[f"{b}_low"], row[f"{b}_high"] = s["low"], s["high"]
                 if s.get("n-corrected"):
                     cor.append((b, f"{b} {s['n-corrected']}/{s['n']}"))
                 if s.get("n-external"):
@@ -403,9 +451,26 @@ def build(records, hier, examples, summaries, flow_summaries, include_empty=True
                     flagged |= {(a["archetype"], c) for c in (b, f"{b}_low", f"{b}_high")}
             if name == "wide-archetype":
                 capacity_unit.apply(cap_rules, row)
+                row["fuel-basis"] = fuel_basis.get(a["archetype"], "")
+                if "capex-equipment-share" in index:
+                    _fid, _f, _r = inst_of(a["archetype"])
+                    row["capex-equipment-share"] = float(f"{1 / _f:.3g}") if _f else ""
                 row["external-conversions"] = "; ".join(t for _, t in sorted(ext, key=lambda x: index.get(x[0], 0)))
                 row["source-corrections"] = "; ".join(t for _, t in sorted(cor, key=lambda x: index.get(x[0], 0)))
                 row["filled"] = "; ".join(t for _, t in sorted(filled, key=lambda x: index.get(x[0], 0)))
+                # S174 (Brad 2026-11-20): a pool whose middle half spans more than 3x
+                wide = []
+                for b in WIDE_POOL_PARAMS:
+                    s = cells.get(a["archetype"], {}).get(b)
+                    if not s or s.get("grade", "sourced") != "sourced":
+                        continue
+                    try:
+                        q1, q3 = float(s.get("p25")), float(s.get("p75"))
+                    except (TypeError, ValueError):
+                        continue
+                    if q1 > 0 and q3 / q1 > 3:
+                        wide.append(f"{b} middle half spans {q3 / q1:.1f}x (n {s['n']})")
+                row["wide-pools"] = "; ".join(wide)
             rows.append(row)
         return cols, rows, groups, units, notes, flagged, graded
 

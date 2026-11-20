@@ -98,6 +98,14 @@ def _wquantile(pairs, q):
     return pairs[-1][0]
 
 
+def _quantile(xs, q):
+    """Linear-interpolation quantile of sorted values (numpy's default)."""
+    pos = (len(xs) - 1) * q
+    lo = int(pos)
+    hi = min(lo + 1, len(xs) - 1)
+    return xs[lo] + (xs[hi] - xs[lo]) * (pos - lo)
+
+
 def summarise(rows, records, keys, examples_by_id):
     """Rows (already normalised, excluded ones skipped) -> one summary per
     (archetype, *keys, unit-norm)."""
@@ -174,7 +182,17 @@ def summarise(rows, records, keys, examples_by_id):
         row = dict(zip(("archetype",) + tuple(keys) + ("unit",), k))
         if wrange is not None:
             vals = {round(x, 9) for p in per for x in p["all"]}
+        # interquartile range of the examples' values (S172, Brad 2026-11-20): what the
+        # wide view shows as _low/_high where four or more examples carry a value; the
+        # full range stays in low and high here
+        q25 = q75 = ""
+        if wrange is None and len(with_c) >= 4:
+            cs = sorted(p["central"] for p in with_c)
+            q25, q75 = f"{_quantile(cs, 0.25):.6g}", f"{_quantile(cs, 0.75):.6g}"
+        elif wrange is not None and len(with_c) >= 4:
+            q25, q75 = f"{_wquantile(pairs, 0.25):.6g}", f"{_wquantile(pairs, 0.75):.6g}"
         row.update({"central": "" if central is None else f"{central:.6g}",
+                    "p25": q25, "p75": q75,
                     "low": (f"{wrange[0]:.6g}" if wrange is not None
                             else f"{min(vals):.6g}" if len(vals) > 1 else one_lo),
                     "high": (f"{wrange[1]:.6g}" if wrange is not None

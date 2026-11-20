@@ -2399,7 +2399,8 @@ def pm_size_anchor(rule, psum, records, target_unit, ctx, stats):
             if implied and abs(oc / implied - 1) <= tol:
                 continue
             facility = bool(fac) and any(s.startswith(fac) for s in split_list(out.get("sources", "")))
-            if not facility and _strength(cap) >= _strength(out):
+            # a capacity set by ruling (central-choice.csv) anchors (Brad 2026-11-20)
+            if not facility and (cap.get("method") == "central-choice" or _strength(cap) >= _strength(out)):
                 anchor = "capacity"
             note = f"was {oc:.4g} {out.get('unit')} against {implied:.4g} from capacity" if anchor == "capacity" \
                 else f"was {cc:.4g} {cap.get('unit')}; output / capacity factor gives {oc / (fc / 100) / kf:.4g}"

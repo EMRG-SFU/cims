@@ -58,7 +58,17 @@ README = [
     ("p", "Costs and intensities are per product-unit, so never compare them across families."),
     ("p", "Energy is on a higher heating value (HHV) basis."),
     ("p", "Central value: the median of three or more examples, otherwise the value from the "
-          "highest-ranked source. Low and high are the widest values any example gives."),
+          "highest-ranked source. Low and high are the 25th and 75th percentiles of the examples where "
+          "four or more give a value (the middle half), otherwise the widest values any example gives; "
+          "the full range is in archetype-parameter.csv. The wide-pools column flags where the middle "
+          "half spans more than 3x."),
+    ("p", "Levelized cost on the archetypes sheet is calculated from the database's own capex, O&M, "
+          "and energy at 2025 Canadian prices. The levelized costs sources print are not shown: they "
+          "differ in basis (prices, region, return, scope), so they are kept as a check in "
+          "levelized-check.csv."),
+    ("p", "Heat-supply archetypes repeated under a hotter heat tier carry a judged adjustment for that "
+          "tier (efficiency, capex, fixed O&M; records/reference/heat-tier-adjustment.csv); the filled "
+          "column says so."),
     ("p", "The _low, _high, and _n columns are grouped beside each central column: use the + above "
           "a column to show them. _n is the number of examples pooled (0 for a filled value)."),
     ("p", "Hover over a column heading for its definition."),
@@ -117,6 +127,13 @@ CSV_NOTES = [
      "or table it was read from."),
     ("example-flow.csv", "Every source flow (inputs and outputs per unit of product), as printed and as "
      "normalised, with its co-product flag, region, year, and locator."),
+    ("levelized-check.csv", "The check of the calculated levelized cost against the levelized or "
+     "production costs sources print: both values, their ratio, and each source figure's basis (what it "
+     "includes, its region, discount rate, and year). Sourced levelized costs are not model inputs (S176)."),
+    ("archetype-sector-size.csv", "Sizes by CIMS sector for the export to CIMS (Brad 2026-11-20): where a sector's "
+     "typical unit differs from the database's reference size (records/reference/sector-size.csv), the size "
+     "and the capex restated at it by the scale exponent; variants scale the host's part only."),
+    ("archetype-service-request.csv", "The service requests on the service-requests sheet, as a flat table."),
     ("example-constraint.csv", "Source constraints by region and year: adoption potentials, applicability "
      "limits, and maximum shares, with their basis and locator."),
 ]
@@ -126,6 +143,8 @@ SHEET_NOTES = {
     "emissions": "Emissions by type and species, for the same rows.",
     "feedstocks": "Feedstock use by carrier, for the same rows.",
     "heat": "Process, output, and waste heat: a tier on every archetype and a temperature where sourced.",
+    "service-requests": "What each archetype asks of other nodes (clinker for a cement, steam for a "
+                        "process, CO2 sent to capture), per unit of its product: how archetypes stack.",
     "source-list": "The sources, by the family they inform.",
 }
 

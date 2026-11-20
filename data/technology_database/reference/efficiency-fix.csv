@@ -24,3 +24,4 @@ combined-cycle_ccs-diffuse,eff-identity,,"Net of capture: efficiency = 100 / ene
 direct-heater_refinery_ccs-diffuse,eff-identity,,"Net of capture: efficiency = 100 / energy use.",Fable review 2026-11-07 (E7)
 gasifier_biomass-fischer-tropsch_ccs-concentrated,eff-identity,,"Net of capture: efficiency = 100 / (energy use + feed).",Fable review 2026-11-07 (E7)
 transesterification-unit_acid-catalyzed,eff-identity,,"Efficiency = 100 / (energy use + feed): the 90.3% was a sibling estimate.",Claude 2026-11-07 (follows E1)
+reactor_hydrotreating-lipids,eff-identity,,"Efficiency = 100 / (energy use + feed). The top-ranked 66% is DEA's jet case (n=2, no median); energy use and feed give 82%, between DEA's diesel case (85%) and Xu et al. 2022 (about 83% from 1.26 kg feed per kg).","sanity check 2026-11-20 (IC001), under Brad 2026-11-07 rule (fix internal-consistency problems)"

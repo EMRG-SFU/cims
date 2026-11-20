@@ -1,0 +1,5 @@
+equipment,class,note,decided
+furnace,heat-equipment,"furnaces take the heat-equipment factor (2.60), not the process-plant one (3.00), which rests partly on grinding mills",Brad 2026-11-20 (S179)
+melting-furnace,heat-equipment,as furnace,Brad 2026-11-20 (S179)
+electric-arc-furnace,heat-equipment,as furnace,Brad 2026-11-20 (S179)
+separator,default,"separators take the default factor (2.2), not the process-plant one",Brad 2026-11-20 (S179)

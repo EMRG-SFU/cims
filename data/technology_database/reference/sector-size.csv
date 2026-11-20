@@ -1,0 +1,2 @@
+archetype,branch,capacity,unit,basis,decided
+boiler_fuel-fired,<sector>.light-industrial.service.steam,5,MW,"Food and light industry (Brad 2026-11-20): a mid-to-large firetube boiler, about 7 t/h of steam (roughly 500 boiler horsepower), typical of a dairy, brewery, meat plant, or large bakery; also the median of the 15 pooled examples. Applies only in the export to CIMS; the database keeps the 25 MW default (reference-size.csv).",Brad 2026-11-20 (boiler size by sector)

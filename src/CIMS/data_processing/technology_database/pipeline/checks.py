@@ -219,6 +219,13 @@ def conversion_references(fail, records, loader) -> None:
             backed.add(sid)
             if sid not in rid and sid not in main:
                 fail["energy-price source-id not registered"].append(f"{e.get('carrier')}: {sid}")
+    # or an archetype size or central choice (reference-size.csv, central-choice.csv)
+    for fn in ("reference-size.csv", "central-choice.csv"):
+        for c in read(REFERENCE / fn):
+            for sid in split_list(c.get("source-id", "")):
+                backed.add(sid)
+                if sid not in rid and sid not in main:
+                    fail[f"{fn} source-id not registered"].append(f"{c.get('archetype')}: {sid}")
     for r in ref:
         if r["source_id"] not in backed and "currency" not in (r.get("used_for") or ""):
             fail["reference source backs no conversion factor or fill assumption"].append(r["source_id"])

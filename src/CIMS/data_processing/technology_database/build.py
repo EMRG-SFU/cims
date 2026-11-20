@@ -65,7 +65,7 @@ EX_COLS = ["example-id", "archetype", "mapping", "source-id", "source-technology
            "detail", "sector-reported", "end-use-reported", "step-reported",
            "service-unit-reported", "description", "trl", "trl-as-reported", "trl-scale",
            "state-of-development", "year-available", "extraction-file", "note"]
-SUM_COLS = ["central", "low", "high", "n", "n-external", "n-corrected", "central-from", "external-factors",
+SUM_COLS = ["central", "low", "high", "p25", "p75", "n", "n-external", "n-corrected", "central-from", "external-factors",
             "sources", "examples"]
 FILL_COLS = ["grade", "method", "rule-id", "inputs", "rationale"]
 
@@ -322,6 +322,8 @@ def main(argv) -> int:
     write(OUTPUT / "example-constraint.csv", CONS_COLS, L.cons)
     order = {a["archetype"]: i for i, a in enumerate(rec.archetypes)}
     psum.sort(key=lambda r: (order.get(r["archetype"], 9999), r["parameter"], r["target"]))
+    from .pipeline import carbon_balance
+    print(f"  carbon-balance fixes (S184): {carbon_balance.apply_fixes(psum, rec)} rows")
     post = checks.summaries(psum)
     if post:
         for k, v in post.items():
@@ -330,10 +332,20 @@ def main(argv) -> int:
     fsum.sort(key=lambda r: (order.get(r["archetype"], 9999), r["direction"], r["commodity"]))
     # secondary parameters (values by stream or part) have their own file
     # (modeller 2026-10-09); views still see every summary
+    # the interquartile range describes the pooled median only (S172): blank it where
+    # the central value came from elsewhere (a central choice, a fill, a host)
+    for r in psum:
+        if not str(r.get("central-from", "")).startswith(("median of", "weighted median")):
+            r["p25"] = r["p75"] = ""
     sec = [r for r in psum if placement.placement(r["parameter"], r["target"]) == "secondary"]
     main = [r for r in psum if placement.placement(r["parameter"], r["target"]) != "secondary"]
     write(OUTPUT / "archetype-parameter.csv",
           ["archetype", "parameter", "target", "unit"] + SUM_COLS + FILL_COLS, main)
+    from .pipeline import levelized_check
+    levelized_check.write_check(psum, L.facts)
+    from .pipeline import sector_size
+    print(f"  sector sizes for the export to CIMS: {sector_size.write_sizes(psum, OUTPUT)} rows")
+    print("  carbon balance (S184): " + ", ".join(f"{k} {v}" for k, v in sorted(carbon_balance.check(psum, rec).items())))
     # the carriers left out of the wide view: other fuels, purchased steam against
     # on-site firing, other estimates (Brad 2026-11-07); CSV only, not in the workbook
     from .pipeline import fuel_choice
@@ -426,6 +438,19 @@ def main(argv) -> int:
         "the heat it rejects that waste-heat recovery could use, for the same rows as the archetypes sheet. "
         "Each has a tier on every archetype and a temperature where the sources give one; a tier from a "
         "sourced temperature is shaded as sourced, a judgement as a guess.")
+    # S183 (Brad 2026-11-20): how archetypes stack, banded by the requesting archetype's family
+    a_fam = {a["archetype"]: a.get("family", "") for a in rec.archetypes}
+    a_lab = {a["archetype"]: a.get("label", "") for a in rec.archetypes}
+    sr_band = []
+    for f in fam_order:
+        for r in sorted((x for x in sr if a_fam.get(x["archetype"]) == f), key=lambda x: (x["archetype"], x["request"])):
+            sr_band.append(dict(r, label=a_lab.get(r["archetype"], ""), _band=f))
+    # the finding and decided columns stay in the CSV only (Brad 2026-11-20)
+    sr_cols = ["archetype", "label"] + [c for c in service_request.COLS if c not in ("archetype", "finding", "decided")]
+    banded["service-requests"] = (sr_cols, sr_band, {}, {}, "_band", "",
+                                  "What each archetype requests from other CIMS nodes per unit of its product: "
+                                  "the intermediate it buys (clinker, hydrogen), the steam or heat it draws, the "
+                                  "CO2 it sends to capture. Quantities with low and high, grade, basis, and source.")
     banded["source-list"] = (sources.COLS, src_band, {}, {}, "_band", "", "The sources, by the family they inform.")
     sheet_of = {"archetypes": "wide-archetype", **{n: "wide-carriers-species" for n in SPLIT},
                 "heat": "wide-heat"}

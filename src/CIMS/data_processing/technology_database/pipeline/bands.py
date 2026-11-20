@@ -347,6 +347,8 @@ def expand(rows: list[dict], records, units: dict | None = None,
             fam_pos.setdefault(h, len(fam_pos))
             o = override_for(ov, disp, k, e, r)
             rr = _apply(r, o, units, factor) if o else r
+            if e in TIER.values():
+                rr = _tier_adjust(rr, k, e)
             out.append(dict(rr, _family=h, _sub=lab,
                             _key=(fam_pos[h], (0 if (e == "" or own(h, e)) else 1000 if e != "~" else 5000)
                                   + rank.get(e, 998), lab,
@@ -360,3 +362,62 @@ def expand(rows: list[dict], records, units: dict | None = None,
     for o in out:
         o.pop("_key", None)
     return out
+
+_TIER_ADJ = None
+
+
+def tier_adjustments():
+    """(archetype, tier end use) -> {parameter: row} from
+    records/reference/heat-tier-adjustment.csv (S181, Brad 2026-11-20)."""
+    global _TIER_ADJ
+    if _TIER_ADJ is None:
+        _TIER_ADJ = defaultdict(dict)
+        for r in read(REFERENCE / "heat-tier-adjustment.csv"):
+            if r["tier"] not in TIER.values():
+                raise SystemExit(f"heat-tier-adjustment.csv: unknown tier {r['tier']!r}")
+            _TIER_ADJ[(r["archetype"], r["tier"])][r["parameter"]] = r
+    return _TIER_ADJ
+
+
+def _tier_adjust(r, k, e):
+    """The row shown under a heat tier other than the archetype's pooled one, with the
+    judged tier adjustment (S181): efficiency times its multiplier, energy use and
+    emissions divided by it, capex and fixed O&M times theirs, and the calculated
+    levelized costs restated from those (non-energy part with the capex multiplier,
+    the energy part with the efficiency one). The CSVs keep the pooled values."""
+    adj = tier_adjustments().get((k, e))
+    if not adj:
+        return r
+    me = _num(adj.get("efficiency", {}).get("multiplier")) or 1.0
+    mc = _num(adj.get("capex", {}).get("multiplier")) or 1.0
+    mo = _num(adj.get("opex-fixed", {}).get("multiplier")) or 1.0
+    out = dict(r)
+    suf = ("", "_low", "_high")
+
+    def scale(col, m):
+        for x in suf:
+            v = _num(out.get(col + x))
+            if v is not None:
+                out[col + x] = float(f"{v * m:.6g}")
+    for c in list(out):
+        if c.endswith(("_n", "_low", "_high")) or c.startswith("_"):
+            continue
+        if c in ("efficiency", "efficiency_heat", "efficiency-chp"):
+            scale(c, me)
+        elif c.startswith("specific-energy-consumption") or (
+                c.startswith("emissions-") and not c.startswith("emissions-reduction-potential")):
+            scale(c, 1 / me)
+        elif c == "capex":
+            scale(c, mc)
+        elif c == "opex-fixed":
+            scale(c, mo)
+    cf, cj = _num(r.get("cost-levelized_calculated")), _num(r.get("cost-levelized_calculated-incl-energy"))
+    if cf is not None:
+        out["cost-levelized_calculated"] = float(f"{cf * mc:.6g}")
+        if cj is not None:
+            out["cost-levelized_calculated-incl-energy"] = float(f"{cf * mc + (cj - cf) / me:.6g}")
+    note = (f"{e} adjustment (judgement, records/reference/heat-tier-adjustment.csv): efficiency x {me:g}, "
+            f"energy use and emissions / {me:g}, capex x {mc:g}, fixed O&M x {mo:g}")
+    out["filled"] = "; ".join(x for x in (note, out.get("filled", "")) if x)
+    return out
+
