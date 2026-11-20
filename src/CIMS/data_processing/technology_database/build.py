@@ -1,15 +1,15 @@
 """Build the harmonized technology database. The one entry point.
 
-    python -m technology_database.build            everything
-    python -m technology_database.build --check    stop after the checks (no outputs)
-    python -m technology_database.build --record-keys
+    python -m CIMS.data_processing.technology_database.build            everything
+    python -m CIMS.data_processing.technology_database.build --check    stop after the checks (no outputs)
+    python -m CIMS.data_processing.technology_database.build --record-keys
                                                first add the key of every newly keyed record
                                                to records/reference/record-key.csv
-    python -m technology_database.build --quantified-only
+    python -m CIMS.data_processing.technology_database.build --quantified-only
                                                the wide view lists only archetypes with
                                                pooled numbers (default: every archetype)
 
-Stages (src/technology_database/docs/pipeline.md):
+Stages (src/CIMS/data_processing/technology_database/docs/pipeline.md):
   1. hierarchy   stamp records/cims-hierarchy.csv, report what changed, and hold
                  every path in the records to it
   2. records     load the archetypes and vocabularies and hold them to the rules
@@ -36,7 +36,7 @@ from collections import Counter
 from pathlib import Path
 
 if __package__ in (None, ""):
-    # run as a script (python src/technology_database/build.py): import the package it sits in
+    # run as a script (python src/CIMS/data_processing/technology_database/build.py): import the package it sits in
     sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
     __package__ = "technology_database"
     import technology_database  # noqa: F401,E402

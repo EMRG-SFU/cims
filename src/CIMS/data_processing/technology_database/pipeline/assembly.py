@@ -16,7 +16,7 @@ A component is written `example-id | case | multiplier`:
 written as a derived row (id tp-<source-id>-aNNN) on the whole-plant archetype,
 with derived-from naming every component row. Components from another source,
 a component that does not resolve to exactly one row, or a component in another
-currency-year stop the build: the rule (src/technology_database/docs/design.md section 2) is that parts
+currency-year stop the build: the rule (src/CIMS/data_processing/technology_database/docs/design.md section 2) is that parts
 are added only within one source, never across sources.
 
 `whole-example` attaches the row to an existing example of the whole-plant

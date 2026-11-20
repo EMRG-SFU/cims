@@ -1,7 +1,7 @@
 """The rules the build holds the records and the facts to.
 
 Everything here reads what is in memory after a build; nothing edits. A failure
-stops the build with a non-zero exit, so `python -m technology_database.build` can
+stops the build with a non-zero exit, so `python -m CIMS.data_processing.technology_database.build` can
 gate a commit.
 """
 from __future__ import annotations

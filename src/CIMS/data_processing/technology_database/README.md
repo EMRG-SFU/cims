@@ -5,11 +5,14 @@ serve each industrial end use in CIMS, summarised from published sources. The ru
 [docs/design.md](docs/design.md), the build and how to add a source in
 [docs/pipeline.md](docs/pipeline.md), and every decision in [docs/decisions.md](docs/decisions.md).
 
-The same package runs in the technology-database repo and in CIMS:
+CIMS is this package's home (since 2026-11-20, plan D6): change the code and the records here.
+The technology-database repository (brad-griffin/technology-database) keeps the extractions'
+authoring copy and the scripts that make them, the reviews, the review packages, and source
+intake; it installs CIMS to use this package. Its history up to the move is there (`97a29cf`).
 
 ```
-python -m technology_database.build                          # technology-database repo
-python -m CIMS.data_processing.technology_database.build     # CIMS
+python -m CIMS.data_processing.technology_database.build            # everything; fails on any broken rule
+python -m CIMS.data_processing.technology_database.build --check    # the checks only
 ```
 
 It finds its data by walking up to the folder that holds `data/technology_database/`, so the
@@ -17,7 +20,7 @@ working directory does not matter.
 
 | Folder (from the repo root) | Edited by | Contents |
 | - | - | - |
-| `data/raw_data/technology_database/` | extraction | Layer 1: the source manifest (`source-details_*.csv`) and every extraction CSV, in publisher folders. Downloaded from FRDR; not committed in CIMS. |
+| `data/raw_data/technology_database/` | extraction | Layer 1: the source manifest (`source-details_*.csv`) and every extraction CSV, in publisher folders. Copied from the technology-database repository's authoring copy until the FRDR deposit, then downloaded from FRDR; not committed in CIMS. |
 | `data/technology_database/` | hand | The records: `archetype.csv`, `archetype-service.csv`, `source-example.csv`, `family.csv`, `hierarchy-annotation.csv`, the CIMS hierarchy snapshot, `fill/`, `reference/` and `vocabulary/`. |
 | `data/processed_data/technology_database/` | the build | The example and archetype tables, the reviews, `unfilled/`, `vocabulary.md` and the workbook. Never edit these: the build rewrites them. [docs/outputs.md](docs/outputs.md) says what each file is for. |
 | `primary-sources/` | hand | The source documents, in the same publisher folders as the extractions. Local only; the build and the checks work without it. |
