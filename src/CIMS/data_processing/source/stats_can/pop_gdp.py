@@ -27,11 +27,13 @@ from CIMS.data_processing.utils.controls_conversions import (
 )
 from CIMS.data_processing.utils.data_extensions import compute_cagr, extend_cagr_periods
 from CIMS.data_processing.utils.output_builder import log_output
+from CIMS.data_processing.utils.extractors.cer import find_cer_file
 
 # --- Paths ---
 POP_FILE    = BASE_PATH / "raw_data/stats_can/population/1710000901.csv"
 GDP_FILE    = BASE_PATH / "raw_data/stats_can/gdp/36100222.csv"
-MACRO_FILE  = BASE_PATH / "raw_data/cer/macro-indicators-2026.csv"
+# Processed CER macro indicators (history back to 2000; see source/cer/README.md)
+MACRO_FILE  = find_cer_file(BASE_PATH / "processed_data/cer", "macro-indicators")
 OUTPUT_DIR  = BASE_PATH / "processed_data/stats_can"
 OUTPUT_FILE = OUTPUT_DIR / "pop_gdp.csv"
 
@@ -60,7 +62,12 @@ REGION_MAP: dict[str, str] = {
 # ---------------------------------------------------------------------------
 
 def _cer_series(macro_df: pl.DataFrame, col: str) -> pd.Series:
-    """Extract one CER macro variable as a year-indexed pandas Series."""
+    """Extract one CER macro variable as a year-indexed pandas Series.
+
+    Matches the column name without regard to case: CEF editions differ
+    (for example "$2017 millions" and "$2017 Millions").
+    """
+    col = next((c for c in macro_df.columns if c.lower() == col.lower()), col)
     rows = macro_df.select(["Year", col]).sort("Year")
     return pd.Series(
         rows[col].cast(pl.Float64).to_list(),

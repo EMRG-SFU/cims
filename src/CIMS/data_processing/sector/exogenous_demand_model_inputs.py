@@ -6,7 +6,8 @@ Emits two sets of rows per region:
 1. Top-level electricity activity  (service_request at Region level)
    Source: processed_data/activity/electricity.csv
    Variable: Electricity.Utility Generation  (MWh)
-   Branch CIMS.CAN.{region} → Target CIMS.CAN.{region}.Electricity
+   Branch CIMS.CAN.{region} → Target CIMS.CAN.{region}.Electricity.Utility Generation
+   (below the zero link in set 2, so the demand reaches generation)
 
 2. Zero-value service_request rows  (Electricity sector → Utility Generation)
    Branch: CIMS.CAN.{region}.Electricity
@@ -66,7 +67,7 @@ def _build_activity_rows(activity: pl.DataFrame, region: str) -> pl.DataFrame:
         pl.lit('service_request').alias('Parameter'),
         pl.lit('').alias('Context'),
         pl.lit('').alias('Sub_Context'),
-        pl.lit(f'CIMS.CAN.{region}.Electricity').alias('Target'),
+        pl.lit(f'CIMS.CAN.{region}.Electricity.Utility Generation').alias('Target'),
         pl.col('Source'),
         pl.col('Unit'),
         pl.col('Year').cast(pl.String).alias('Year'),
