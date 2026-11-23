@@ -23,7 +23,7 @@ the words within a part; an underscore `_` separates the parts.
 | Extracted files | as named | `author_year_slug[_suffix].csv`, as in the technology database: `cer_2026_benchmark-price.csv` |
 | Column headers | `Branch`, `Sub_Context` | `branch`, `sub-context` |
 | Branch paths | `CIMS.CAN.BC.Iron and Steel` | `cims.can.bc.iron-and-steel` |
-| Regions | `BC`, `RoW` | `bc`, `row` |
+| Regions | `BC`, `RoW` | `bc`, `rest-of-world` |
 | Sectors, fuels, technologies | `Iron and Steel`, `Natural Gas` | `iron-and-steel`, `natural-gas` |
 | Parameters | `service_request`, `market_share_new_max` | `service-request`, `market-share-new-max` |
 | Units | `2025_CAD/GJ`, `tCO2e` | `2025_cad/gj`, `t-co2e` (§1.1) |
@@ -66,24 +66,36 @@ process, and nothing reads a layer upstream of its own place in the flow.
 | Layer | In git | Written by | Contents |
 | - | - | - | - |
 | `data/primary-sources/` | no | hand (downloads) | Documents as obtained, in publisher folders (`gov-can/statcan/`, `gov-usa/eia/`, …). The build never reads them (Q3). |
-| `data/extracted/` | no | extraction scripts | As-published values in long CSVs, in the same publisher folders, with one manifest for all sources. Deposited to FRDR and fetched at a pinned version. Source-specific extraction scripts sit beside their CSVs. |
+| `data/extracted/` | no | hand or extraction scripts | As-published values in long CSVs, transcribed by hand or by a script, in the same publisher folders, with one manifest for all sources. Deposited to FRDR and fetched at a pinned version. Source-specific extraction scripts sit beside their CSVs. |
 | `data/config/` | yes | hand | Every hand-edited record: the model hierarchy, parameter values not computed from data, mappings, assumptions, proxies, calibration recipes, policies, model defaults, and pipeline settings (D2, D3). |
 | `data/processed/` | no | the build | One table per source dataset, in the model schema (§3). |
 | `data/model/` | no (except its README) | the build | Everything CIMS reads. Nothing in it is edited by hand (Q2). |
 
-- **Hand edits go only in `config/`.** A value someone chose (a proxy region, a
-  growth rate, a fuel assumption) is a record in `config/` with its rationale, not a
-  line of code or a cell in a generated file.
+- **Choices go only in `config/`.** A value someone chose (a proxy region, a growth
+  rate, a fuel assumption) is a record in `config/` with its rationale, not a line of
+  code or a cell in a generated file. Hand work in `extracted/` is transcription only:
+  values as the source publishes them.
+- **Assumptions from an analysis (Proposed).** Where an assumption is the result of a
+  small analysis, its marimo notebook and the values it writes sit together in
+  `config/assumption/<topic>/`: `<topic>.csv` (or another file the build can read),
+  `<topic>_analysis.py`, and a README entry with the rationale and the date. The build
+  reads only the values and never runs the notebook, so changing the assumption is a
+  deliberate act: rerun the notebook and commit the new values. The notebook records
+  which inputs it used (files and dates), because the values don't update when those
+  inputs change. An analysis that should rerun whenever its inputs change is a stage
+  instead, and writes to `processed/`.
 - **Generated files are never committed.** They always come from the build (Q2).
 - **The data folder follows the code.** The pipeline reads and writes the `data/`
   folder beside the code it imports, unless `CIMS_DATA_ROOT` is set. Run it with
   `uv run` from the worktree. Phase 2 puts every layer's root in one module,
   `common/paths.py`.
-- **Today's folders** map to the layers this way: `raw_data/` to `extracted/` (and,
-  for documents, `primary-sources/`); `mappings_conversions/`, `technology_database/`,
-  and the hand-made parts of `model_inputs/` to `config/`; `processed_data/` to
-  `processed/`; and the generated parts of `model_inputs/`, plus `calibration/`, to
-  `model/`. Phase 3 moves them, and phase 13 retires `fixed_data`.
+- **Today's folders** map to the layers this way (phase 3 moves them, and phase 13
+  retires `fixed_data`):
+  - `raw_data/` to `extracted/`, and its documents to `primary-sources/`
+  - `mappings_conversions/`, `technology_database/`, and the hand-made parts of
+    `model_inputs/` to `config/`
+  - `processed_data/` to `processed/`
+  - the generated parts of `model_inputs/`, and `calibration/`, to `model/`
 
 ## 3. Schema
 
@@ -97,9 +109,14 @@ columns, in this order:
 - **Columns the build can derive** (`type`, `region`, `sector`, and `service` all
   follow from `branch`) may be left blank in processed tables. The model stage fills
   them.
-- **Data that feeds no model parameter** (an activity share, a growth rate) uses a
-  parameter name registered in `config/vocabulary/processed-parameter.csv`, so the
-  schema stays the same.
+- **Values that aren't model parameters.** Some processed tables hold values that a
+  later stage turns into model rows, such as a sector's activity shares or a growth
+  rate. Today these tables have their own columns (`Variable`, for example, with
+  values like `Metal Smelting.Aluminum`). In the target they use the same columns as
+  every other table, with a `parameter` name such as `activity-share` or
+  `growth-rate`. Each such name is listed, with its definition and unit, in
+  `config/vocabulary/processed-parameter.csv`. A check then accepts only model
+  parameters and listed names, so a misspelled parameter can't slip through.
 - **Years.** A blank `year` is a constant for every year. Keep only the anchor years
   for parameters the model interpolates, and collapse a series that never changes to
   one blank-year row. The model fills years only strictly between the years given,
