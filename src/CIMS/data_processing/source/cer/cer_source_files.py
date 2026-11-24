@@ -240,6 +240,10 @@ def carbon_costs(prices: pd.DataFrame, defl: dict[str, pd.Series]) -> pd.DataFra
             rows.append(s.assign(Scenario=scen, **{col: real})[['Scenario', 'Region', 'Sector', 'Year', col]])
         comp_df = pd.concat(rows).rename(columns={'Region': 'Area'})
         out = out.merge(comp_df, on=['Scenario', 'Area', 'Sector', 'Year'], how='left')
+        for key in ('Area', 'Sector'):
+            unknown = set(comp_df[key]) - set(out[key])
+            if unknown:
+                raise ValueError(f'{key} in cer_carbon-prices.csv not in the price data: {sorted(unknown)}')
         out[col] = out[col].fillna(0.0)
         total += out[col]
     out['Carbon price (C$2025/t)'] = total
