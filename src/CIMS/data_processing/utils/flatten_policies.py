@@ -219,6 +219,10 @@ def process_all(input_dir: Path, output_dir: Path) -> None:
             continue
 
         name = policy_name(subfolder.name)
+        clash = [d.name for d in input_dir.iterdir()
+                 if d.is_dir() and d != subfolder and policy_name(d.name) == name]
+        if clash:
+            raise ValueError(f'{subfolder.name} and {clash[0]} both map to policy name {name!r}')
         out_sub = output_dir / name
 
         for csv_file in sorted(subfolder.glob('*.csv')):
