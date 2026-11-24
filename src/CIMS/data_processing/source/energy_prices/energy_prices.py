@@ -22,21 +22,22 @@ from CIMS.data_processing.utils.controls_conversions import (
 from CIMS.data_processing.utils.data_fill import backfill_constant, interpolate_5year_to_annual
 from CIMS.data_processing.utils.data_extensions import extend_constant
 from CIMS.data_processing.utils.extractors.cer import find_cer_file
-from CIMS.data_processing.utils.controls_conversions import DATA_START, PROJECTION_END, BASE_PATH, LAST_DATA_YEAR, ARCHIVED_DATA
+from CIMS.data_processing.common import paths
+from CIMS.data_processing.utils.controls_conversions import DATA_START, PROJECTION_END, LAST_DATA_YEAR, ARCHIVED_DATA
 
 
 # Configuration
 # Processed CER files: carbon removed from end-use prices and history back to
 # 2000 (see source/cer/cer_source_files.py and source/cer/README.md).
-CER_DIR   = BASE_PATH / 'processed_data/cer'
+CER_DIR   = paths.PROCESSED / 'cer'
 MACRO_FILE          = find_cer_file(CER_DIR, 'macro-indicators')
 BENCHMARK_FILE      = find_cer_file(CER_DIR, 'benchmark-prices')
 END_USE_PRICES_FILE = find_cer_file(CER_DIR, 'end-use-prices')
 END_USE_DEMAND_FILE = find_cer_file(CER_DIR, 'end-use-demand')
-CIMS_PRICES_FILE = BASE_PATH / 'raw_data/energy_prices/CIMS Prices and Calcs.xlsx'
-RETAIL_FUEL_FILE = BASE_PATH / 'raw_data/energy_prices/alternative_fuels_data_center/10326_retail_fuel_prices_1-23-26.xlsx'
-RENEWABLE_DIESEL_FILE = BASE_PATH / 'raw_data/energy_prices/alternative_fuels_data_center/10969_renewable_diesel_prices_2-3-26.xlsx'
-OUTPUT_DIR = BASE_PATH / 'processed_data/energy_prices'
+CIMS_PRICES_FILE = paths.RAW / 'energy_prices/CIMS Prices and Calcs.xlsx'
+RETAIL_FUEL_FILE = paths.RAW / 'energy_prices/alternative_fuels_data_center/10326_retail_fuel_prices_1-23-26.xlsx'
+RENEWABLE_DIESEL_FILE = paths.RAW / 'energy_prices/alternative_fuels_data_center/10969_renewable_diesel_prices_2-3-26.xlsx'
+OUTPUT_DIR = paths.PROCESSED / 'energy_prices'
 
 # Every price is converted to this basis (with the deflator and exchange tables
 # CIMS uses; see utils/currency.py) and labelled in CIMS's YYYY_CCC form. The

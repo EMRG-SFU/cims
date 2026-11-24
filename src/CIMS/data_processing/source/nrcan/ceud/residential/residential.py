@@ -44,7 +44,7 @@ from CIMS.data_processing.utils.data_extensions import (
     extend_cagr_periods,
 )
 from CIMS.data_processing.utils.extractors.stats_can import load_resd
-from CIMS.data_processing.utils.controls_conversions import BASE_PATH as _CIMS_BASE
+from CIMS.data_processing.common import paths
 from CIMS.data_processing.utils.controls_conversions import load_control_config
 import CIMS.data_processing.source.nrcan.ceud.residential.residential_heating_intensity as _heat_mod
 
@@ -54,13 +54,13 @@ CONTROLS = load_control_config()
 # CONFIGURATION
 # ==============================================================================
 
-BASE_PATH      = _CIMS_BASE / 'raw_data/nrcan/ceud/residential'
-ASSUMPTIONS_CSV = _CIMS_BASE / 'raw_data/assumptions/residential_assumptions.csv'
-OUTPUT_DIR     = _CIMS_BASE / 'processed_data/nrcan/ceud'
-RESD_CSV = _CIMS_BASE / 'raw_data/stats_can/resd/25100029.csv'
-POP_CSV  = _CIMS_BASE / 'raw_data/stats_can/population/1710000901.csv'
-EFFICIENCY_XLS = _CIMS_BASE / 'raw_data/nrcan/ceud/residential/res_ca_e_32.xls'
-ACTIVITY_CAGR_CSV = _CIMS_BASE / 'raw_data/assumptions/activity_cagr_projections.csv'
+SOURCE_DIR      = paths.RAW / 'nrcan/ceud/residential'
+ASSUMPTIONS_CSV = paths.ASSUMPTIONS / 'residential_assumptions.csv'
+OUTPUT_DIR     = paths.PROCESSED / 'nrcan/ceud'
+RESD_CSV = paths.RAW / 'stats_can/resd/25100029.csv'
+POP_CSV  = paths.RAW / 'stats_can/population/1710000901.csv'
+EFFICIENCY_XLS = paths.RAW / 'nrcan/ceud/residential/res_ca_e_32.xls'
+ACTIVITY_CAGR_CSV = paths.ASSUMPTIONS / 'activity_cagr_projections.csv'
 LAST_HIST_YEAR = CONTROLS["last_data_year"]["ceud"]
 
 # Basis for space- and water-heating market shares:
@@ -71,7 +71,7 @@ LAST_HIST_YEAR = CONTROLS["last_data_year"]["ceud"]
 #   'stock' — space heating: share of dwellings (CEUD Tables 22-25); water
 #             heating: CEUD fuel shares split by the space-heating tier mix.
 HEATING_SHARE_BASIS = 'heat'
-WH_FIXED_DATA_DIR = _CIMS_BASE / 'raw_data/fixed_data/residential'
+WH_FIXED_DATA_DIR = paths.FIXED_DATA / 'residential'
 
 # Per-province overrides — explicit annual rate per period, bypasses computed CAGR.
 CAGR_OVERRIDES: dict[str, tuple[float, ...]] = {
@@ -299,7 +299,7 @@ def load_tables(province_code: str) -> dict:
     ------
     FileNotFoundError if the province's data file does not exist.
     """
-    file_path = BASE_PATH / f"res_{province_code.lower()}_e.xls"
+    file_path = SOURCE_DIR / f"res_{province_code.lower()}_e.xls"
     if not file_path.exists():
         raise FileNotFoundError(f"Data file not found: {file_path}")
 

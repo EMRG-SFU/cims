@@ -37,21 +37,21 @@ from pathlib import Path
 
 import pandas as pd
 
-from CIMS.data_processing.utils.controls_conversions import BASE_PATH
+from CIMS.data_processing.common import paths
 from CIMS.data_processing.utils.extractors.cer import find_cer_file
 
 # ── paths ─────────────────────────────────────────────────────────────────────
-RAW_DIR       = BASE_PATH / 'raw_data/cer'
-OUT_DIR       = BASE_PATH / 'processed_data/cer'
-MAPPINGS      = BASE_PATH / 'mappings_conversions'
+RAW_DIR       = paths.RAW / 'cer'
+OUT_DIR       = paths.PROCESSED / 'cer'
+MAPPINGS      = paths.MAPPINGS
 CARBON_FILE   = MAPPINGS / 'cer_carbon-prices.csv'
 EF_FILE       = MAPPINGS / 'cer_emission-factors.csv'
 BENCH_HISTORY = MAPPINGS / 'cer_benchmark-prices_2000-2005.csv'
-CPI_FILE      = BASE_PATH / 'raw_data/stats_can/cpi/18100005.xlsx'
-POP_FILE      = BASE_PATH / 'raw_data/stats_can/population/1710000901.csv'
-GDP_FILE      = BASE_PATH / 'raw_data/stats_can/gdp/36100222.csv'
-DEFLATOR_FILE = BASE_PATH / 'processed_data/deflator_exchange/currency_deflator.csv'
-EXCHANGE_FILE = BASE_PATH / 'processed_data/deflator_exchange/currency_exchange.csv'
+CPI_FILE      = paths.RAW / 'stats_can/cpi/18100005.xlsx'
+POP_FILE      = paths.RAW / 'stats_can/population/1710000901.csv'
+GDP_FILE      = paths.RAW / 'stats_can/gdp/36100222.csv'
+DEFLATOR_FILE = paths.PROCESSED / 'deflator_exchange/currency_deflator.csv'
+EXCHANGE_FILE = paths.PROCESSED / 'deflator_exchange/currency_exchange.csv'
 
 FIRST_YEAR  = 2000          # extend every file back to this year
 CER_START   = 2005          # first year in the CER open data

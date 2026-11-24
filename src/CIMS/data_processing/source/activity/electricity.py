@@ -47,13 +47,14 @@ import math
 import polars as pl
 from pathlib import Path
 
-from CIMS.data_processing.utils.controls_conversions import BASE_PATH, DATA_START, PROJECTION_END, LAST_DATA_YEAR
+from CIMS.data_processing.common import paths
+from CIMS.data_processing.utils.controls_conversions import DATA_START, PROJECTION_END, LAST_DATA_YEAR
 
 # -- File paths ----------------------------------------------------------------
-PATH_SC15  = BASE_PATH / 'raw_data/stats_can/activity/25100015.csv'
-PATH_JCIMS = BASE_PATH / 'raw_data/clean_fuel_production/electricity_activity_jcims.csv'
-REGION_MAP = BASE_PATH / 'mappings_conversions/region_map.csv'
-OUTPUT     = BASE_PATH / 'processed_data/activity/electricity.csv'
+PATH_SC15  = paths.RAW / 'stats_can/activity/25100015.csv'
+PATH_JCIMS = paths.RAW / 'clean_fuel_production/electricity_activity_jcims.csv'
+REGION_MAP = paths.MAPPINGS / 'region_map.csv'
+OUTPUT     = paths.PROCESSED / 'activity/electricity.csv'
 
 # Year columns present in the JCIMS CSV
 JCIMS_YEAR_COLS = [str(y) for y in range(2000, 2101)]

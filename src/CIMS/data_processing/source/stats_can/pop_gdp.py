@@ -20,8 +20,8 @@ CAD millions using convert_currency(), with the deflator tables CIMS uses.
 import pandas as pd
 import polars as pl
 from pathlib import Path
-from CIMS.data_processing.utils.controls_conversions import (
-    BASE_PATH, DATA_START, PROJECTION_END, LAST_DATA_YEAR,
+from CIMS.data_processing.common import paths
+from CIMS.data_processing.utils.controls_conversions import ( DATA_START, PROJECTION_END, LAST_DATA_YEAR,
     load_control_config, load_macro_indicators,
     load_region_mapping, convert_currency,
 )
@@ -30,11 +30,11 @@ from CIMS.data_processing.utils.output_builder import log_output
 from CIMS.data_processing.utils.extractors.cer import find_cer_file
 
 # --- Paths ---
-POP_FILE    = BASE_PATH / "raw_data/stats_can/population/1710000901.csv"
-GDP_FILE    = BASE_PATH / "raw_data/stats_can/gdp/36100222.csv"
+POP_FILE    = paths.RAW / "stats_can/population/1710000901.csv"
+GDP_FILE    = paths.RAW / "stats_can/gdp/36100222.csv"
 # Processed CER macro indicators (history back to 2000; see source/cer/README.md)
-MACRO_FILE  = find_cer_file(BASE_PATH / "processed_data/cer", "macro-indicators")
-OUTPUT_DIR  = BASE_PATH / "processed_data/stats_can"
+MACRO_FILE  = find_cer_file(paths.PROCESSED / "cer", "macro-indicators")
+OUTPUT_DIR  = paths.PROCESSED / "stats_can"
 OUTPUT_FILE = OUTPUT_DIR / "pop_gdp.csv"
 
 CONTROLS  = load_control_config()

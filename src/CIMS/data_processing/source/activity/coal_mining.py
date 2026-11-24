@@ -177,16 +177,17 @@ from pathlib import Path
 from openpyxl import load_workbook
 
 from CIMS.data_processing.utils.data_extensions import extend_cagr_periods, compute_cagr, load_cagr_assumptions, extend_constant
-from CIMS.data_processing.utils.controls_conversions import load_control_config, DATA_START, PROJECTION_END, BASE_PATH
+from CIMS.data_processing.common import paths
+from CIMS.data_processing.utils.controls_conversions import load_control_config, DATA_START, PROJECTION_END
 
 # ── File paths ───────────────────────────────────────────────────────────────────
-MAPPINGS_PATH    = BASE_PATH / 'mappings_conversions'
+MAPPINGS_PATH    = paths.MAPPINGS
 REGION_MAP_FILE  = MAPPINGS_PATH / 'region_map.csv'
-PATH_48          = BASE_PATH / 'raw_data/stats_can/activity/coal_production/25100048.csv'
-PATH_46          = BASE_PATH / 'raw_data/stats_can/activity/coal_production/25100046.csv'
-PATH_BC          = BASE_PATH / 'raw_data/bc_gov/bcannualcoalproduction.csv'
-PATH_AER         = BASE_PATH / 'raw_data/ab_gov/st98-2025-coal-production-demand-data.xlsx'
-OUTPUT           = BASE_PATH / 'processed_data/activity/coal_mining.csv'
+PATH_48          = paths.RAW / 'stats_can/activity/coal_production/25100048.csv'
+PATH_46          = paths.RAW / 'stats_can/activity/coal_production/25100046.csv'
+PATH_BC          = paths.RAW / 'bc_gov/bcannualcoalproduction.csv'
+PATH_AER         = paths.RAW / 'ab_gov/st98-2025-coal-production-demand-data.xlsx'
+OUTPUT           = paths.PROCESSED / 'activity/coal_mining.csv'
 
 _config        = load_control_config()
 LAST_DATA_YEAR = _config["last_data_year"]
@@ -195,7 +196,7 @@ EXTEND_TO      = PROJECTION_END
 YEARS          = list(range(DATA_START, LAST_DATA_YEAR["stat_can_coal"] + 1))
 REGIONS    = ['British Columbia', 'Alberta', 'Saskatchewan', 'New Brunswick', 'Nova Scotia']
 
-ASSUMPTIONS_FILE = BASE_PATH / 'raw_data/assumptions/activity_cagr_projections.csv'
+ASSUMPTIONS_FILE = paths.ASSUMPTIONS / 'activity_cagr_projections.csv'
 CAGR_START, CAGR_END, CAGR_PERIODS = load_cagr_assumptions('Coal Mining', ASSUMPTIONS_FILE)
 
 # Per-region overrides — one explicit annual rate per period.

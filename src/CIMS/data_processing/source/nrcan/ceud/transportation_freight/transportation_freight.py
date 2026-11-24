@@ -43,7 +43,7 @@ import pandas as pd
 import numpy as np
 
 from CIMS.data_processing.utils.extractors.nrcan_ceud import row_to_series
-from CIMS.data_processing.utils.controls_conversions import BASE_PATH as _CIMS_BASE
+from CIMS.data_processing.common import paths
 from CIMS.data_processing.utils.controls_conversions import load_control_config
 
 CONTROLS = load_control_config()
@@ -52,16 +52,16 @@ CONTROLS = load_control_config()
 # CONFIGURATION
 # ==============================================================================
 
-BASE_PATH        = _CIMS_BASE / 'raw_data/nrcan/ceud/transportation'
-CAN_FILE         = BASE_PATH / 'tran_ca_e.xls'
-ASSUMPTIONS_CSV  = _CIMS_BASE / 'raw_data/assumptions/transport_freight_assumptions.csv'
-STATSCAN_POP_PATH = _CIMS_BASE / 'raw_data/stats_can/population/1710000901.csv'
-OUTPUT_DIR       = _CIMS_BASE / 'processed_data/nrcan/ceud'
+SOURCE_DIR        = paths.RAW / 'nrcan/ceud/transportation'
+CAN_FILE         = SOURCE_DIR / 'tran_ca_e.xls'
+ASSUMPTIONS_CSV  = paths.ASSUMPTIONS / 'transport_freight_assumptions.csv'
+STATSCAN_POP_PATH = paths.RAW / 'stats_can/population/1710000901.csv'
+OUTPUT_DIR       = paths.PROCESSED / 'nrcan/ceud'
 LAST_HIST_YEAR   = CONTROLS["last_data_year"]["ceud"]
 
 FUEL_SCALE = 1000.0  # CEUD reports energy in PJ; × 1000 → TJ
 
-IPCC_FILE               = _CIMS_BASE / 'raw_data/eccc/nir/GHG_IPCC_Can_Prov_Terr.csv'
+IPCC_FILE               = paths.RAW / 'eccc/nir/GHG_IPCC_Can_Prov_Terr.csv'
 OFFROAD_MJ_PER_TKM      = 7.82     # TJ per M·tkm (TJ→MJ and M·tkm cancel); same for all regions
 GASOLINE_EF_KT_CO2EQ_TJ = 0.064   # kt CO2eq per TJ for motor gasoline
 HFO_EF_KT_CO2EQ_TJ      = 0.074737 # kt CO2eq per TJ for heavy fuel oil (marine)
@@ -280,7 +280,7 @@ def _try_labels(table: pl.DataFrame, candidates: list[str], match_n: int = 0) ->
 def _load_prov_table(province_code: str, table_num: int) -> Optional[pl.DataFrame]:
     """Load a single numbered table from the provincial CEUD file."""
     file_code = _PROV_FILE_CODE.get(province_code.upper(), province_code.lower())
-    file_path = BASE_PATH / f"tran_{file_code}_e.xls"
+    file_path = SOURCE_DIR / f"tran_{file_code}_e.xls"
     if not file_path.exists():
         return None
     sheet_name = f"Table {table_num}"

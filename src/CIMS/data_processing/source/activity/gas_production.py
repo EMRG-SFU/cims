@@ -46,22 +46,23 @@ import pandas as pd
 import polars as pl
 from pathlib import Path
 
-from CIMS.data_processing.utils.controls_conversions import load_control_config, DATA_START, PROJECTION_END, BASE_PATH, load_energy_conversions
+from CIMS.data_processing.common import paths
+from CIMS.data_processing.utils.controls_conversions import load_control_config, DATA_START, PROJECTION_END, load_energy_conversions
 from CIMS.data_processing.utils.data_fill import trend_backwards, backfill_constant, interpolate_gaps
 from CIMS.data_processing.utils.data_extensions import extend_constant, extend_cagr_periods, compute_cagr, load_cagr_assumptions
 from CIMS.data_processing.utils.extractors.stats_can import load_resd
 from CIMS.data_processing.utils.extractors.cer import find_cer_file
 
 # Configuration
-CER_DIR   = BASE_PATH / 'raw_data/cer'
+CER_DIR   = paths.RAW / 'cer'
 NATURAL_GAS_PRODUCTION_FILE = find_cer_file(CER_DIR, 'natural-gas-production')
-RESD_FILE                   = BASE_PATH / 'raw_data/stats_can/resd/25100029.csv'
+RESD_FILE                   = paths.RAW / 'stats_can/resd/25100029.csv'
 LNG_EXPORT_FILE             = find_cer_file(CER_DIR, 'lng-export-assumptions')
-OUTPUT_DIR                  = BASE_PATH / 'processed_data/activity'
+OUTPUT_DIR                  = paths.PROCESSED / 'activity'
 _config                     = load_control_config()
 SCENARIO                    = _config["cer_ef_reference_scenario"]
 LAST_DATA_YEAR              = _config["last_data_year"]
-ASSUMPTIONS_FILE = BASE_PATH / 'raw_data/assumptions/activity_cagr_projections.csv'
+ASSUMPTIONS_FILE = paths.ASSUMPTIONS / 'activity_cagr_projections.csv'
 CAGR_START, CAGR_END, CAGR_PERIODS = load_cagr_assumptions('Natural Gas', ASSUMPTIONS_FILE)
 
 # Per-region overrides — one explicit annual rate per period.

@@ -28,20 +28,21 @@ from pathlib import Path
 import polars as pl
 
 from CIMS.data_processing.utils.add_cims_totals import add_totals
-from CIMS.data_processing.utils.controls_conversions import load_control_config, BASE_PATH
+from CIMS.data_processing.common import paths
+from CIMS.data_processing.utils.controls_conversions import load_control_config
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # CONFIG — Input and output files
 # ═══════════════════════════════════════════════════════════════════════════════
 
 # Update folder with new nir when released each year
-NIR_CSV  = BASE_PATH / 'raw_data/eccc/nir/GHG_Econ_Can_Prov_Terr.csv'
+NIR_CSV  = paths.RAW / 'eccc/nir/GHG_Econ_Can_Prov_Terr.csv'
 # Manual map - should stay the same unless there are changes to nir or cims naming
-MAP_CSV  = BASE_PATH / 'mappings_conversions/nir_to_cims_map.csv'
+MAP_CSV  = paths.MAPPINGS / 'nir_to_cims_map.csv'
 # Script outputs a version of the nir with the suppressed values solved
-OUT_NIR  = BASE_PATH / 'processed_data/eccc/NIR_Suppressed_Solved.csv'
+OUT_NIR  = paths.PROCESSED / 'eccc/NIR_Suppressed_Solved.csv'
 # Main output - NIR emissions mapped to cims nodes
-OUT_CIMS = BASE_PATH / 'processed_data/eccc/nir/nir_to_cims.csv'
+OUT_CIMS = paths.PROCESSED / 'eccc/nir/nir_to_cims.csv'
 
 _config = load_control_config()
 _archived = _config["archived_data"]

@@ -20,14 +20,15 @@ from CIMS.data_processing.utils.controls_conversions import (
 from CIMS.data_processing.utils.data_fill import backfill_constant, interpolate_5year_to_annual
 from CIMS.data_processing.utils.data_extensions import extend_constant
 from CIMS.data_processing.utils.extractors.cer import find_cer_file
-from CIMS.data_processing.utils.controls_conversions import DATA_START, PROJECTION_END, BASE_PATH, LAST_DATA_YEAR, ARCHIVED_DATA
+from CIMS.data_processing.common import paths
+from CIMS.data_processing.utils.controls_conversions import DATA_START, PROJECTION_END, LAST_DATA_YEAR, ARCHIVED_DATA
 from CIMS.data_processing.source.energy_prices.energy_prices import (
     main as get_production_costs, PRICE_YEAR, PRICE_CURRENCY,
 )
 
 
 # Configuration
-MAPPINGS_PATH    = BASE_PATH / 'mappings_conversions'
+MAPPINGS_PATH    = paths.MAPPINGS
 CONTROL_FILE     = MAPPINGS_PATH / 'control.py'
 ENERGY_MAP_FILE  = MAPPINGS_PATH / 'energy_map.csv'
 REGION_MAP_FILE  = MAPPINGS_PATH / 'region_map.csv'
@@ -35,11 +36,11 @@ SECTOR_MAP_FILE  = MAPPINGS_PATH / 'sector_map.csv'
 SECTOR_REGION_MAP_FILE = MAPPINGS_PATH / 'sector_region_map.csv'
 # Processed CER files: carbon removed from end-use prices and history back to
 # 2000 (see source/cer/cer_source_files.py and source/cer/README.md).
-CER_DIR             = BASE_PATH / 'processed_data/cer'
+CER_DIR             = paths.PROCESSED / 'cer'
 MACRO_FILE          = find_cer_file(CER_DIR, 'macro-indicators')
 END_USE_PRICES_FILE = find_cer_file(CER_DIR, 'end-use-prices')
-CIMS_PRICES_FILE = BASE_PATH / 'raw_data/energy_prices/CIMS Prices and Calcs.xlsx'
-OUTPUT_DIR = BASE_PATH / 'processed_data/energy_prices'
+CIMS_PRICES_FILE = paths.RAW / 'energy_prices/CIMS Prices and Calcs.xlsx'
+OUTPUT_DIR = paths.PROCESSED / 'energy_prices'
 
 
 

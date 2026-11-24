@@ -9,10 +9,10 @@ from typing import Dict, Optional
 import numpy as np
 import pandas as pd
 
-from CIMS.data_processing.utils.controls_conversions import BASE_PATH
+from CIMS.data_processing.common import paths
 
-DEFAULT_STATCAN_FILE = BASE_PATH / 'raw_data/stats_can/market_shares/2010002501-eng.csv'
-DEFAULT_EPA_FILE = BASE_PATH / 'raw_data/epa/table_export.csv'
+DEFAULT_STATCAN_FILE = paths.RAW / 'stats_can/market_shares/2010002501-eng.csv'
+DEFAULT_EPA_FILE = paths.RAW / 'epa/table_export.csv'
 DEFAULT_OUTPUT_FILE = Path("passenger_transportation_market_shares.csv")
 
 HISTORICAL_START_YEAR = 2000
