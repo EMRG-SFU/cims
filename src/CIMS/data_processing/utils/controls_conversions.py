@@ -3,7 +3,6 @@ Utility functions for energy price processing.
 Uses Polars for data processing with pandas for Excel reading.
 """
 
-import os
 
 import pandas as pd
 import polars as pl
@@ -11,54 +10,27 @@ import numpy as np
 from pathlib import Path
 from typing import Dict, Optional
 
-# Paths — anchored on the repository root so nothing is hardcoded.
-# This file lives at src/CIMS/data_processing/utils/controls_conversions.py, so
-# walking up five parents lands on the repo root:
-#   parents[0] → utils/
-#   parents[1] → data_processing/
-#   parents[2] → CIMS/
-#   parents[3] → src/
-#   parents[4] → <repo root>
-# The data tree (raw_data/, processed_data/, model_inputs/, calibration/,
-# mappings_conversions/) stays at <repo root>/data/.
-_ENV_DATA_ROOT = 'CIMS_DATA_ROOT'
+# Paths: every layer root is in common/paths.py (plan Phase 2). These names are
+# kept as aliases, so existing imports keep working.
+from CIMS.data_processing.common import paths
+
+_ENV_DATA_ROOT = paths.ENV_DATA_ROOT
 
 
 def find_repo_root() -> Path:
     """Return the repository root (the directory containing src/ and data/)."""
-    return Path(__file__).resolve().parents[4]
+    return paths.REPO_ROOT
 
 
 def find_project_root() -> Path:
-    """
-    Return the data root directory (<repo root>/data).
-
-    Set the CIMS_DATA_ROOT environment variable to override this — useful when
-    the data tree lives outside the repository, or when CIMS is installed
-    non-editable and the path above no longer points at a checkout.
-    """
-    override = os.environ.get(_ENV_DATA_ROOT)
-    if override:
-        root = Path(override).expanduser().resolve()
-        if not root.is_dir():
-            raise FileNotFoundError(
-                f'{_ENV_DATA_ROOT} is set to {root}, which is not a directory.'
-            )
-        return root
-
-    root = find_repo_root() / 'data'
-    if not root.is_dir():
-        raise FileNotFoundError(
-            f'Could not locate the CIMS data directory at {root}. '
-            f'Set the {_ENV_DATA_ROOT} environment variable to point at it.'
-        )
-    return root
+    """Return the data root: <repo root>/data, unless CIMS_DATA_ROOT is set (see common.paths)."""
+    return paths.DATA_ROOT
 
 
-REPO_ROOT        = find_repo_root()
-BASE_PATH        = find_project_root()
-PIPELINE_ROOT    = REPO_ROOT / 'src' / 'CIMS' / 'data_processing'
-MAPPINGS_PATH    = BASE_PATH / 'mappings_conversions'
+REPO_ROOT        = paths.REPO_ROOT
+BASE_PATH        = paths.DATA_ROOT
+PIPELINE_ROOT    = paths.PIPELINE_ROOT
+MAPPINGS_PATH    = paths.MAPPINGS
 CONTROL_FILE     = MAPPINGS_PATH / 'control.py'
 ENERGY_MAP_FILE  = MAPPINGS_PATH / 'energy_map.csv'
 REGION_MAP_FILE  = MAPPINGS_PATH / 'region_map.csv'

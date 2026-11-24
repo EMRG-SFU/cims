@@ -5,6 +5,7 @@ Usage:
     python -m CIMS.data_processing.process_source_data
     python -m CIMS.data_processing.process_source_data --stop-on-error
     python -m CIMS.data_processing.process_source_data --use-existing-technology-database
+    python -m CIMS.data_processing.process_source_data --strict
 
 --use-existing-technology-database skips the technology database build and
 uses the tables already in processed_data/technology_database/ (for example
@@ -17,6 +18,7 @@ import subprocess
 import sys
 import time
 
+from CIMS.data_processing.common import paths
 from CIMS.data_processing.utils.controls_conversions import BASE_PATH
 
 PACKAGE = "CIMS.data_processing.source"
@@ -79,6 +81,7 @@ MODULES = [
 def main() -> int:
     STOP_ON_ERROR = "--stop-on-error" in sys.argv[1:]
     USE_EXISTING_TECHDB = "--use-existing-technology-database" in sys.argv[1:]
+    paths.announce(strict=True if "--strict" in sys.argv[1:] else None)
 
     GREEN = "\033[92m"
     RED   = "\033[91m"
