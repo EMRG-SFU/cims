@@ -199,7 +199,8 @@ def flatten(header: list[str], rows: list[list[str]]) -> tuple[list[str], list[l
         if not any(row):
             continue
         fixed = [row[i] for i in keep]
-        points = [(year, row[idx]) for year, idx in year_cols if row[idx] not in ('', '-')]
+        points = sorted((year, row[idx]) for year, idx in year_cols
+                        if row[idx] != '' and row[idx].lower() not in BLANK_LITERAL_SENTINELS)
         if not points:
             out_rows.append(fixed + ['', ''])
             continue
