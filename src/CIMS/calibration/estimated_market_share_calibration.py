@@ -11,6 +11,8 @@ with app.setup:
 
     import polars as pl
 
+    from CIMS.data_processing.common import paths
+
     from CIMS.calibration.Calibration.Optimization.optimize_ms import (
         optimize_total_market_share_fic,
         optimize_total_market_share_fic_lifetime,
@@ -66,7 +68,7 @@ def _():
 
 @app.cell
 def _():
-    model_pickle_path = "C:/calibration/cims/results/Reference/transportation_freight_optimized.pkl"
+    model_pickle_path = str(paths.RESULTS / "Reference" / "transportation_freight_optimized.pkl")
     return (model_pickle_path,)
 
 
@@ -267,7 +269,7 @@ def _(nodeNames):
     # <calibration_output_root>/<sector>/fitted_fics (and fitted_lifetimes), and
     # read back in by the next Reference.py run via calibration_output_sectors —
     # every sector listed below must be in that list.
-    calibration_output_root = "C:/calibration/cims/data/model_inputs/calibration_outputs"
+    calibration_output_root = str(paths.CALIBRATION_OUTPUTS)
     for _sector, _nodes in group_by_sector(nodeNames).items():
         print(f"{_sector}: {len(_nodes)} node(s) -> {calibration_output_root}/{_sector}")
     return (calibration_output_root,)
