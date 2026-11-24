@@ -1,7 +1,7 @@
 # Conventions
 
 The rules the data processing and calibration pipeline follows. They describe the
-target that the reorganization (`data-reorganization-plan.md`) works toward, so
+end state that the reorganization (`data-reorganization-plan.md`) works toward, so
 reviewers can agree on it before anything moves. Where today's pipeline differs, the
 phase that brings it into line is named. Decisions, with their dates, are in
 [decisions.md](decisions.md).
@@ -17,7 +17,7 @@ The technology database follows the same rules and has its own detailed design i
 **Lowercase kebab-snake throughout, wherever possible** (D4, D5). A hyphen `-` joins
 the words within a part; an underscore `_` separates the parts.
 
-| What | Today | Target |
+| What | Today | After the reorganization |
 | - | - | - |
 | Folders and data files | `iron_and_steel_ab.csv`, `CIMS_base_AB.csv`, `FIC_AB.csv` | `iron-and-steel_ab.csv`, `cims-base_ab.csv`, `fixed-intangible-cost_ab.csv` |
 | Extracted files | as named | `author_year_slug[_suffix].csv`, as in the technology database: `cer_2026_benchmark-price.csv` |
@@ -112,7 +112,7 @@ columns, in this order:
 - **Values that aren't model parameters.** Some processed tables hold values that a
   later stage turns into model rows, such as a sector's activity shares or a growth
   rate. Today these tables have their own columns (`Variable`, for example, with
-  values like `Metal Smelting.Aluminum`). In the target they use the same columns as
+  values like `Metal Smelting.Aluminum`). After the reorganization, they use the same columns as
   every other table, with a `parameter` name such as `activity-share` or
   `growth-rate`. Each such name is listed, with its definition and unit, in
   `config/vocabulary/processed-parameter.csv`. A check then accepts only model
@@ -144,7 +144,7 @@ columns, in this order:
 
 ## 5. Precedence between files
 
-When two rows target the same branch and parameter, today's model mostly keeps the
+When two rows set the same parameter on the same branch, today's model mostly keeps the
 last one loaded, so file order decides which row wins. There are exceptions:
 
 - a constant (blank year) never beats a year row;
