@@ -1,9 +1,13 @@
 # Conventions
 
-The rules the data processing and calibration pipeline follows. They describe the
-end state that the reorganization (`data-reorganization-plan.md`) works toward, so
-reviewers can agree on it before anything moves. Where today's pipeline differs, the
-phase that brings it into line is named. Decisions, with their dates, are in
+The rules the data processing pipeline follows. The pipeline turns sources into the
+model's input files, including the calibration targets. Calibration itself, which
+fits the FIC values to those targets, is a separate process that reads them.
+
+These rules describe the end state that the reorganization
+(`data-reorganization-plan.md`) works toward, so reviewers can agree on it before
+anything moves. Where today's pipeline differs, the phase that brings it into line is
+named. Decisions, with their dates, are in
 [decisions.md](decisions.md).
 
 Items marked **Proposed** are not yet decided. Each one needs a ruling before the
@@ -67,7 +71,7 @@ process, and nothing reads a layer upstream of its own place in the flow.
 | - | - | - | - |
 | `data/primary-sources/` | no | hand (downloads) | Documents as obtained, in publisher folders (`gov-can/statcan/`, `gov-usa/eia/`, …). The build never reads them (Q3). |
 | `data/extracted/` | no | hand or extraction scripts | As-published values in long CSVs, transcribed by hand or by a script, in the same publisher folders, with one manifest for all sources. Deposited to FRDR and fetched at a pinned version. Source-specific extraction scripts sit beside their CSVs. |
-| `data/config/` | yes | hand | Every hand-edited record: the model hierarchy, parameter values not computed from data, mappings, assumptions, proxies, calibration recipes, policies, model defaults, and pipeline settings (D2, D3). |
+| `data/config/` | yes | hand | Every hand-edited record: the model hierarchy, parameter values not computed from data, mappings, assumptions, proxies, calibration-target recipes, policies, model defaults, and pipeline settings (D2, D3). |
 | `data/processed/` | no | the build | One table per source dataset, in the model schema (§3). |
 | `data/model/` | no (except its README) | the build | Everything CIMS reads. Nothing in it is edited by hand (Q2). |
 
@@ -165,11 +169,11 @@ check that sums rows must allow for overridden values.
 - **One home for each kind of code.** Generic code (paths, configuration, CSV input
   and output, the schema, branch handling, years, currency, shared checks) goes in
   `common/`; code for one dataset goes in `source/<publisher>/`; model assembly in
-  `model/`; calibration targets in `calibration/`; and the few sectors that need their
+  `model/`; the calibration targets in `calibration/`; and the few sectors that need their
   own code in `hooks/`.
 - **Stages read files.** A stage reads files and writes files. It doesn't import
-  another stage to get its data, and no calibration script reads another
-  calibration script's output (phase 6).
+  another stage to get its data, and no script that builds calibration targets reads
+  another's output (phase 6).
 - **Absolute imports** (`from CIMS.data_processing.utils.currency import ...`), and no
   `sys.path` edits.
 - **No data paths in code** outside `common/paths.py`, and no settings in code:
