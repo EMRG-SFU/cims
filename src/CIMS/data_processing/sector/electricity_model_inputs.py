@@ -57,8 +57,8 @@ import CIMS.data_processing.source.energy_prices.energy_price_multipliers as _en
 
 import CIMS.data_processing.source.activity.electricity as _elec_mod
 
+from CIMS.data_processing.common import paths
 from CIMS.data_processing.utils.controls_conversions import (
-    BASE_PATH,
     force_single_technology_market_share,
 )
 from CIMS.data_processing.utils.currency import write_model_csv
@@ -66,8 +66,8 @@ from CIMS.data_processing.utils.collapse_constant_years import collapse_constant
 from CIMS.data_processing.utils.drop_zero_activity import drop_zero_activity_regions
 
 # ── configuration ──────────────────────────────────────────────────────────────
-FIXED_INPUT_DIR = BASE_PATH / 'raw_data/fixed_data/electricity'
-OUTPUT_DIR      = BASE_PATH / 'model_inputs/model/electricity'
+FIXED_INPUT_DIR = paths.FIXED_DATA / 'electricity'
+OUTPUT_DIR      = paths.MODEL / 'electricity'
 
 OUTPUT_COLS = [
     'Branch', 'Type', 'Region', 'Sector', 'Service', 'Technology',

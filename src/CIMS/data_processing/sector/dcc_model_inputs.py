@@ -25,13 +25,14 @@ import polars as pl
 # ── path setup ────────────────────────────────────────────────────────────────
 import CIMS.data_processing.utils.flatten_fixed_data as _flatten_mod
 
-from CIMS.data_processing.utils.controls_conversions import BASE_PATH, DATA_START, PROJECTION_END, LAST_DATA_YEAR
+from CIMS.data_processing.common import paths
+from CIMS.data_processing.utils.controls_conversions import DATA_START, PROJECTION_END, LAST_DATA_YEAR
 from CIMS.data_processing.utils.currency import write_model_csv
 from CIMS.data_processing.utils.techdb_steam import drop_replaced_steam_rows
 
 # ── configuration ─────────────────────────────────────────────────────────────
-FIXED_INPUT_DIR = BASE_PATH / 'raw_data/fixed_data/dcc'
-OUTPUT_DIR      = BASE_PATH / 'model_inputs/model/dcc'
+FIXED_INPUT_DIR = paths.FIXED_DATA / 'dcc'
+OUTPUT_DIR      = paths.MODEL / 'dcc'
 
 
 # ── main ──────────────────────────────────────────────────────────────────────

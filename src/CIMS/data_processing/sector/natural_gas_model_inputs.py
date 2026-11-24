@@ -150,16 +150,16 @@ import CIMS.data_processing.source.energy_prices.energy_price_multipliers as _en
 
 import CIMS.data_processing.source.cer.cer_resd_demand as _cer_resd_mod
 
-from CIMS.data_processing.utils.controls_conversions import BASE_PATH
+from CIMS.data_processing.common import paths
 from CIMS.data_processing.utils.currency import write_model_csv
 from CIMS.data_processing.utils.collapse_constant_years import collapse_constant_years
 from CIMS.data_processing.utils.drop_zero_activity import drop_zero_activity_regions
 from CIMS.data_processing.utils.feedstock_demand import build_feedstock_rows_all_regions
 
 # ── configuration ──────────────────────────────────────────────────────────────
-FIXED_INPUT_DIR = BASE_PATH / 'raw_data/fixed_data/natural_gas'
-OUTPUT_DIR      = BASE_PATH / 'model_inputs/model/natural_gas'
-MARKET_OUTPUT_DIR = BASE_PATH / 'model_inputs/model/natural_gas_market'
+FIXED_INPUT_DIR = paths.FIXED_DATA / 'natural_gas'
+OUTPUT_DIR      = paths.MODEL / 'natural_gas'
+MARKET_OUTPUT_DIR = paths.MODEL / 'natural_gas_market'
 
 # The national market, an optional sector (see "Natural Gas Market switch")
 MARKET_SECTOR = 'Natural Gas Market'

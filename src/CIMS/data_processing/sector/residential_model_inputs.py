@@ -82,14 +82,15 @@ import CIMS.data_processing.source.energy_prices.energy_price_multipliers as _en
 
 import CIMS.data_processing.source.nrcan.ceud.residential.residential_heating_intensity as _heating_mod
 
-from CIMS.data_processing.utils.controls_conversions import BASE_PATH, DATA_START, PROJECTION_END
+from CIMS.data_processing.common import paths
+from CIMS.data_processing.utils.controls_conversions import DATA_START, PROJECTION_END
 from CIMS.data_processing.utils.currency import write_model_csv
 from CIMS.data_processing.utils.collapse_constant_years import collapse_constant_years
 
 # ── configuration ──────────────────────────────────────────────────────────────
-FIXED_INPUT_DIR = BASE_PATH / 'raw_data/fixed_data/residential'
-OUTPUT_DIR      = BASE_PATH / 'model_inputs/model/residential'
-LIGHTING_ESTIMATED_MS_DIR = BASE_PATH / 'calibration/calibration_estimated/residential'
+FIXED_INPUT_DIR = paths.FIXED_DATA / 'residential'
+OUTPUT_DIR      = paths.MODEL / 'residential'
+LIGHTING_ESTIMATED_MS_DIR = paths.CALIBRATION_TARGETS / 'calibration_estimated/residential'
 
 REGIONS = [
     'AB', 'BC', 'MB', 'NB', 'NL', 'NS', 'NT', 'NU',

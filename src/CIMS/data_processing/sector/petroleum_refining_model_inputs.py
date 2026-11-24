@@ -45,14 +45,14 @@ import CIMS.data_processing.source.energy_prices.energy_price_multipliers as _en
 
 import CIMS.data_processing.source.cer.cer_resd_demand as _cer_resd_mod
 
-from CIMS.data_processing.utils.controls_conversions import BASE_PATH
+from CIMS.data_processing.common import paths
 from CIMS.data_processing.utils.currency import write_model_csv
 from CIMS.data_processing.utils.collapse_constant_years import collapse_constant_years
 from CIMS.data_processing.utils.feedstock_demand import build_feedstock_rows_all_regions
 
 # ── configuration ──────────────────────────────────────────────────────────────
-FIXED_INPUT_DIR = BASE_PATH / 'raw_data/fixed_data/petroleum_refining'
-OUTPUT_DIR      = BASE_PATH / 'model_inputs/model/petroleum_refining'
+FIXED_INPUT_DIR = paths.FIXED_DATA / 'petroleum_refining'
+OUTPUT_DIR      = paths.MODEL / 'petroleum_refining'
 
 OUTPUT_COLS = [
     'Branch', 'Type', 'Region', 'Sector', 'Service', 'Technology',

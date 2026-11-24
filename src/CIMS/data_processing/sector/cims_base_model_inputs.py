@@ -28,13 +28,14 @@ from CIMS.data_processing.utils.flatten_fixed_data import read_fixed_data_file
 
 import CIMS.data_processing.source.stats_can.pop_gdp as _pg_mod
 
-from CIMS.data_processing.utils.controls_conversions import BASE_PATH, PROJECTION_END
+from CIMS.data_processing.common import paths
+from CIMS.data_processing.utils.controls_conversions import PROJECTION_END
 from CIMS.data_processing.utils.currency import write_model_csv
 from CIMS.data_processing.utils.collapse_constant_years import collapse_constant_years
 
 # ── configuration ───────────────────────────────────────────────────────────────
-FIXED_INPUT_DIR = BASE_PATH / 'raw_data/fixed_data/cims_base'
-OUTPUT_DIR      = BASE_PATH / 'model_inputs/model/cims_base'
+FIXED_INPUT_DIR = paths.FIXED_DATA / 'cims_base'
+OUTPUT_DIR      = paths.MODEL / 'cims_base'
 
 PROVINCES    = ['AB', 'BC', 'MB', 'NB', 'NL', 'NS', 'NT', 'NU', 'ON', 'PE', 'QC', 'SK', 'YT']
 FLATTEN_ONLY = ['CIMS', 'CAN', 'RoW']

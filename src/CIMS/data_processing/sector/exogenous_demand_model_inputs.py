@@ -28,11 +28,12 @@ import polars as pl
 
 import CIMS.data_processing.source.activity.electricity as _elec_mod
 
-from CIMS.data_processing.utils.controls_conversions import BASE_PATH, DATA_START, PROJECTION_END
+from CIMS.data_processing.common import paths
+from CIMS.data_processing.utils.controls_conversions import DATA_START, PROJECTION_END
 from CIMS.data_processing.utils.currency import write_model_csv
 from CIMS.data_processing.utils.collapse_constant_years import collapse_constant_years
 
-OUTPUT_DIR = BASE_PATH / 'model_inputs/model/exogenous_demand'
+OUTPUT_DIR = paths.MODEL / 'exogenous_demand'
 
 OUTPUT_COLS = [
     'Branch', 'Type', 'Region', 'Sector', 'Service', 'Technology',
