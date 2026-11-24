@@ -2,7 +2,7 @@
 
 Branch `natural-gas-market`, 2026-11-18; rebased onto `emh-port` and split on 2026-11-19.
 
-**Status:** the market is **off by default** in `scenarios/Reference.py`. With it off, Natural Gas (and Petroleum Crude, which needs it) runs for any set of regions. Turning it on needs the #512 sector-check exemption, which is on its own branch, `512_overlay-sector-exemption` (from `staging`), for Jillian to review. Until that merges, `validate_files` reports the market's rows as errors and the graph won't build.
+**Status:** the market is **off by default** in `scenarios/Reference.py`. With it off, Natural Gas (and Petroleum Crude, which needs it) runs for any set of regions. Turning it on relies on the #512 sector-check exemption (#631), which is merged and on this branch.
 
 ## How the switch works
 
