@@ -19,7 +19,6 @@ import sys
 import time
 
 from CIMS.data_processing.common import paths
-from CIMS.data_processing.utils.controls_conversions import BASE_PATH
 
 PACKAGE = "CIMS.data_processing.source"
 TECHDB_BUILD = "CIMS.data_processing.technology_database.build"
@@ -92,7 +91,7 @@ def main() -> int:
 
     modules = MODULES
     if USE_EXISTING_TECHDB:
-        techdb_dir = BASE_PATH / "processed_data" / "technology_database"
+        techdb_dir = paths.TECHDB_OUTPUT
         missing = [t for t in TECHDB_TABLES if not (techdb_dir / t).exists()]
         if missing:
             print(f"{RED}--use-existing-technology-database: {techdb_dir} lacks "

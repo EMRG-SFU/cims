@@ -24,15 +24,15 @@ Usage
 
 import pandas as pd
 
-from CIMS.data_processing.utils.controls_conversions import BASE_PATH
+from CIMS.data_processing.common import paths
 
 
 # ── Configuration ─────────────────────────────────────────────────────────────
 
 # Pipeline writes leaves here — add_totals reads from this, never writes to it
-INPUT_CSV  = BASE_PATH / 'processed_data/eccc/nir/nir_walkthrough_cims_leaves.csv'
+INPUT_CSV  = paths.PROCESSED / 'eccc/nir/nir_walkthrough_cims_leaves.csv'
 # add_totals writes the full output (leaves + ancestors) here
-OUTPUT_CSV = BASE_PATH / 'processed_data/eccc/nir/nir_walkthrough_cims.csv'
+OUTPUT_CSV = paths.PROCESSED / 'eccc/nir/nir_walkthrough_cims.csv'
 
 COL_BRANCH = "CIMS_Branch"
 COL_REGION = "Region"
