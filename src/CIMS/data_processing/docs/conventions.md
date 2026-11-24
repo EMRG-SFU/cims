@@ -10,9 +10,6 @@ anything moves. Where today's pipeline differs, the phase that brings it into li
 named. Decisions, with their dates, are in
 [decisions.md](decisions.md).
 
-Items marked **Proposed** are not yet decided. Each one needs a ruling before the
-phase that applies it.
-
 The technology database follows the same rules and has its own detailed design in
 [`technology_database/docs/design.md`](../technology_database/docs/design.md).
 
@@ -45,7 +42,7 @@ the words within a part; an underscore `_` separates the parts.
   change in phase 14. That is a model-core change, with its own pull requests and a
   transition period in which the model reads both spellings.
 
-### 1.1 Units (Proposed)
+### 1.1 Units
 
 Lowercasing units loses the case that SI prefixes depend on (`Mt` and `mt`, `MW` and
 `mW`). So units come from a closed list rather than a spelling rule alone:
@@ -79,7 +76,7 @@ process, and nothing reads a layer upstream of its own place in the flow.
   rate, a fuel assumption) is a record in `config/` with its rationale, not a line of
   code or a cell in a generated file. Hand work in `extracted/` is transcription only:
   values as the source publishes them.
-- **Assumptions from an analysis (Proposed).** Where an assumption is the result of a
+- **Assumptions from an analysis.** Where an assumption is the result of a
   small analysis, its marimo notebook and the values it writes sit together in
   `config/assumption/<topic>/`: `<topic>.csv` (or another file the build can read),
   `<topic>_analysis.py`, and a README entry with the rationale and the date. The build
@@ -133,11 +130,11 @@ columns, in this order:
 
 - **Encoding: UTF-8 with a byte-order mark**, so Excel reads accents and symbols. The
   technology database already writes this way (Brad, 2026-11-06). Readers accept files
-  with or without the mark. **Proposed** for model files, which have no mark today.
-  The model reader and the validator (both polars) and pandas skip the mark, but
-  Python's `csv` module opened with `encoding="utf-8"` keeps it in the first header,
-  so code that reads model files that way (in notebooks or emh's reporting) needs
-  `utf-8-sig` first.
+  with or without the mark. This includes model files, which have no mark today
+  (2026-11-24). The model reader and the validator (both polars) and pandas skip the
+  mark, but Python's `csv` module opened with `encoding="utf-8"` keeps it in the first
+  header, so code that reads model files that way (in notebooks or emh's reporting)
+  needs `utf-8-sig`.
 - **Line endings: `\n`**, whatever the platform. The repository's `.gitattributes`
   sets `eol=lf`.
 - **Comma-separated, one header row**, with the columns in schema order (§3).

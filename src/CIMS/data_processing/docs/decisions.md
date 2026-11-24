@@ -16,6 +16,9 @@ log in [`technology_database/docs/decisions.md`](../technology_database/docs/dec
 
 | Date | Decision | Status | Record |
 | - | - | - | - |
+| 2026-11-24 | Units come from a closed list, `config/vocabulary/unit.csv`, with each unit's display spelling, dimension, and factor to the dimension's base unit; a check fails on any unit not listed. Within a unit, `/` means "per" and `-` joins the words of one quantity; money is `yyyy_ccc`. | planned (phase 14) | #636; conventions §1.1 |
+| 2026-11-24 | Every CSV the pipeline writes, model files included, is UTF-8 with a byte-order mark and `\n` line endings. Readers accept files with or without the mark. | planned (phase 2, `common/io.py`) | #636; conventions §4 |
+| 2026-11-24 | An assumption that comes from a small analysis keeps its marimo notebook and its values together in `config/assumption/<topic>/`, with a README entry. The build reads only the values and never runs the notebook. | planned (phase 4) | #636; conventions §2 |
 | 2026-11-24 | Policies will be built from sources like any other input (extracted, processed, then written by the policy stage), not kept as hand-edited records in `config/`. Until then, they're made by hand in `model_inputs/policies/`, and `flatten_policies` has no sources to read. Narrows D3. | planned | Brad, 2026-11-24 |
 | 2026-11-23 | `uv` resolves only package versions that have a Windows wheel (`required-environments` in `pyproject.toml`), because `loro` 1.19.0, a marimo dependency, shipped without one and broke `uv sync` on Windows. | in review | `e79072e`, branch `uv-windows-wheels` |
 | 2026-11-23 | Outputs are checked against a recorded snapshot (`tools/output_snapshot.py`). Files with the same rows in any order count as the same, and numbers are compared at 1e-9 relative. The Phase 0 baseline is snapshot `1eecb766d2`. | current on `data-reorganization` | `4a2f254`; plan §6, Phase 0 step 6 |
@@ -40,7 +43,7 @@ log in [`technology_database/docs/decisions.md`](../technology_database/docs/dec
 | 2026-11-12 | Generated files always come from the build. A release tags the model and the FRDR version together. | planned (phase 15) | Q2 |
 | 2026-11-12 | Fetching primary sources stays manual. The build never reads them. | current | Q3 |
 | 2026-11-12 | Which sources FRDR can host. Meanwhile, every raw data source goes through the technology database's intake, with its licence recorded, and doubtful cases go to a hosting review. | open | Q4; plan phase 9 |
-| 2026-11-06 | CSV files are written as UTF-8 with a byte-order mark, so Excel reads accents and symbols. | current for the technology database; proposed for the pipeline | technology database `pipeline/common.py`; conventions §4 |
+| 2026-11-06 | CSV files are written as UTF-8 with a byte-order mark, so Excel reads accents and symbols. | current for the technology database; extended to the pipeline 2026-11-24 | technology database `pipeline/common.py`; conventions §4 |
 
 ## Earlier decisions in the sector modules
 
