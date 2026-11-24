@@ -76,3 +76,8 @@ code = ["src/CIMS"]  # Only search for imports under ./src/CIMS (includes data_p
 deps = ["pyproject.toml"]  # Only look for declared dependencies here
 ignore_unused = ["xlrd", "fastexcel", "pyarrow", "kaleido"]  # Used by pandas, polars & plotly, but never imported directly
 output_format = "human_detailed"  # Detailed report by default
+
+# Resolve only versions that have a Windows wheel, since a new release sometimes ships without one
+# (loro 1.19.0, a marimo dependency, did in November 2026).
+[tool.uv]
+required-environments = ["sys_platform == 'win32' and platform_machine == 'AMD64'"]
