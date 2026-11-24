@@ -30,5 +30,4 @@ That works with today's files but weakens the check:
 
 **Option to explore:** declare overlay sectors explicitly, for example with an `overlay` flag in the sector list (`config/sector.csv` in Phase 4 of the data reorganization plan). The check would then accept only `service_request` rows tagged with a declared overlay sector, and drop both rules above.
 
-- **Owner:** Jillian (author of #512). The exemption is a separate pull request into `staging`, so she can take it, replace it with the declared approach, or fix the check her own way.
-- **Also:** add a test that a wrong-sector request inside a region is still flagged, and that a declared overlay sector's rows pass.
+- **Owner:** Jillian (author of #512), tracked in #637. The exemption is merged (#631); the declared approach would replace it.
