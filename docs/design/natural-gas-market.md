@@ -26,7 +26,6 @@ That works with today's files but weakens the check:
 
 - Rule 1 hides a copied row whose Sector was taken from its target by mistake.
 - Rule 2 accepts a `Natural Gas Market` tag on any branch.
-- The list of national nodes is worked out from branch paths, so it also includes region codes (harmless, but indirect).
 - There's no test file for the exemption.
 
 **Option to explore:** declare overlay sectors explicitly, for example with an `overlay` flag in the sector list (`config/sector.csv` in Phase 4 of the data reorganization plan). The check would then accept only `service_request` rows tagged with a declared overlay sector, and drop both rules above.
