@@ -1,38 +1,45 @@
 """
-Build model-ready policy CSVs from policy source files:
-  A) Split AT (Atlantic aggregate) files into province files (NB, NS, PE, NL)
-  B) Flatten wide 5-year columns (2000, 2005, … 2050) to annual long format;
-     files already in long format (Year and Value columns) pass through as-is
-  C) Finalise currency units (utils/currency.py), e.g. '$/tCO2e' -> '2020_CAD/tCO2e'
+Build the long, annual policy files the model reads from policy source files.
 
-Input:  BASE_PATH / raw_data/policies/<policy>/<policy>_<region>.csv
-Output: BASE_PATH / model_inputs/policies/<policy>/<policy>_<region>.csv
+Input:  BASE_PATH / raw_data/policies/<source folder>/*.csv
+        Wide files with 5-year columns (2000, 2005, ... 2050), or files already
+        in long format (Year and Value columns). Source folders keep the names
+        they were authored with (for example Off_OBPS_Fed), or already use the
+        output name (for example carbon-tax_ref).
+Output: BASE_PATH / model_inputs/policies/<policy folder>/<policy folder>_<region>.csv
+        Long files with Year and Value columns, one row per year, in
+        kebab-snake names (for example obps_federal_off/obps_federal_off_ab.csv).
 
-Both sides use one folder per policy (e.g. carbon-tax_ref/, obps_federal/), the
-layout scenarios/Reference.py reads from data/model_inputs/policies/. Output file
-names use a lower-case region suffix (carbon-tax_ref_bc.csv); an AT file
-(<policy>_AT.csv or _at.csv) becomes <policy>_nb.csv, _ns.csv, _pe.csv and _nl.csv.
-Existing output files with the same name are overwritten.
+For each file, the script:
+  A) drops the navigation-hint row (",<-- Navigate ...") if present;
+  B) splits Atlantic (AT) files into NB, NS, PE, and NL files, substituting the
+     province in the Branch and Region columns;
+  C) writes one row per year from the first year with a value to YEAR_MAX:
+     numeric values are interpolated linearly between the given years, literal
+     values (such as "None", which turns a policy off) carry forward until the
+     next given year, and the last given value holds to YEAR_MAX. Years before
+     the first given value get no row, so a policy that starts in 2030 stays
+     unset before 2030;
+  D) passes rows with no year values through with a blank Year and Value;
+  E) finalises currency units with utils/currency.py (for example "$/tCO2e"
+     becomes "2020_CAD/tCO2e", and blank fic and dic_min units get the
+     untagged currency).
 
-A policy CSV may have a navigation-hint row as line 1 (e.g. ",<-- Navigate …").
-This row is stripped before flattening so process_file sees the real header.
+Files already in long format (with Year and Value columns) are passed through
+as they are, apart from the AT split (B) and the currency step (E).
 
-AT rows are duplicated four times with CIMS.CAN.AT.… → CIMS.CAN.{prov}.…
-and the Region field replaced accordingly.
-
-5-year values are linearly interpolated to annual 2000–2050.
-Rows with no numeric year values (e.g. market_share_class placeholders) are
-passed through with blank Year/Value (flatten_fixed_data default behaviour).
+Reconciles two rewrites (plan, phase 0 step 4): the wide-file handling and
+naming come from emh_mmcf_2026; the long-file pass-through and the
+utils/currency.py step from data-processing-calibration.
 """
 
 import csv
-import tempfile
+import re
 from pathlib import Path
-
-import CIMS.data_processing.utils.flatten_fixed_data as _flat_mod
 
 from CIMS.data_processing.utils.controls_conversions import BASE_PATH
 from CIMS.data_processing.utils.currency import finalise_currency_csv
+from CIMS.data_processing.utils.flatten_fixed_data import BLANK_LITERAL_SENTINELS
 
 # ── configuration ──────────────────────────────────────────────────────────────
 INPUT_DIR  = BASE_PATH / 'raw_data/policies'
@@ -40,14 +47,49 @@ OUTPUT_DIR = BASE_PATH / 'model_inputs/policies'
 
 AT_PROVINCES = ['NB', 'NS', 'PE', 'NL']
 
-YEAR_MIN     = 2000
-YEAR_MAX     = 2050
-TARGET_START = 2000
-TARGET_END   = 2050
-TARGET_STEP  = 1
+YEAR_MIN = 2000
+YEAR_MAX = 2050
+
+# Source folder name -> output policy name. Folders not listed here are named
+# by policy_name() below.
+NAME_MAP = {
+    'Off_OBPS_Fed': 'obps_federal_off',
+    'Off_carbon tax': 'carbon-tax_off',
+}
+
+# Whole components that are spelled out in output names.
+COMPONENT_MAP = {
+    'fed': 'federal',
+    'prov': 'provincial',
+}
 
 
-# ── helpers ────────────────────────────────────────────────────────────────────
+# ── naming ─────────────────────────────────────────────────────────────────────
+
+def policy_name(folder: str) -> str:
+    """
+    Return the kebab-snake output name for a source folder.
+
+    Hyphens join words within a component and underscores separate components.
+    A leading "ref_" is dropped and a leading "Off_" becomes a trailing "_off".
+    """
+    if folder in NAME_MAP:
+        return NAME_MAP[folder]
+
+    suffix = ''
+    if folder.lower().startswith('off_'):
+        folder, suffix = folder[4:], '_off'
+    elif folder.lower().startswith('ref_'):
+        folder = folder[4:]
+
+    components = []
+    for component in folder.split('_'):
+        component = re.sub(r'\s+', '-', component.strip().lower())
+        components.append(COMPONENT_MAP.get(component, component))
+    return '_'.join(c for c in components if c) + suffix
+
+
+# ── reading ────────────────────────────────────────────────────────────────────
 
 def _read_csv_skip_nav(path: Path) -> tuple[list[str], list[list[str]]]:
     """
@@ -56,6 +98,7 @@ def _read_csv_skip_nav(path: Path) -> tuple[list[str], list[list[str]]]:
     The hint row is identified by any cell containing '<--'. After skipping it,
     the first remaining row is the real header.
     """
+    rows: list[list[str]] = []
     for encoding in ('utf-8-sig', 'utf-8', 'latin-1'):
         try:
             with path.open(newline='', encoding=encoding) as f:
@@ -64,10 +107,7 @@ def _read_csv_skip_nav(path: Path) -> tuple[list[str], list[list[str]]]:
         except UnicodeDecodeError:
             continue
 
-    if not rows:
-        return [], []
-
-    if any('<--' in cell for cell in rows[0]):
+    if rows and any('<--' in cell for cell in rows[0]):
         rows = rows[1:]
 
     if not rows:
@@ -75,6 +115,23 @@ def _read_csv_skip_nav(path: Path) -> tuple[list[str], list[list[str]]]:
 
     return rows[0], rows[1:]
 
+
+def _year_columns(header: list[str]) -> list[tuple[int, int]]:
+    """Return (year, column index) for header cells that are years in range."""
+    years = []
+    for idx, cell in enumerate(header):
+        cell = cell.strip()
+        if cell.isdigit() and YEAR_MIN <= int(cell) <= YEAR_MAX:
+            years.append((int(cell), idx))
+    return years
+
+
+def _is_long(header: list[str]) -> bool:
+    norm = {h.strip().lower() for h in header}
+    return {'year', 'value'} <= norm
+
+
+# ── transforming ───────────────────────────────────────────────────────────────
 
 def _split_at(header: list[str], rows: list[list[str]]) -> dict[str, list[list[str]]]:
     """
@@ -103,32 +160,57 @@ def _split_at(header: list[str], rows: list[list[str]]) -> dict[str, list[list[s
     return result
 
 
-def _write_temp(header: list[str], rows: list[list[str]]) -> Path:
-    """Write header + rows to a NamedTemporaryFile and return its path."""
-    tmp = tempfile.NamedTemporaryFile(
-        mode='w', suffix='.csv', delete=False, encoding='utf-8', newline=''
-    )
-    w = csv.writer(tmp)
-    w.writerow(header)
-    w.writerows(rows)
-    tmp.close()
-    return Path(tmp.name)
+def _as_number(value: str) -> float | None:
+    try:
+        return float(value)
+    except ValueError:
+        return None
+
+
+def _annual(points: list[tuple[int, str]]) -> list[tuple[int, str]]:
+    """
+    Expand (year, value) points to one value per year, first point to YEAR_MAX.
+
+    Linear between two numeric points; otherwise the earlier value carries forward.
+    """
+    out = []
+    for (y0, v0), (y1, v1) in zip(points, points[1:] + [(YEAR_MAX + 1, None)]):
+        n0 = _as_number(v0)
+        n1 = _as_number(v1) if v1 is not None else None
+        for year in range(y0, min(y1, YEAR_MAX + 1)):
+            if year == y0 or n0 is None or n1 is None:
+                out.append((year, v0))
+            else:
+                value = n0 + (n1 - n0) * (year - y0) / (y1 - y0)
+                out.append((year, repr(round(value, 10))))
+    return out
+
+
+def flatten(header: list[str], rows: list[list[str]]) -> tuple[list[str], list[list[str]]]:
+    """Convert wide rows to long annual rows. Drops the Comments column."""
+    year_cols = _year_columns(header)
+    year_idx = {idx for _, idx in year_cols}
+    keep = [i for i, h in enumerate(header)
+            if i not in year_idx and h.strip().lower() != 'comments']
+    out_header = [header[i].strip() for i in keep] + ['Year', 'Value']
+
+    out_rows = []
+    for row in rows:
+        row = [cell.strip() for cell in row] + [''] * (len(header) - len(row))
+        if not any(row):
+            continue
+        fixed = [row[i] for i in keep]
+        points = sorted((year, row[idx]) for year, idx in year_cols
+                        if row[idx] != '' and row[idx].lower() not in BLANK_LITERAL_SENTINELS)
+        if not points:
+            out_rows.append(fixed + ['', ''])
+            continue
+        for year, value in _annual(points):
+            out_rows.append(fixed + [str(year), value])
+    return out_header, out_rows
 
 
 # ── main processing ────────────────────────────────────────────────────────────
-
-def _is_long(header: list[str]) -> bool:
-    """True when the file is already annual long format (Year and Value columns)."""
-    norm = {h.strip().lower() for h in header}
-    return {'year', 'value'} <= norm
-
-
-def _write_rows(header: list[str], rows: list[list[str]], out_path: Path) -> None:
-    with out_path.open('w', newline='', encoding='utf-8') as f:
-        w = csv.writer(f, lineterminator='\n')
-        w.writerow([h.strip() for h in header])
-        w.writerows(rows)
-
 
 def process_all(input_dir: Path, output_dir: Path) -> None:
     total_in = total_out = 0
@@ -137,54 +219,46 @@ def process_all(input_dir: Path, output_dir: Path) -> None:
         if not subfolder.is_dir():
             continue
 
-        out_sub = output_dir / subfolder.name
-        out_sub.mkdir(parents=True, exist_ok=True)
+        name = policy_name(subfolder.name)
+        clash = [d.name for d in input_dir.iterdir()
+                 if d.is_dir() and d != subfolder and policy_name(d.name) == name]
+        if clash:
+            raise ValueError(f'{subfolder.name} and {clash[0]} both map to policy name {name!r}')
+        out_sub = output_dir / name
 
         for csv_file in sorted(subfolder.glob('*.csv')):
-            total_in += 1
             header, data_rows = _read_csv_skip_nav(csv_file)
             if not header:
-                print(f'  SKIP {csv_file.name} — unreadable')
+                print(f'  SKIP {csv_file.name}: unreadable')
                 continue
-
-            stem = csv_file.stem
-            is_at = stem.lower().endswith('_at')
-
-            if is_at:
-                province_data = _split_at(header, data_rows)
-                targets = {
-                    f'{stem[:-3]}_{prov.lower()}': rows
-                    for prov, rows in province_data.items()
-                }
-            else:
-                targets = {stem: data_rows}
-
             long_format = _is_long(header)
-            for out_stem, rows in targets.items():
-                out_path = out_sub / f'{out_stem}.csv'
-                try:
-                    if long_format:
-                        _write_rows(header, rows, out_path)
-                    else:
-                        tmp = _write_temp(header, rows)
-                        try:
-                            _flat_mod.process_file(
-                                input_path=tmp,
-                                output_path=out_path,
-                                year_min=YEAR_MIN,
-                                year_max=YEAR_MAX,
-                                target_start=TARGET_START,
-                                target_end=TARGET_END,
-                                target_step=TARGET_STEP,
-                            )
-                        finally:
-                            tmp.unlink(missing_ok=True)
-                    finalise_currency_csv(out_path)
-                    total_out += 1
-                    print(f'  {subfolder.name}/{csv_file.name} → {out_stem}.csv'
-                          f'{" (long format)" if long_format else ""}')
-                except Exception as exc:
-                    print(f'  ERROR {csv_file.name} → {out_stem}.csv: {exc}')
+            if not long_format and not _year_columns(header):
+                print(f'  SKIP {csv_file.name}: no year columns')
+                continue
+            total_in += 1
+
+            region = csv_file.stem.rsplit('_', 1)[-1]
+            if region.upper() == 'AT':
+                targets = _split_at(header, data_rows)
+            else:
+                targets = {region: data_rows}
+
+            out_sub.mkdir(parents=True, exist_ok=True)
+            for reg, rows in targets.items():
+                if long_format:
+                    out_header = [h.strip() for h in header]
+                    out_rows = [[cell.strip() for cell in row] for row in rows if any(cell.strip() for cell in row)]
+                else:
+                    out_header, out_rows = flatten(header, rows)
+                out_path = out_sub / f'{name}_{reg.lower()}.csv'
+                with out_path.open('w', newline='', encoding='utf-8') as f:
+                    w = csv.writer(f, lineterminator='\n')
+                    w.writerow(out_header)
+                    w.writerows(out_rows)
+                finalise_currency_csv(out_path)
+                total_out += 1
+                note = ', long format' if long_format else ''
+                print(f'  {subfolder.name}/{csv_file.name} → {name}/{out_path.name} ({len(out_rows)} rows{note})')
 
     print()
     print(f'Input files:  {total_in}')
@@ -193,11 +267,11 @@ def process_all(input_dir: Path, output_dir: Path) -> None:
 
 def main() -> None:
     print('=' * 60)
-    print('BUILD POLICY FILES')
+    print('FLATTEN POLICY FILES')
     print('=' * 60)
     print(f'Input:  {INPUT_DIR}')
     print(f'Output: {OUTPUT_DIR}')
-    print(f'Years:  {TARGET_START}–{TARGET_END} (annual, linear interpolation)')
+    print(f'Years:  first given year to {YEAR_MAX} (annual)')
     print()
 
     if not INPUT_DIR.is_dir():

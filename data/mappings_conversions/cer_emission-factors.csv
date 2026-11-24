@@ -1,0 +1,7 @@
+Fuel,Sectors,Emission_factor_tCO2e_per_GJ,Derivation
+Natural Gas,Residential;Commercial;Industrial,0.0509,Industrial Net-zero less Current Measures gap per $ of aggregate cost of carbon (2050: 22.91 $/GJ / 450); matches 2024 consumer gap (4.140 $/GJ / $80 at C$2025)
+Oil,Residential;Commercial,0.0721,2024 consumer gap in commercial and residential oil (5.864 $/GJ / $80 at C$2025); light fuel oil
+Oil,Industrial,0.0786,Industrial Net-zero less Current Measures gap per $ of aggregate cost of carbon (2050: 35.37 $/GJ / 450); matches 2024 gap (6.393 $/GJ); heavy fuel oil
+Diesel,Transportation,0.0699,2024 consumer gap (5.684 $/GJ / $80 at C$2025)
+Gasoline,Transportation,0.069,2024 consumer gap (5.611 $/GJ / $80 at C$2025)
+Electricity,Residential;Commercial;Industrial,0.0,"Not removed: carbon costs sit inside generation costs, and CIMS models the power sector"

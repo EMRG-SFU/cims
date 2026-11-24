@@ -20,6 +20,12 @@ into that form:
     '2025 C$/GJ'    -> '2025_CAD/GJ'
     '2025$ millions'-> '2025_CAD_millions'
     'US$/GJ'        -> '2020_USD/GJ'
+    blank, on a fic or dic_min row -> '2020_CAD'   (BLANK_UNIT_MONETARY; untagged)
+
+The fixed data and older calibration outputs leave fic and dic_min without a
+unit, although both are money. ``finalise_currency`` gives those rows the
+untagged dollar-year and currency, so CIMS converts them like any other cost.
+New FIC fits carry the run's own label (calibration/.../write_fics.py).
 
 Units that name GDP as an activity are quantities of output (real GDP in
 chained 2017 dollars), not prices, so they must not convert. They are written as
@@ -56,6 +62,10 @@ _CONTROLS = load_control_config()
 UNTAGGED_YEAR = int(_CONTROLS.get('currency_year_untagged', 2020))
 UNTAGGED_CURRENCY = str(_CONTROLS.get('currency_country_untagged', 'CAD')).upper()
 OUTPUT_MODE = str(_CONTROLS.get('currency_output_mode', 'tagged')).lower()
+
+# Monetary parameters that the fixed data and older calibration outputs leave
+# without a unit; finalise_currency labels them with the untagged currency.
+BLANK_UNIT_MONETARY = frozenset({'fic', 'dic_min'})
 if OUTPUT_MODE not in ('tagged', 'convert'):
     raise ValueError(f"control.py currency_output_mode must be 'tagged' or 'convert', not {OUTPUT_MODE!r}")
 OUTPUT_CONVERT = OUTPUT_MODE == 'convert'
@@ -160,6 +170,13 @@ def finalise_currency(df: pl.DataFrame, convert: bool | None = None,
     convert = OUTPUT_CONVERT if convert is None else convert
     year = OUTPUT_YEAR if year is None else int(year)
     currency = (OUTPUT_CURRENCY if currency is None else currency).upper()
+
+    if 'Parameter' in df.columns:
+        blank = pl.col('Unit').cast(pl.Utf8).fill_null('').str.strip_chars() == ''
+        money = pl.col('Parameter').cast(pl.Utf8).is_in(list(BLANK_UNIT_MONETARY))
+        df = df.with_columns(
+            pl.when(blank & money).then(pl.lit(f'{UNTAGGED_YEAR}_{UNTAGGED_CURRENCY}'))
+              .otherwise(pl.col('Unit').cast(pl.Utf8)).alias('Unit'))
 
     units = df.get_column('Unit').cast(pl.Utf8)
     mapping = {u: canonical_unit(u) for u in units.unique().to_list() if u is not None}

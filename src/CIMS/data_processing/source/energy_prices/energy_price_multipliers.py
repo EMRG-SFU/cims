@@ -33,7 +33,9 @@ ENERGY_MAP_FILE  = MAPPINGS_PATH / 'energy_map.csv'
 REGION_MAP_FILE  = MAPPINGS_PATH / 'region_map.csv'
 SECTOR_MAP_FILE  = MAPPINGS_PATH / 'sector_map.csv'
 SECTOR_REGION_MAP_FILE = MAPPINGS_PATH / 'sector_region_map.csv'
-CER_DIR             = BASE_PATH / 'raw_data/cer'
+# Processed CER files: carbon removed from end-use prices and history back to
+# 2000 (see source/cer/cer_source_files.py and source/cer/README.md).
+CER_DIR             = BASE_PATH / 'processed_data/cer'
 MACRO_FILE          = find_cer_file(CER_DIR, 'macro-indicators')
 END_USE_PRICES_FILE = find_cer_file(CER_DIR, 'end-use-prices')
 CIMS_PRICES_FILE = BASE_PATH / 'raw_data/energy_prices/CIMS Prices and Calcs.xlsx'
