@@ -665,8 +665,10 @@ def branch_path_missing_sector(validator):
         return flagged, concern_desc
 
     df = validator.model_df
+    comp = df[df[COL.parameter] == PARAM.competition_type]
+    regions = set(comp.loc[comp[COL.value].astype(str).str.strip().str.lower() == "region", COL.branch])
     national_nodes = {parts[2] for parts in (str(b).split(".") for b in df[COL.branch].dropna().unique())
-                      if len(parts) >= 3}
+                      if len(parts) >= 3 and ".".join(parts[:3]) not in regions}
 
     def _overlay_request(row_index):
         row = df.loc[row_index]
