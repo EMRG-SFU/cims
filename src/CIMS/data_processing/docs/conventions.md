@@ -169,7 +169,8 @@ check that sums rows must allow for overridden values.
 - **One home for each kind of code.** Generic code (paths, configuration, CSV input
   and output, the schema, branch handling, years, currency, shared checks) goes in
   `common/`; code for one dataset goes in `source/<publisher>/`; model assembly in
-  `model/`; the calibration targets in `calibration/`; and the few sectors that need their
+  `model/`; the calibration targets in `calibration_target/` (named apart from
+  `src/CIMS/calibration/`, the FIC fitting); and the few sectors that need their
   own code in `hooks/`.
 - **Stages read files.** A stage reads files and writes files. It doesn't import
   another stage to get its data, and no script that builds calibration targets reads
@@ -243,6 +244,6 @@ check that sums rows must allow for overridden values.
 - **Size.** One concern per commit, ideally under about 400 changed lines of real edits
   (moves don't count). One pull request per phase into `staging` (D7).
 - **Message shape:** `<area>: <what>`, a blank line, why, and the outputs line. For
-  example: `data_processing/calibration: replace 18 sector modules with targets.py
-  and target-recipe.csv`.
+  example: `data_processing/calibration_target: replace 18 sector modules with
+  targets.py and target-recipe.csv`.
 - **Stage files by name.** Never `git add -A`, which would pick up untracked results.
