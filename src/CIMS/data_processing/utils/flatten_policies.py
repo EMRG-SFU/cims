@@ -39,6 +39,7 @@ from pathlib import Path
 
 from CIMS.data_processing.utils.controls_conversions import BASE_PATH
 from CIMS.data_processing.utils.currency import finalise_currency_csv
+from CIMS.data_processing.utils.flatten_fixed_data import BLANK_LITERAL_SENTINELS
 
 # ── configuration ──────────────────────────────────────────────────────────────
 INPUT_DIR  = BASE_PATH / 'raw_data/policies'

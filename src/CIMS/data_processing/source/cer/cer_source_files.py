@@ -218,6 +218,9 @@ def carbon_costs(prices: pd.DataFrame, defl: dict[str, pd.Series]) -> pd.DataFra
     the carbon cost (C$2025/GJ) to the CER end-use prices.
     """
     carbon = _expand_sectors(pd.read_csv(CARBON_FILE))
+    unknown = set(carbon['Scenario']) - set(prices['Scenario']) - {'All'}
+    if unknown:
+        raise ValueError(f'Scenario in cer_carbon-prices.csv not in the price data: {sorted(unknown)}')
     ef = _expand_sectors(pd.read_csv(EF_FILE)).rename(
         columns={'Emission_factor_tCO2e_per_GJ': 'Emission factor (tCO2e/GJ)'})
 
