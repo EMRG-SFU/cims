@@ -17,7 +17,7 @@ The generator is `src/CIMS/data_processing/sector/natural_gas_model_inputs.py`; 
 
 The market's switch rows are `service_request` rows on regional `Production` nodes, tagged `Sector = Natural Gas Market`. The #512 check `branch_path_missing_sector` (an error, so it blocks `construct_graph`) flags them, because the Sector isn't part of the Branch.
 
-The exemption on `512_overlay-sector-exemption` accepts a flagged `service_request` row when either:
+The exemption (#631) accepts a flagged `service_request` row when either:
 
 1. its Sector is part of its Target path, or
 2. its Sector is a national node (`CIMS.<country>.<sector>`).
