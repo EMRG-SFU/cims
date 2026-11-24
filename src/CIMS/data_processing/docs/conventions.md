@@ -71,7 +71,7 @@ process, and nothing reads a layer upstream of its own place in the flow.
 | - | - | - | - |
 | `data/primary-sources/` | no | hand (downloads) | Documents as obtained, in publisher folders (`gov-can/statcan/`, `gov-usa/eia/`, …). The build never reads them (Q3). |
 | `data/extracted/` | no | hand or extraction scripts | As-published values in long CSVs, transcribed by hand or by a script, in the same publisher folders, with one manifest for all sources. Deposited to FRDR and fetched at a pinned version. Source-specific extraction scripts sit beside their CSVs. |
-| `data/config/` | yes | hand | Every hand-edited record: the model hierarchy, parameter values not computed from data, mappings, assumptions, proxies, calibration-target recipes, policies, model defaults, and pipeline settings (D2, D3). |
+| `data/config/` | yes | hand | Every hand-edited record: the model hierarchy, parameter values not computed from data, mappings, assumptions, proxies, calibration-target recipes, model defaults, and pipeline settings (D2, D3). |
 | `data/processed/` | no | the build | One table per source dataset, in the model schema (§3). |
 | `data/model/` | no (except its README) | the build | Everything CIMS reads. Nothing in it is edited by hand (Q2). |
 
@@ -88,6 +88,9 @@ process, and nothing reads a layer upstream of its own place in the flow.
   which inputs it used (files and dates), because the values don't update when those
   inputs change. An analysis that should rerun whenever its inputs change is a stage
   instead, and writes to `processed/`.
+- **Policies are data, not records.** They will be built from sources like any other
+  input: extracted, processed, and written to `model/` by the policy stage. Until
+  then, they're made by hand directly in today's `model_inputs/policies/`.
 - **Generated files are never committed.** They always come from the build (Q2).
 - **The data folder follows the code.** The pipeline reads and writes the `data/`
   folder beside the code it imports, unless `CIMS_DATA_ROOT` is set. Run it with

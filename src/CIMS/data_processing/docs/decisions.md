@@ -16,6 +16,7 @@ log in [`technology_database/docs/decisions.md`](../technology_database/docs/dec
 
 | Date | Decision | Status | Record |
 | - | - | - | - |
+| 2026-11-24 | Policies will be built from sources like any other input (extracted, processed, then written by the policy stage), not kept as hand-edited records in `config/`. Until then, they're made by hand in `model_inputs/policies/`, and `flatten_policies` has no sources to read. Narrows D3. | planned | Brad, 2026-11-24 |
 | 2026-11-23 | `uv` resolves only package versions that have a Windows wheel (`required-environments` in `pyproject.toml`), because `loro` 1.19.0, a marimo dependency, shipped without one and broke `uv sync` on Windows. | in review | `e79072e`, branch `uv-windows-wheels` |
 | 2026-11-23 | Outputs are checked against a recorded snapshot (`tools/output_snapshot.py`). Files with the same rows in any order count as the same, and numbers are compared at 1e-9 relative. The Phase 0 baseline is snapshot `1eecb766d2`. | current on `data-reorganization` | `4a2f254`; plan §6, Phase 0 step 6 |
 | 2026-11-20 | CIMS is the technology database's home: its code in the package and its records in `data/technology_database/`. The technology-database repository keeps the extractions' authoring copy and their scripts, the reviews, the review packages, and source intake, and installs CIMS to use the package. The package moved without its history, which stays in that repository (`97a29cf`). | in review | `88d1897`, `de4724b`, branch `techdb-into-cims`; D6 |
@@ -30,7 +31,7 @@ log in [`technology_database/docs/decisions.md`](../technology_database/docs/dec
 | 2026-11-19 | Steam fuel targets are built in a source stage, so no script that builds calibration targets reads another's output. This removes an order dependence: with one sector's files missing, another sector's CHP shares changed. | current | #628 |
 | 2026-11-12 | Data layers: `primary-sources/`, `extracted/`, `config/`, `processed/`, and `model/` under `data/`. | planned (phase 3) | D1; plan §2.1 |
 | 2026-11-12 | Everything in `fixed_data` moves to the layer it belongs in (structure to `config/cims-hierarchy.csv`, sourced values to extracted and processed data, assumptions to `config/model-parameter/`), and `fixed_data` is retired. The technology database's hierarchy is the starting point. | planned (phase 13) | D2; plan §2.1 |
-| 2026-11-12 | The hand-made model inputs (defaults, policy records, hierarchy, parameter records) are versioned, in `config/`. `model/` holds only build output. | planned (phase 3) | D3 |
+| 2026-11-12 | The hand-made model inputs (defaults, policy records, hierarchy, parameter records) are versioned, in `config/`. `model/` holds only build output. | planned (phase 3); policies superseded 2026-11-24 | D3 |
 | 2026-11-12 | Names are lowercase kebab-snake throughout, including parameters, regions, fuels, units, branch paths, and headers. `config/display-name.csv` gives display spellings for results. | planned (phases 3 to 14) | D4, D5; plan §3 |
 | 2026-11-12 | One pull request per phase. | current | D7 |
 | 2026-11-12 | The calibration package is renamed after the pipeline work, in its own pull request. | planned (phase 11) | D8 |
