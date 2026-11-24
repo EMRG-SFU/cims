@@ -34,7 +34,8 @@ import polars as pl
 import CIMS.data_processing.source.eccc.nir.nir_crosswalk_tables_cims as _crosswalk_mod
 import CIMS.data_processing.source.eccc.nir.nir_to_cims as _nir_mod
 import CIMS.data_processing.source.cer.cer_resd_demand as _cer_mod
-from CIMS.data_processing.utils.controls_conversions import BASE_PATH, load_sector_regions, filter_excluded_branches
+from CIMS.data_processing.common import paths
+from CIMS.data_processing.utils.controls_conversions import load_sector_regions, filter_excluded_branches
 from CIMS.data_processing.utils.calibration_helpers import (
     OUTPUT_COLS,
     build_cer_energy,
@@ -46,7 +47,7 @@ from CIMS.data_processing.utils.mecs_steam_calibration import apply_mecs_steam
 from CIMS.data_processing.utils.techdb_steam import add_steam_market_share_targets
 
 # ── configuration ─────────────────────────────────────────────────────────────
-OUTPUT_DIR = BASE_PATH / 'calibration/pulp_and_paper'
+OUTPUT_DIR = paths.CALIBRATION_TARGETS / 'pulp_and_paper'
 
 SECTOR_NAME = 'Pulp and Paper'
 

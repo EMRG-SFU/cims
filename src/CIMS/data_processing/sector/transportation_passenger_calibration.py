@@ -57,7 +57,8 @@ import CIMS.data_processing.source.eccc.nir.nir_to_cims as _nir_mod
 import CIMS.data_processing.source.cer.cer_resd_demand as _cer_mod
 import CIMS.data_processing.source.nrcan.ceud.transportation_passenger.transportation_passenger as _tp_mod
 import CIMS.data_processing.source.stats_can.passenger_transportation as _statcan_tp_mod
-from CIMS.data_processing.utils.controls_conversions import load_control_config, BASE_PATH, load_sector_regions, filter_excluded_branches
+from CIMS.data_processing.common import paths
+from CIMS.data_processing.utils.controls_conversions import load_control_config, load_sector_regions, filter_excluded_branches
 from CIMS.data_processing.utils.calibration_helpers import (
     OUTPUT_COLS,
     REGION_MAP,
@@ -70,7 +71,7 @@ from CIMS.data_processing.utils.calibration_helpers import (
 from CIMS.data_processing.utils.output_builder import write_per_region_csvs
 
 # ── configuration ─────────────────────────────────────────────────────────────
-OUTPUT_DIR = BASE_PATH / 'calibration/transportation_passenger'
+OUTPUT_DIR = paths.CALIBRATION_TARGETS / 'transportation_passenger'
 
 SECTOR_NAME = 'Transportation Passenger'
 
@@ -81,9 +82,9 @@ STATCAN_MARKET_SHARE_SOURCE = 'StatCan/EPA'
 
 # Fixed data defining which technologies exist at each node; market share targets
 # are aligned to it (see _align_share_techs_to_fixed).
-FIXED_INPUT_DIR = BASE_PATH / 'raw_data/fixed_data/transportation_passenger'
+FIXED_INPUT_DIR = paths.FIXED_DATA / 'transportation_passenger'
 
-EPA_FILE = BASE_PATH / 'raw_data/epa/table_export.csv'
+EPA_FILE = paths.RAW / 'epa/table_export.csv'
 
 
 # EPA engine-package mapping used to split gasoline into efficiency classes.
