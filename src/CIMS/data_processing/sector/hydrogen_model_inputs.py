@@ -35,7 +35,7 @@ from CIMS.data_processing.utils.collapse_constant_years import collapse_constant
 
 # ── configuration ──────────────────────────────────────────────────────────────
 FIXED_INPUT_DIR = paths.FIXED_DATA / 'hydrogen'
-OUTPUT_DIR      = paths.MODEL / 'hydrogen'
+OUTPUT_DIR      = paths.MODEL_SECTOR / 'hydrogen'
 
 OUTPUT_COLS = [
     'Branch', 'Type', 'Region', 'Sector', 'Service', 'Technology',

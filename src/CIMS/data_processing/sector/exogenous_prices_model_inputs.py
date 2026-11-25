@@ -43,7 +43,7 @@ from CIMS.data_processing.utils.collapse_constant_years import collapse_constant
 
 # ── configuration ──────────────────────────────────────────────────────────────
 FIXED_INPUT_DIR = paths.FIXED_DATA / 'exogenous_prices'
-OUTPUT_DIR      = paths.MODEL / 'exogenous_prices'
+OUTPUT_DIR      = paths.MODEL_EXOGENOUS / 'exogenous-price'
 
 OUTPUT_COLS = [
     'Branch', 'Type', 'Region', 'Sector', 'Service', 'Technology',
@@ -246,7 +246,7 @@ def main() -> dict[str, pl.DataFrame]:
             print('  Assembling with energy prices and emission factors...')
             output = _assemble_region(fixed, region, prices_df, ef_df)
 
-            out_path = OUTPUT_DIR / f'exogenous_prices_{region.lower()}.csv'
+            out_path = OUTPUT_DIR / f'exogenous-price_{region.lower()}.csv'
             output = collapse_constant_years(output)
             write_model_csv(output, str(out_path))
             print(f'  Wrote {len(output):,} rows → {out_path.name}')

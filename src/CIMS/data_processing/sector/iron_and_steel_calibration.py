@@ -47,7 +47,7 @@ from CIMS.data_processing.utils.mecs_steam_calibration import apply_mecs_steam
 from CIMS.data_processing.utils.techdb_steam import add_steam_market_share_targets
 
 # ── configuration ─────────────────────────────────────────────────────────────
-OUTPUT_DIR = paths.CALIBRATION_TARGETS / 'iron_and_steel'
+OUTPUT_DIR = paths.CALIBRATION_TARGETS / 'iron-and-steel'
 
 SECTOR_NAME = 'Iron and Steel'
 
@@ -102,7 +102,7 @@ def main() -> pl.DataFrame:
     output = filter_excluded_branches(output)
     output = add_steam_market_share_targets(output, SECTOR_NAME)
 
-    regions = write_per_region_csvs(output, OUTPUT_DIR, 'iron_and_steel', skip_if_all_zero=True)
+    regions = write_per_region_csvs(output, OUTPUT_DIR, 'iron-and-steel', skip_if_all_zero=True)
 
     print(f'\n✅ Iron and steel calibration complete')
     print(f'   Total rows:  {len(output):,}')

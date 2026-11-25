@@ -53,7 +53,7 @@ from CIMS.data_processing.utils.feedstock_demand import build_feedstock_rows_all
 
 # ── configuration ─────────────────────────────────────────────────────────────
 FIXED_INPUT_DIR = paths.FIXED_DATA / 'agriculture'
-OUTPUT_DIR      = paths.MODEL / 'agriculture'
+OUTPUT_DIR      = paths.MODEL_SECTOR / 'agriculture'
 
 OUTPUT_COLS = [
     'Branch', 'Type', 'Region', 'Sector', 'Service', 'Technology',

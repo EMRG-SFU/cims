@@ -54,7 +54,7 @@ from CIMS.data_processing.utils.drop_zero_activity import drop_zero_activity_reg
 
 # ── configuration ─────────────────────────────────────────────────────────────
 FIXED_INPUT_DIR = paths.FIXED_DATA / 'industrial_minerals'
-OUTPUT_DIR      = paths.MODEL / 'industrial_minerals'
+OUTPUT_DIR      = paths.MODEL_SECTOR / 'industrial-minerals'
 
 OUTPUT_COLS = [
     'Branch', 'Type', 'Region', 'Sector', 'Service', 'Technology',
@@ -236,7 +236,7 @@ def main() -> pl.DataFrame:
     regions = fixed_str['Region'].drop_nulls().unique().sort().to_list()
     for region in regions:
         region_df = output.filter(pl.col('Region') == region)
-        out_path = OUTPUT_DIR / f'industrial_minerals_{region.lower()}.csv'
+        out_path = OUTPUT_DIR / f'industrial-minerals_{region.lower()}.csv'
         region_df = collapse_constant_years(region_df)
         write_model_csv(region_df, out_path)
         print(f'  Wrote {len(region_df):,} rows → {out_path.name}')

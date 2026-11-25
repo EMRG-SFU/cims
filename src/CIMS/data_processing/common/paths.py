@@ -61,14 +61,18 @@ DEFAULTS = CONFIG / 'model-default'                         # hand-made model de
 CALIBRATION_CONFIG = CONFIG / 'calibration'                 # the FIC proxy map and decline list
 TECHDB_RECORDS = CONFIG / 'technology-database'             # the technology database's hand-edited records
 PROCESSED = DATA_ROOT / 'processed'                         # written by the source stages
-MODEL_INPUTS = DATA_ROOT / 'model_inputs'
-MODEL = MODEL_INPUTS / 'model'                              # the model files CIMS reads
-POLICIES = MODEL_INPUTS / 'policies'                        # policy files (hand-made for now)
-CALIBRATION_OUTPUTS = MODEL_INPUTS / 'calibration_outputs'  # written by calibration: fitted FICs and lifetimes
-CALIBRATION_TARGETS = DATA_ROOT / 'calibration'             # calibration targets, written by the pipeline
+MODEL = DATA_ROOT / 'model'                                 # everything CIMS reads; written by the build
+MODEL_BASE = MODEL / 'base'                                 # cims-base_<region>.csv
+MODEL_SECTOR = MODEL / 'sector'                             # <sector>/<sector>_<region>.csv
+MODEL_COST = MODEL / 'cost'                                 # declining-capital-cost/, declining-intangible-cost/, fixed-intangible-cost/
+MODEL_EXOGENOUS = MODEL / 'exogenous'                       # exogenous-price/, exogenous-demand/, market-share-limit/
+POLICIES = MODEL / 'policy'                                 # policy files (hand-made until the policy stage)
+CALIBRATION_TARGETS = MODEL / 'calibration' / 'target'      # calibration targets, written by the pipeline
+CALIBRATION_OUTPUTS = MODEL / 'calibration' / 'fitted'      # written by calibration: fitted FICs and lifetimes
 TECHDB_EXTRACTED = EXTRACTED / 'technology-database'        # its extractions and manifest
 TECHDB_OUTPUT = PROCESSED / 'technology-database'           # its build output
 RESULTS = REPO_ROOT / 'results'                             # model results and logs (gitignored)
+LOGS = RESULTS / 'logs'                                     # run and optimizer logs
 
 
 def _inside(path: Path, folder: Path) -> bool:

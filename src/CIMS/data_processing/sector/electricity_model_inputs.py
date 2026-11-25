@@ -67,7 +67,7 @@ from CIMS.data_processing.utils.drop_zero_activity import drop_zero_activity_reg
 
 # ── configuration ──────────────────────────────────────────────────────────────
 FIXED_INPUT_DIR = paths.FIXED_DATA / 'electricity'
-OUTPUT_DIR      = paths.MODEL / 'electricity'
+OUTPUT_DIR      = paths.MODEL_SECTOR / 'electricity'
 
 OUTPUT_COLS = [
     'Branch', 'Type', 'Region', 'Sector', 'Service', 'Technology',

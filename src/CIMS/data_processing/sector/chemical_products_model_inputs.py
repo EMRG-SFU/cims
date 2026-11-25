@@ -64,7 +64,7 @@ from CIMS.data_processing.utils.feedstock_demand import build_feedstock_rows_all
 
 # ── configuration ──────────────────────────────────────────────────────────────
 FIXED_INPUT_DIR = paths.FIXED_DATA / 'chemical_products'
-OUTPUT_DIR      = paths.MODEL / 'chemical_products'
+OUTPUT_DIR      = paths.MODEL_SECTOR / 'chemical-products'
 
 OUTPUT_COLS = [
     'Branch', 'Type', 'Region', 'Sector', 'Service', 'Technology',
@@ -269,7 +269,7 @@ def main() -> pl.DataFrame:
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     for region in regions:
         region_df = output.filter(pl.col('Region') == region)
-        out_path = OUTPUT_DIR / f'chemical_products_{region.lower()}.csv'
+        out_path = OUTPUT_DIR / f'chemical-products_{region.lower()}.csv'
         region_df = collapse_constant_years(region_df)
         write_model_csv(region_df, out_path)
         print(f'  Wrote {len(region_df):,} rows → {out_path.name}')

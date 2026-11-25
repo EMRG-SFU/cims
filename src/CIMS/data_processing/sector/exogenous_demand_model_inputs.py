@@ -33,7 +33,7 @@ from CIMS.data_processing.utils.controls_conversions import DATA_START, PROJECTI
 from CIMS.data_processing.utils.currency import write_model_csv
 from CIMS.data_processing.utils.collapse_constant_years import collapse_constant_years
 
-OUTPUT_DIR = paths.MODEL / 'exogenous_demand'
+OUTPUT_DIR = paths.MODEL_EXOGENOUS / 'exogenous-demand'
 
 OUTPUT_COLS = [
     'Branch', 'Type', 'Region', 'Sector', 'Service', 'Technology',
@@ -122,7 +122,7 @@ def main() -> dict[str, pl.DataFrame]:
 
         output = pl.concat([act_rows, zero_rows], how='diagonal_relaxed').select(OUTPUT_COLS)
 
-        out_path = OUTPUT_DIR / f'exogenous_demand_{region.lower()}.csv'
+        out_path = OUTPUT_DIR / f'exogenous-demand_{region.lower()}.csv'
         output = collapse_constant_years(output)
         write_model_csv(output, str(out_path))
         print(f'  Wrote {len(output):,} rows -> {out_path.name}')

@@ -1660,7 +1660,8 @@ def run_stage1_node_with_timeout(model, nodeName, calibration_output_dir, fit_kw
     parallel runner below uses this so a batch of nodes shares one copy.
 
     `log_dir` is where the per-year solver output goes
-    (`<log_dir>/<node>_stage1.log`); default `<calibration_output_dir>/logs`.
+    (`<log_dir>/<node>_stage1.log`); default `results/logs/calibration/<sector>/`
+    (calibration_outputs.log_file_for).
 
     Deliberately `subprocess`, not `multiprocessing`: under an interactive
     notebook kernel (marimo, Jupyter) on Windows, `multiprocessing`'s `spawn`
@@ -1802,8 +1803,7 @@ def run_stage1_nodes_parallel(model, nodeNames, calibration_output_dir, fit_kwar
 
     calibration_output_dir = os.path.abspath(calibration_output_dir)
     os.makedirs(calibration_output_dir, exist_ok=True)
-    log_dir = os.path.join(calibration_output_dir, 'logs')
-    os.makedirs(log_dir, exist_ok=True)
+    log_dir = None   # each node's log goes to results/logs/calibration/<sector>/ (log_file_for)
 
     # Pickle what the workers load — one slice per node, or the whole model
     # once — counting the uncompressed bytes as they are written, so the memory

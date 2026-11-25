@@ -71,7 +71,7 @@ from CIMS.data_processing.utils.calibration_helpers import (
 from CIMS.data_processing.utils.output_builder import write_per_region_csvs
 
 # ── configuration ─────────────────────────────────────────────────────────────
-OUTPUT_DIR = paths.CALIBRATION_TARGETS / 'transportation_passenger'
+OUTPUT_DIR = paths.CALIBRATION_TARGETS / 'transportation-passenger'
 
 SECTOR_NAME = 'Transportation Passenger'
 
@@ -685,7 +685,7 @@ def main() -> pl.DataFrame:
         .alias('Unit')
     )
 
-    regions = write_per_region_csvs(output, OUTPUT_DIR, 'transportation_passenger', skip_if_all_zero=True)
+    regions = write_per_region_csvs(output, OUTPUT_DIR, 'transportation-passenger', skip_if_all_zero=True)
 
     print(f'\n✅ Transportation Passenger calibration complete')
     print(f'   Total rows:  {len(output):,}')

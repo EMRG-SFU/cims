@@ -64,7 +64,7 @@ SECTOR_NAME = 'Commercial'
 # (Cold) / (Marine)) since CER's own data carries no climate-zone split.
 # cer_resd_demand.py drops the Marine rows for every region except BC, but
 # for BC both variants survive carrying the SAME undivided total. Apply the
-# same 25/75 Cold/Marine floorspace split model_inputs.py already uses
+# same 25/75 Cold/Marine floorspace split model.py already uses
 # (BC_COLD_FRACTION / BC_MARINE_FRACTION there) so the two calibration
 # targets don't each claim the full historical total.
 BC_COLD_FRACTION   = 0.25

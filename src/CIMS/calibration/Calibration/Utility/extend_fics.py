@@ -57,9 +57,15 @@ def load_fitted_fics(outputs_dir):
 
 
 def load_availability(model_dir):
-    """Return {(branch, tech): {'available': y, 'unavailable': y}} from the base model files."""
+    """Return {(branch, tech): {'available': y, 'unavailable': y}} from the base model files.
+
+    Policies and calibration files sit under the model folder too (data/model/policy/,
+    data/model/calibration/); they're left out, as before the data layout move.
+    """
     frames = []
     for path in glob.glob(os.path.join(model_dir, "**", "*.csv"), recursive=True):
+        if os.path.relpath(path, model_dir).replace(os.sep, "/").split("/")[0] in ("policy", "calibration"):
+            continue
         try:
             df = pd.read_csv(path, usecols=["Branch", "Technology", "Parameter", "Value"],
                              dtype=str, encoding="utf-8-sig")

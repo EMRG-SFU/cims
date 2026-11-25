@@ -43,7 +43,7 @@ from CIMS.data_processing.utils.calibration_helpers import (
 from CIMS.data_processing.utils.output_builder import write_per_region_csvs
 
 # ── configuration ─────────────────────────────────────────────────────────────
-OUTPUT_DIR = paths.CALIBRATION_TARGETS / 'industrial_minerals'
+OUTPUT_DIR = paths.CALIBRATION_TARGETS / 'industrial-minerals'
 
 SECTOR_NAME = 'Industrial Minerals'
 
@@ -94,7 +94,7 @@ def main() -> pl.DataFrame:
 
     output = filter_excluded_branches(output)
 
-    regions = write_per_region_csvs(output, OUTPUT_DIR, 'industrial_minerals', skip_if_all_zero=True)
+    regions = write_per_region_csvs(output, OUTPUT_DIR, 'industrial-minerals', skip_if_all_zero=True)
 
     print(f'\n✅ Industrial minerals calibration complete')
     print(f'   Total rows:  {len(output):,}')

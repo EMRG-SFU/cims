@@ -49,7 +49,7 @@ from CIMS.data_processing.utils.calibration_helpers import (
 from CIMS.data_processing.utils.output_builder import write_per_region_csvs
 
 # ── configuration ─────────────────────────────────────────────────────────────
-OUTPUT_DIR = paths.CALIBRATION_TARGETS / 'transportation_freight'
+OUTPUT_DIR = paths.CALIBRATION_TARGETS / 'transportation-freight'
 
 SECTOR_NAME = 'Transportation Freight'
 
@@ -264,7 +264,7 @@ def main() -> pl.DataFrame:
     output = filter_excluded_branches(output)
 
     written_regions = write_per_region_csvs(
-        output, OUTPUT_DIR, 'transportation_freight', skip_if_all_zero=True, report_written=True
+        output, OUTPUT_DIR, 'transportation-freight', skip_if_all_zero=True, report_written=True
     )
 
     print(f'\n Transportation Freight calibration complete')

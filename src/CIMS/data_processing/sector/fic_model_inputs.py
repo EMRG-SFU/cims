@@ -30,7 +30,7 @@ from CIMS.data_processing.utils.techdb_steam import drop_replaced_steam_rows
 
 # ── configuration ──────────────────────────────────────────────────────────────
 FIXED_INPUT_DIR = paths.FIXED_DATA / 'fic'
-OUTPUT_DIR      = paths.MODEL / 'fic'
+OUTPUT_DIR      = paths.MODEL_COST / 'fixed-intangible-cost'
 
 OUTPUT_COLS = [
     'Branch', 'Type', 'Region', 'Sector', 'Service', 'Technology',
@@ -66,7 +66,7 @@ def main() -> dict[str, pl.DataFrame]:
             print('  Flattening fixed data...')
             output = drop_replaced_steam_rows(read_fixed_data_file(fixed_path).select(OUTPUT_COLS))
 
-            out_path = OUTPUT_DIR / f'fic_{region.lower()}.csv'
+            out_path = OUTPUT_DIR / f'fixed-intangible-cost_{region.lower()}.csv'
             output = collapse_constant_years(output)
             write_model_csv(output, str(out_path))
             print(f'  Wrote {len(output):,} rows → {out_path.name}')

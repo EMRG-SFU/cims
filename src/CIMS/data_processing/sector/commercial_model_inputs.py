@@ -80,7 +80,7 @@ from CIMS.data_processing.utils.feedstock_demand import build_feedstock_rows
 
 # ── configuration ──────────────────────────────────────────────────────────────
 FIXED_INPUT_DIR = paths.FIXED_DATA / 'commercial'
-OUTPUT_DIR      = paths.MODEL / 'commercial'
+OUTPUT_DIR      = paths.MODEL_SECTOR / 'commercial'
 
 OUTPUT_COLS = [
     'Branch', 'Type', 'Region', 'Sector', 'Service', 'Technology',
@@ -403,7 +403,7 @@ def _build_tech_mst_rows(
         # share -- e.g. a fuel with zero measured demand across the whole
         # disaggregation group for that year -- and .get()'s default only
         # covers a technology missing entirely. Treat NaN the same as
-        # missing rather than writing a literal "nan" into the model_inputs
+        # missing rather than writing a literal "nan" into the model
         # CSV, which silently drops out of any downstream sum.
         if val is None or val != val:
             val = 0.0

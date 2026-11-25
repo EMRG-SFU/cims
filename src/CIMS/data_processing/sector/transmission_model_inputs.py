@@ -26,7 +26,7 @@ from CIMS.data_processing.utils.collapse_constant_years import collapse_constant
 
 # ── configuration ─────────────────────────────────────────────────────────────
 FIXED_INPUT_DIR = paths.FIXED_DATA / 'transmission'
-OUTPUT_DIR      = paths.MODEL / 'transmission'
+OUTPUT_DIR      = paths.MODEL_SECTOR / 'transmission'
 OUTPUT_FILE     = OUTPUT_DIR / 'transmission_cims.csv'
 
 OUTPUT_COLS = [

@@ -89,8 +89,8 @@ from CIMS.data_processing.utils.collapse_constant_years import collapse_constant
 
 # ── configuration ──────────────────────────────────────────────────────────────
 FIXED_INPUT_DIR = paths.FIXED_DATA / 'residential'
-OUTPUT_DIR      = paths.MODEL / 'residential'
-LIGHTING_ESTIMATED_MS_DIR = paths.CALIBRATION_TARGETS / 'calibration_estimated/residential'
+OUTPUT_DIR      = paths.MODEL_SECTOR / 'residential'
+LIGHTING_ESTIMATED_MS_DIR = paths.CALIBRATION_TARGETS / 'calibration-estimated/residential'
 
 REGIONS = [
     'AB', 'BC', 'MB', 'NB', 'NL', 'NS', 'NT', 'NU',

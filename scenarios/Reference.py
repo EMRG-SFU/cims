@@ -32,10 +32,10 @@ def _():
 def reset_model_files():
     ### Base model and standard files below are required for the model to run
     model_path = str(paths.MODEL)
-    # Model files should be located at: data/model_inputs/
+    # Model files are in data/model/ (base/, sector/, cost/, exogenous/; conventions §2)
 
     ### Base model to start initialisation
-    base_model = 'CIMS_base'
+    base_model = 'base'
 
     ### Default values and parameter list files
     default_path = str(paths.DEFAULTS / 'default-parameter.csv')
@@ -45,48 +45,48 @@ def reset_model_files():
 
     update_files = {}
 
-    ### Required sector files (included in data/model_inputs/model/)
+    ### Required sector files (in data/model/sector/)
     sector_req = [
         'fuels',
         'transmission',
-        'coal_mining',
-        'natural_gas',
-        'natural_gas_market', # must come after natural_gas: it overrides the regional production path
-        'petroleum_crude',
-        'petroleum_refining',
+        'coal-mining',
+        'natural-gas',
+        'natural-gas-market', # must come after natural-gas: it overrides the regional production path
+        'petroleum-crude',
+        'petroleum-refining',
         'electricity',
         'biodiesel',
         'ethanol',
         'hydrogen',
         'mining',
-        'industrial_minerals',
-        'iron_and_steel',
-        'metal_smelting',
-        'chemical_products',
-        'pulp_and_paper',
-        'light_industrial',
+        'industrial-minerals',
+        'iron-and-steel',
+        'metal-smelting',
+        'chemical-products',
+        'pulp-and-paper',
+        'light-industrial',
         'construction',
         'residential',
         'commercial',
-        'transportation_passenger',
-        'transportation_freight',
+        'transportation-passenger',
+        'transportation-freight',
         'waste',
         'agriculture',
         'forestry',
         ]
 
-    ### Required model files (included in data/model_inputs/model/)
+    ### Required model files (in data/model/)
     model_req = [
-        'dcc', # declining capital cost
-        # 'dic', # declining intangible cost (neighbour effect)
-        'fic', # fixed intangible cost; primarily used for calibration
-        'market_share_limits', # use of limits should be minimised
+        'cost/declining-capital-cost',
+        # 'cost/declining-intangible-cost', # neighbour effect
+        'cost/fixed-intangible-cost', # primarily used for calibration
+        'exogenous/market-share-limit', # use of limits should be minimised
         ]
 
     # Each entry below is (folder, [file/subfolder names]); merging just means
     # appending the list onto update_files[folder], creating it if needed.
     for _path, _files in [
-        (model_path, sector_req),
+        (str(paths.MODEL_SECTOR), sector_req),
         (model_path, model_req),
     ]:
         if _files:
@@ -253,14 +253,14 @@ def _():
 
 @app.cell
 def _(calibration_data, calibration_path, model_path, update_files):
-    ### Optional model folder files (included in data/model_inputs/model/)
+    ### Optional model folder files (in data/model/)
     model_optional = [
-        'exogenous_prices',  # needed for correct calibration of historical years
-        'exogenous_demand',  # use this file when calibrating endogenous supply sectors
+        'exogenous/exogenous-price',   # needed for correct calibration of historical years
+        'exogenous/exogenous-demand',  # use this file when calibrating endogenous supply sectors
         ]
 
 
-    ### Policy files: one folder per policy under data/model_inputs/policies/
+    ### Policy files: one folder per policy under data/model/policy/
     # (<policy>/<policy>_<region>.csv). Entries are applied in list order, so the
     # reference policies come first, then turn-off files, then scenario files.
     policy_path = str(paths.POLICIES)
@@ -327,8 +327,8 @@ def _(calibration_data, calibration_path, model_path, update_files):
     # calibration_data = [
     #     'agriculture',
     #     'biodiesel',
-    #     'chemical_products',
-    #     'coal_mining',
+    #     'chemical-products',
+    #     'coal-mining',
     #     'commercial',
     #     'construction',
     #     'electricity',
@@ -336,24 +336,24 @@ def _(calibration_data, calibration_path, model_path, update_files):
     #     'forestry',
     #     'fuels',
     #     'hydrogen',
-    #     'industrial_minerals',
-    #     'iron_and_steel',
-    #     'light_industrial',
-    #     'metal_smelting',
+    #     'industrial-minerals',
+    #     'iron-and-steel',
+    #     'light-industrial',
+    #     'metal-smelting',
     #     'mining',
-    #     'natural_gas',
-    #     'petroleum_crude',
-    #     'petroleum_refining',
-    #     'pulp_and_paper',
+    #     'natural-gas',
+    #     'petroleum-crude',
+    #     'petroleum-refining',
+    #     'pulp-and-paper',
     #     'residential',
-    #     'transportation_freight',
-    #     'transportation_passenger',
+    #     'transportation-freight',
+    #     'transportation-passenger',
     #     'waste'
     # ]
 
     ### Calibration Outputs (fitted FICs / lifetimes from a prior calibration pass)
     # One subfolder per sector, each with its own fitted_fics/ and fitted_lifetimes/
-    # (data/model_inputs/calibration_outputs/<sector>/fitted_fics, ...), so several
+    # (data/model/calibration/fitted/<sector>/fitted_fics, ...), so several
     # sectors' calibration outputs can be loaded together without overwriting each other.
     calibration_outputs_path = str(paths.CALIBRATION_OUTPUTS)
     calibration_output_sectors = [

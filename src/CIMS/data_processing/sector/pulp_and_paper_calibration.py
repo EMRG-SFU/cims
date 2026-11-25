@@ -47,7 +47,7 @@ from CIMS.data_processing.utils.mecs_steam_calibration import apply_mecs_steam
 from CIMS.data_processing.utils.techdb_steam import add_steam_market_share_targets
 
 # ── configuration ─────────────────────────────────────────────────────────────
-OUTPUT_DIR = paths.CALIBRATION_TARGETS / 'pulp_and_paper'
+OUTPUT_DIR = paths.CALIBRATION_TARGETS / 'pulp-and-paper'
 
 SECTOR_NAME = 'Pulp and Paper'
 
@@ -102,7 +102,7 @@ def main() -> pl.DataFrame:
     output = filter_excluded_branches(output)
     output = add_steam_market_share_targets(output, SECTOR_NAME)
 
-    regions = write_per_region_csvs(output, OUTPUT_DIR, 'pulp_and_paper', skip_if_all_zero=True)
+    regions = write_per_region_csvs(output, OUTPUT_DIR, 'pulp-and-paper', skip_if_all_zero=True)
 
     print(f'\n✅ Pulp and paper calibration complete')
     print(f'   Total rows:  {len(output):,}')

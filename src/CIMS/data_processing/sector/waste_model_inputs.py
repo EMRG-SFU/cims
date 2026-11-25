@@ -54,7 +54,7 @@ from CIMS.data_processing.utils.output_builder import write_per_region_csvs
 
 # ── configuration ─────────────────────────────────────────────────────────────
 FIXED_INPUT_DIR = paths.FIXED_DATA / 'waste'
-OUTPUT_DIR      = paths.MODEL / 'waste'
+OUTPUT_DIR      = paths.MODEL_SECTOR / 'waste'
 
 OUTPUT_COLS = [
     'Branch', 'Type', 'Region', 'Sector', 'Service', 'Technology',

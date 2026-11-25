@@ -4,13 +4,13 @@ Steam fuel targets for the six steam sectors.
 Builds the .Steam calibration_quantity_requested rows (GJ of fuel by region,
 year, and fuel) for every sector in techdb_steam.SECTORS, and writes them to
 one table. The steam code (steam_chp_shares and techdb_steam) reads this table
-instead of reading the sectors' calibration files back from data/calibration/.
+instead of reading the sectors' calibration files back from data/model/calibration/target/.
 
 Why a separate stage
 --------------------
 Each steam sector's calibration script needs the CHP shares, and the CHP
 shares need every steam sector's steam fuel targets. When those targets were
-read from data/calibration/, each script read all six sectors' files from the
+read from data/model/calibration/target/, each script read all six sectors' files from the
 previous run, including its own, before writing its new file. A stale file
 could not be replaced, and the results depended on which files were on disk
 and the order the scripts ran. The targets only need source data (CER demand

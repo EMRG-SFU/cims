@@ -12,7 +12,7 @@ Inputs:
     processed/gov-can/statcan/pop-gdp.csv  (via pop_gdp.main())
 
 Output:
-    model_inputs/model/cims_base/CIMS_base_{suffix}.csv
+    model/base/cims-base_{suffix}.csv
     Columns: Branch, Type, Region, Sector, Service, Technology,
              Parameter, Context, Sub_Context, Target, Source, Unit,
              Year, Value
@@ -35,7 +35,7 @@ from CIMS.data_processing.utils.collapse_constant_years import collapse_constant
 
 # ── configuration ───────────────────────────────────────────────────────────────
 FIXED_INPUT_DIR = paths.FIXED_DATA / 'cims_base'
-OUTPUT_DIR      = paths.MODEL / 'cims_base'
+OUTPUT_DIR      = paths.MODEL_BASE
 
 PROVINCES    = ['AB', 'BC', 'MB', 'NB', 'NL', 'NS', 'NT', 'NU', 'ON', 'PE', 'QC', 'SK', 'YT']
 FLATTEN_ONLY = ['CIMS', 'CAN', 'RoW']
@@ -149,7 +149,7 @@ def main() -> None:
         stem = f'cims_base_{suffix.lower()}'
         fixed = _flatten_fixed(stem)
         fixed_out = collapse_constant_years(fixed.select(OUTPUT_COLS))
-        write_model_csv(fixed_out, OUTPUT_DIR / f'{stem}.csv')
+        write_model_csv(fixed_out, OUTPUT_DIR / f'cims-base_{suffix.lower()}.csv')
         print(f"  {stem}: {len(fixed_out)} rows")
 
     print("\nAssembling provincial files...")
@@ -158,7 +158,7 @@ def main() -> None:
         df    = _assemble_region(region, pop_gdp)
         df    = collapse_constant_years(df)
         n_attr = len(df.filter(pl.col('Parameter') == 'attribute'))
-        write_model_csv(df, OUTPUT_DIR / f'{stem}.csv')
+        write_model_csv(df, OUTPUT_DIR / f'cims-base_{region.lower()}.csv')
         print(f"  {stem}: {len(df)} rows  ({n_attr} attribute)")
 
     total = len(FLATTEN_ONLY) + len(PROVINCES)

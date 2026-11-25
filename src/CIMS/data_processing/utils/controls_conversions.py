@@ -372,7 +372,7 @@ def force_single_technology_market_share(df: pl.DataFrame) -> pl.DataFrame:
     Parameters
     ----------
     df : pl.DataFrame
-        A flattened fixed_data DataFrame (or model_inputs `fixed`/`output`)
+        A flattened fixed_data DataFrame (or model `fixed`/`output`)
         with 'Branch', 'Parameter', 'Technology', 'Value' columns.
 
     Returns

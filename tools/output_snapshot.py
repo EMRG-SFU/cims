@@ -1,7 +1,7 @@
 """Snapshot the pipeline's outputs, and compare snapshots (plan §6).
 
-A snapshot records every file under data/processed, data/model_inputs, and
-data/calibration: its row count, its columns, and a hash of its rows sorted. It also
+A snapshot records every file under data/processed, data/model, and
+data/config/model-default: its row count, its columns, and a hash of its rows sorted. It also
 keeps a compressed copy of each file, so a comparison can show what changed.
 
     uv run python tools/output_snapshot.py record baseline --note "Phase 0 baseline"
@@ -51,7 +51,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 DATA = Path(os.environ.get("CIMS_DATA_ROOT", ROOT / "data"))
 SNAPSHOTS = Path(os.environ.get("CIMS_SNAPSHOT_ROOT", ROOT.parent / "snapshots"))
-FOLDERS = ("processed", "model_inputs", "calibration")
+FOLDERS = ("processed", "model", "config/model-default")
 SKIP = {".gitkeep"}
 KEY_COLUMNS = {"year"}  # numeric, but they identify a row rather than measure something
 REL = 1e-9

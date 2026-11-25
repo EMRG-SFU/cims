@@ -75,7 +75,7 @@ from CIMS.data_processing.utils.feedstock_demand import build_feedstock_rows
 
 # ── configuration ──────────────────────────────────────────────────────────────
 FIXED_INPUT_DIR = paths.FIXED_DATA / 'transportation_freight'
-OUTPUT_DIR      = paths.MODEL / 'transportation_freight'
+OUTPUT_DIR      = paths.MODEL_SECTOR / 'transportation-freight'
 
 OUTPUT_COLS = [
     'Branch', 'Type', 'Region', 'Sector', 'Service', 'Technology',
@@ -767,7 +767,7 @@ def main() -> dict[str, pl.DataFrame]:
                 fixed, tf, multipliers, feedstock_demand, feedstock_last_hist_year, region,
             )
 
-            out_path = OUTPUT_DIR / f'transportation_freight_{region.lower()}.csv'
+            out_path = OUTPUT_DIR / f'transportation-freight_{region.lower()}.csv'
             output = collapse_constant_years(output)
             write_model_csv(output, str(out_path))
             print(f'  Wrote {len(output):,} rows -> {out_path.name}')
