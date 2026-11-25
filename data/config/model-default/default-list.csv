@@ -1,0 +1,10 @@
+﻿Columns,Inheritable,Competition
+Branch,multiplier_price,Root
+Region,discount_rate_financial,Region
+Sector,discount_rate_retrofit,Sector
+Technology,retrofit_heterogeneity,Fixed Ratio
+Parameter,retrofit_existing_max,Tech Compete
+Context,retrofit_existing_min,Supply - Fixed Price
+Sub_Context,intercept_retirement,Supply - Cost Curve Annual
+Target,,Supply - Cost Curve Cumulative
+Unit,,

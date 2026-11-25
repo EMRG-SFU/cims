@@ -50,21 +50,20 @@ def _data_root() -> Path:
 DATA_ROOT = _data_root()
 DATA_ROOT_FROM_ENV = bool(os.environ.get(ENV_DATA_ROOT))
 
-# Today's layers. Phase 3 renames them here (primary-sources/, extracted/, config/,
-# processed/, model/) and moves the folders with tools/migrate_data_layout.py.
+# The layers (conventions §2). Phase 3 moves the folders (tools/migrate_data_layout.py).
 RAW = DATA_ROOT / 'raw_data'                                # sources as obtained, and extractions
 FIXED_DATA = RAW / 'fixed_data'                             # the JCIMS model data (phase 13 retires it)
-ASSUMPTIONS = RAW / 'assumptions'                           # hand-set growth rates and shares
+CONFIG = DATA_ROOT / 'config'                               # hand-edited records, in git
+ASSUMPTIONS = CONFIG / 'assumption'                         # hand-set growth rates and shares
+DEFAULTS = CONFIG / 'model-default'                         # hand-made model defaults
+CALIBRATION_CONFIG = CONFIG / 'calibration'                 # the FIC proxy map and decline list
+TECHDB_RECORDS = CONFIG / 'technology-database'             # the technology database's hand-edited records
 PROCESSED = DATA_ROOT / 'processed_data'                    # written by the source stages
-MAPPINGS = DATA_ROOT / 'mappings_conversions'               # hand-edited maps and settings
-CONFIG = DATA_ROOT / 'config'                               # results settings (results_*.txt)
 MODEL_INPUTS = DATA_ROOT / 'model_inputs'
 MODEL = MODEL_INPUTS / 'model'                              # the model files CIMS reads
-DEFAULTS = MODEL_INPUTS / 'defaults'                        # hand-made model defaults
 POLICIES = MODEL_INPUTS / 'policies'                        # policy files (hand-made for now)
 CALIBRATION_OUTPUTS = MODEL_INPUTS / 'calibration_outputs'  # written by calibration: fitted FICs and lifetimes
 CALIBRATION_TARGETS = DATA_ROOT / 'calibration'             # calibration targets, written by the pipeline
-TECHDB_RECORDS = DATA_ROOT / 'technology_database'          # the technology database's hand-edited records
 TECHDB_EXTRACTED = RAW / 'technology_database'              # its extractions and manifest
 TECHDB_OUTPUT = PROCESSED / 'technology_database'           # its build output
 RESULTS = REPO_ROOT / 'results'                             # model results and logs (gitignored)

@@ -33,7 +33,7 @@ from CIMS.data_processing.utils.controls_conversions import DATA_START, PROJECTI
 # Configuration
 CER_DIR   = paths.RAW / 'cer'
 CRUDE_OIL_PRODUCTION_FILE   = find_cer_file(CER_DIR, 'crude-oil-production')
-REGION_MAP_FILE             = paths.MAPPINGS / 'region_map.csv'
+REGION_MAP_FILE             = paths.CONFIG / 'mapping/region.csv'
 OUTPUT_DIR                  = paths.PROCESSED / 'activity'
 _config                     = load_control_config()
 SCENARIO                    = _config["cer_ef_reference_scenario"]
@@ -41,7 +41,7 @@ LAST_DATA_YEAR              = _config["last_data_year"]
 
 OIL_CONVERSION = 1_000 * 365   # Thousand m3/day -> m3/year
 
-ASSUMPTIONS_FILE = paths.ASSUMPTIONS / 'activity_cagr_projections.csv'
+ASSUMPTIONS_FILE = paths.ASSUMPTIONS / 'activity-cagr-projections.csv'
 CAGR_START, CAGR_END, CAGR_PERIODS = load_cagr_assumptions('Oil', ASSUMPTIONS_FILE)
 
 # Per-region overrides — one explicit annual rate per period.

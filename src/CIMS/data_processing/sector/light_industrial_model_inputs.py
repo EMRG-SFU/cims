@@ -51,7 +51,7 @@ Manufacturing sub-service splits  (service_request rows at Manufacturing level)
 
 Energy price multipliers  (multiplier_price rows)
     pipeline/source/energy_prices/energy_price_multipliers.py  (called directly via main())
-    Light Industrial is classified as Industrial in sector_map.csv.
+    Light Industrial is classified as Industrial in config/mapping/sector.csv.
 
 Output columns
 --------------

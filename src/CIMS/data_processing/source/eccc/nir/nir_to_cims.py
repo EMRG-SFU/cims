@@ -38,7 +38,7 @@ from CIMS.data_processing.utils.controls_conversions import load_control_config
 # Update folder with new nir when released each year
 NIR_CSV  = paths.RAW / 'eccc/nir/GHG_Econ_Can_Prov_Terr.csv'
 # Manual map - should stay the same unless there are changes to nir or cims naming
-MAP_CSV  = paths.MAPPINGS / 'nir_to_cims_map.csv'
+MAP_CSV  = paths.CONFIG / 'mapping/nir-to-cims.csv'
 # Script outputs a version of the nir with the suppressed values solved
 OUT_NIR  = paths.PROCESSED / 'eccc/NIR_Suppressed_Solved.csv'
 # Main output - NIR emissions mapped to cims nodes

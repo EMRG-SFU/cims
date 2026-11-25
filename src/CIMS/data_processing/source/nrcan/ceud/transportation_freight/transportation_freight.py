@@ -54,7 +54,7 @@ CONTROLS = load_control_config()
 
 SOURCE_DIR        = paths.RAW / 'nrcan/ceud/transportation'
 CAN_FILE         = SOURCE_DIR / 'tran_ca_e.xls'
-ASSUMPTIONS_CSV  = paths.ASSUMPTIONS / 'transport_freight_assumptions.csv'
+ASSUMPTIONS_CSV  = paths.ASSUMPTIONS / 'transport-freight-assumptions.csv'
 STATSCAN_POP_PATH = paths.RAW / 'stats_can/population/1710000901.csv'
 OUTPUT_DIR       = paths.PROCESSED / 'nrcan/ceud'
 LAST_HIST_YEAR   = CONTROLS["last_data_year"]["ceud"]
@@ -121,7 +121,7 @@ BCT_REGIONS = ('BC', 'YT', 'NT', 'NU')
 #   ('Light Trucks', 'Medium Trucks', 'Heavy Trucks', 'Rail', 'Marine',
 #    'Aviation', 'Off-Road')
 # Value: (cagr_2023_to_2050, cagr_2051_to_2100)
-# When present, replaces the rates read from transport_freight_assumptions.csv.
+# When present, replaces the rates read from config/assumption/transport-freight-assumptions.csv.
 # ==============================================================================
 
 CAGR_OVERRIDES: dict[tuple[str, str], tuple[float, float]] = {

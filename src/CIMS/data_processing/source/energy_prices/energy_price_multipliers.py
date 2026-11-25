@@ -28,12 +28,12 @@ from CIMS.data_processing.source.energy_prices.energy_prices import (
 
 
 # Configuration
-MAPPINGS_PATH    = paths.MAPPINGS
-CONTROL_FILE     = MAPPINGS_PATH / 'control.py'
-ENERGY_MAP_FILE  = MAPPINGS_PATH / 'energy_map.csv'
-REGION_MAP_FILE  = MAPPINGS_PATH / 'region_map.csv'
-SECTOR_MAP_FILE  = MAPPINGS_PATH / 'sector_map.csv'
-SECTOR_REGION_MAP_FILE = MAPPINGS_PATH / 'sector_region_map.csv'
+MAPPINGS_PATH    = paths.CONFIG / 'mapping'
+CONTROL_FILE     = paths.CONFIG / 'control.py'
+ENERGY_MAP_FILE  = MAPPINGS_PATH / 'energy.csv'
+REGION_MAP_FILE  = MAPPINGS_PATH / 'region.csv'
+SECTOR_MAP_FILE  = MAPPINGS_PATH / 'sector.csv'
+SECTOR_REGION_MAP_FILE = MAPPINGS_PATH / 'sector-region.csv'
 # Processed CER files: carbon removed from end-use prices and history back to
 # 2000 (see source/cer/cer_source_files.py and source/cer/README.md).
 CER_DIR             = paths.PROCESSED / 'cer'
@@ -875,7 +875,7 @@ def main() -> pd.DataFrame:
     )
 
     # Drop sector/region combinations that sector has no fixed structural data
-    # for (see sector_regions in load_control_data / sector_region_map.csv).
+    # for (see sector_regions in load_control_data / config/mapping/sector-region.csv).
     # Sectors not listed there are left unrestricted (all cims_regions apply).
     sector_regions = control_data['sector_regions']
     if sector_regions:
@@ -886,7 +886,7 @@ def main() -> pd.DataFrame:
         if dropped:
             output_df = output_df[~drop_mask].reset_index(drop=True)
             print(f"   Dropped {dropped:,} rows for sector/region combinations "
-                  f"with no fixed data (see sector_region_map.csv)")
+                  f"with no fixed data (see config/mapping/sector-region.csv)")
 
     print(f"\n✅ Multipliers complete")
     print(f"   Total rows:  {len(output_df):,}")

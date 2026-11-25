@@ -53,7 +53,7 @@ from CIMS.data_processing.utils.controls_conversions import DATA_START, PROJECTI
 # -- File paths ----------------------------------------------------------------
 PATH_SC15  = paths.RAW / 'stats_can/activity/25100015.csv'
 PATH_JCIMS = paths.RAW / 'clean_fuel_production/electricity_activity_jcims.csv'
-REGION_MAP = paths.MAPPINGS / 'region_map.csv'
+REGION_MAP = paths.CONFIG / 'mapping/region.csv'
 OUTPUT     = paths.PROCESSED / 'activity/electricity.csv'
 
 # Year columns present in the JCIMS CSV

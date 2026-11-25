@@ -1,1 +1,30 @@
 old,new,note
+raw_data/assumptions/activity_cagr_projections.csv,config/assumption/activity-cagr-projections.csv,hand-set assumption: now in git
+raw_data/assumptions/commercial_assumptions.csv,config/assumption/commercial-assumptions.csv,hand-set assumption: now in git
+raw_data/assumptions/ng_eff_assumptions_commercial.csv,config/assumption/ng-eff-assumptions-commercial.csv,hand-set assumption: now in git
+raw_data/assumptions/residential_assumptions.csv,config/assumption/residential-assumptions.csv,hand-set assumption: now in git
+raw_data/assumptions/third_party_industrial_cogeneration.csv,config/assumption/third-party-industrial-cogeneration.csv,hand-set assumption: now in git
+raw_data/assumptions/transport_freight_assumptions.csv,config/assumption/transport-freight-assumptions.csv,hand-set assumption: now in git
+raw_data/assumptions/transport_passenger_assumptions.csv,config/assumption/transport-passenger-assumptions.csv,hand-set assumption: now in git
+mappings_conversions/README.md,config/README.md,
+mappings_conversions/control.py,config/control.py,
+mappings_conversions/cer_benchmark-prices_2000-2005.csv,config/interim-source/cer_benchmark-price_2000-2005.csv,
+mappings_conversions/cer_carbon-prices.csv,config/interim-source/cer_carbon-price.csv,
+mappings_conversions/cer_emission-factors.csv,config/interim-source/cer_emission-factor.csv,
+mappings_conversions/cer_to_cims_map.csv,config/mapping/cer-to-cims.csv,
+mappings_conversions/cims_nodes.csv,config/mapping/cims-node.csv,
+mappings_conversions/energy_conversions.csv,config/conversion/energy-conversion.csv,
+mappings_conversions/energy_map.csv,config/mapping/energy.csv,
+mappings_conversions/excluded_branches.csv,config/excluded-branch.csv,
+mappings_conversions/nir_crosswalk_map.csv,config/mapping/nir-crosswalk.csv,
+mappings_conversions/nir_to_cims_map.csv,config/mapping/nir-to-cims.csv,
+mappings_conversions/region_map.csv,config/mapping/region.csv,
+mappings_conversions/sector_map.csv,config/mapping/sector.csv,
+mappings_conversions/sector_region_map.csv,config/mapping/sector-region.csv,
+config/results_general.txt,config/results-general.txt,
+config/results_tech.txt,config/results-tech.txt,
+technology_database/,config/technology-database/,
+model_inputs/defaults/defaults_Parameters.csv,config/model-default/default-parameter.csv,hand-made: now in git
+model_inputs/defaults/defaults_Lists.csv,config/model-default/default-list.csv,hand-made: now in git
+model_inputs/calibration_outputs/fic-proxy-map.csv,config/calibration/fic-proxy-map.csv,hand-made: now in git
+model_inputs/calibration_outputs/fic-decline-techs.csv,config/calibration/fic-decline-techs.csv,hand-made: now in git

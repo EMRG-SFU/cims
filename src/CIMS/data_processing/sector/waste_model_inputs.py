@@ -30,7 +30,7 @@ Activity demand  (service_provide levels)
 
 Energy price multipliers
     pipeline/source/energy_prices/energy_price_multipliers.py  (called directly via main())
-    Waste is classified as Industrial in sector_map.csv and receives
+    Waste is classified as Industrial in config/mapping/sector.csv and receives
     multipliers accordingly.
 
 Output columns

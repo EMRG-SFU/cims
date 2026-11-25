@@ -9,7 +9,7 @@ Key behavioural notes
 - AT (Atlantic) groups NB + NS + PE + NL together.
 - BC groups BC + Territories together.
 - BC has Marine and Cold climate HVAC (75 % Marine / 25 % Cold floorspace split).
-- NG heating is split by efficiency tier using ng_eff_assumptions_commercial.csv.
+- NG heating is split by efficiency tier using config/assumption/ng-eff-assumptions-commercial.csv.
 - Hot water technologies are NOT split by building shell type.
 - All intermediate data is held as Polars DataFrames in long format:
       (region, variable, category, parameter, unit, year, value)
@@ -62,9 +62,9 @@ CONTROLS = load_control_config()
 FIXED_DATA_DIR   = paths.FIXED_DATA / 'commercial'
 CALIBRATION_DIR  = paths.CALIBRATION_TARGETS / 'commercial'
 SOURCE_DIR        = paths.RAW / 'nrcan/ceud/commercial'
-ASSUMPTIONS_CSV  = paths.ASSUMPTIONS / 'commercial_assumptions.csv'
-ACTIVITY_CAGR_CSV = paths.ASSUMPTIONS / 'activity_cagr_projections.csv'
-NG_EFFICIENCY_CSV = paths.ASSUMPTIONS / 'ng_eff_assumptions_commercial.csv'
+ASSUMPTIONS_CSV  = paths.ASSUMPTIONS / 'commercial-assumptions.csv'
+ACTIVITY_CAGR_CSV = paths.ASSUMPTIONS / 'activity-cagr-projections.csv'
+NG_EFFICIENCY_CSV = paths.ASSUMPTIONS / 'ng-eff-assumptions-commercial.csv'
 OUTPUT_DIR       = paths.PROCESSED / 'nrcan/ceud'
 CER_DEMAND_CSV = paths.RAW / 'cer/cer_demand_data_update/vDmd-CIMS.csv'
 POP_CSV        = paths.RAW / 'stats_can/population/1710000901.csv'
@@ -278,10 +278,10 @@ def load_projection_params(assumptions_csv: Path = ASSUMPTIONS_CSV,
     """
     Load commercial projection parameters.
 
-    Floorspace uses the shared activity CAGR file (activity_cagr_projections.csv),
+    Floorspace uses the shared activity CAGR file (config/assumption/activity-cagr-projections.csv),
     sector 'Commercial': CAGR Period, dampener periods — same pattern as activity scripts.
 
-    Building shell uses commercial_assumptions.csv.
+    Building shell uses config/assumption/commercial-assumptions.csv.
 
     Returns
     -------
@@ -324,7 +324,7 @@ def load_projection_params(assumptions_csv: Path = ASSUMPTIONS_CSV,
 
     params = {}
 
-    # -- 1. Floorspace — activity-style CAGR (activity_cagr_projections.csv)
+    # -- 1. Floorspace — activity-style CAGR (config/assumption/activity-cagr-projections.csv)
     cagr_start, cagr_end, periods = load_cagr_assumptions('Commercial', activity_cagr_csv)
     params['floorspace'] = {
         'cagr_start': cagr_start,

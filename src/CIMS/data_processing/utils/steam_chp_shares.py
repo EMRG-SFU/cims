@@ -20,7 +20,7 @@ raw_data/stats_can/electricity_generation/
                   liquor separate. Used from 2020.
 raw_data/ceedc/elec_gen.csv
     CEEDC industrial generation by NAICS and fuel, Canada only, 2000-2024.
-raw_data/assumptions/third_party_industrial_cogeneration.csv
+config/assumption/third-party-industrial-cogeneration.csv
     Cogeneration plants at industrial sites owned by a third party and so
     counted as utilities by StatCan (include=TRUE rows only). Their
     host-attributable generation is added to the host sector. Grandview (NB
@@ -105,7 +105,7 @@ from CIMS.data_processing.source.eia.mecs_steam_shares import CIMS_TO_MECS
 from CIMS.data_processing.utils import techdb_steam as T
 
 GEN_DIR      = paths.RAW / 'stats_can/electricity_generation'
-THIRD_PARTY  = paths.ASSUMPTIONS / 'third_party_industrial_cogeneration.csv'
+THIRD_PARTY  = paths.ASSUMPTIONS / 'third-party-industrial-cogeneration.csv'
 OUTPUT_FILE  = paths.PROCESSED / 'steam_chp/chp_shares.csv'
 YEARS        = range(2000, 2025)
 FIRST_0084   = 2020           # use 25-10-0084 from this year (no suppression, wood vs SPL)

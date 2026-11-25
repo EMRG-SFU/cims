@@ -24,7 +24,7 @@ For each sector, the rows come from exactly the steps the sector's
     1. mecs_steam_calibration.build_mecs_steam_rows('.{sector}')
        (what apply_mecs_steam puts in place of the CER steam rows)
     2. calibration_helpers.build_cer_energy (row by row, no aggregation)
-    3. keep regions listed for the sector in sector_region_map.csv
+    3. keep regions listed for the sector in config/mapping/sector-region.csv
     4. controls_conversions.filter_excluded_branches
     5. keep the main .Steam node's calibration_quantity_requested rows
 

@@ -62,7 +62,7 @@ OUTPUT_DIR                  = paths.PROCESSED / 'activity'
 _config                     = load_control_config()
 SCENARIO                    = _config["cer_ef_reference_scenario"]
 LAST_DATA_YEAR              = _config["last_data_year"]
-ASSUMPTIONS_FILE = paths.ASSUMPTIONS / 'activity_cagr_projections.csv'
+ASSUMPTIONS_FILE = paths.ASSUMPTIONS / 'activity-cagr-projections.csv'
 CAGR_START, CAGR_END, CAGR_PERIODS = load_cagr_assumptions('Natural Gas', ASSUMPTIONS_FILE)
 
 # Per-region overrides — one explicit annual rate per period.

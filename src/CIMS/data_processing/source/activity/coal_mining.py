@@ -181,8 +181,8 @@ from CIMS.data_processing.common import paths
 from CIMS.data_processing.utils.controls_conversions import load_control_config, DATA_START, PROJECTION_END
 
 # ── File paths ───────────────────────────────────────────────────────────────────
-MAPPINGS_PATH    = paths.MAPPINGS
-REGION_MAP_FILE  = MAPPINGS_PATH / 'region_map.csv'
+MAPPINGS_PATH    = paths.CONFIG / 'mapping'
+REGION_MAP_FILE  = MAPPINGS_PATH / 'region.csv'
 PATH_48          = paths.RAW / 'stats_can/activity/coal_production/25100048.csv'
 PATH_46          = paths.RAW / 'stats_can/activity/coal_production/25100046.csv'
 PATH_BC          = paths.RAW / 'bc_gov/bcannualcoalproduction.csv'
@@ -196,7 +196,7 @@ EXTEND_TO      = PROJECTION_END
 YEARS          = list(range(DATA_START, LAST_DATA_YEAR["stat_can_coal"] + 1))
 REGIONS    = ['British Columbia', 'Alberta', 'Saskatchewan', 'New Brunswick', 'Nova Scotia']
 
-ASSUMPTIONS_FILE = paths.ASSUMPTIONS / 'activity_cagr_projections.csv'
+ASSUMPTIONS_FILE = paths.ASSUMPTIONS / 'activity-cagr-projections.csv'
 CAGR_START, CAGR_END, CAGR_PERIODS = load_cagr_assumptions('Coal Mining', ASSUMPTIONS_FILE)
 
 # Per-region overrides — one explicit annual rate per period.

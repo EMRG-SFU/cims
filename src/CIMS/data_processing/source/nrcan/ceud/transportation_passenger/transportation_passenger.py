@@ -70,7 +70,7 @@ CONTROLS = load_control_config()
 
 SOURCE_DIR       = paths.RAW / 'nrcan/ceud/transportation'
 CAN_FILE        = SOURCE_DIR / 'tran_ca_e.xls'
-ASSUMPTIONS_CSV = paths.ASSUMPTIONS / 'transport_passenger_assumptions.csv'
+ASSUMPTIONS_CSV = paths.ASSUMPTIONS / 'transport-passenger-assumptions.csv'
 STATSCAN_POP_PATH = paths.RAW / 'stats_can/population/1710000901.csv'
 OUTPUT_DIR      = paths.PROCESSED / 'nrcan/ceud'
 LAST_HIST_YEAR  = CONTROLS["last_data_year"]["ceud"]
@@ -469,7 +469,7 @@ def load_projection_params(assumptions_csv: Path = ASSUMPTIONS_CSV,
 
     Rail and air intensities come from tran_ca_e.xls (national CEUD).
     Walk/cycle share, urban vehicle share, and aviation domestic shares
-    come from transport_passenger_assumptions.csv.
+    come from config/assumption/transport-passenger-assumptions.csv.
 
     Returns
     -------
@@ -953,7 +953,7 @@ def extract_air_kpkm(province: str, tables: dict, params: dict) -> list[pl.DataF
 
     Formula: kpkm = energy_PJ - domestic_share - 1e6 / intensity_MJ_per_kpkm
 
-    The domestic share (from transport_passenger_assumptions.csv) isolates domestic
+    The domestic share (from config/assumption/transport-passenger-assumptions.csv) isolates domestic
     aviation energy from total provincial energy, matching the old trans_ceud_old.py
     approach which used 'energy_share_domestic' per province.
 

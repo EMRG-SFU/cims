@@ -58,7 +58,7 @@ OUTPUT_DIR = paths.CALIBRATION_TARGETS / 'commercial'
 
 SECTOR_NAME = 'Commercial'
 
-# cer_to_cims_map.csv maps every commercial Space Heating CER row to BOTH a
+# config/mapping/cer-to-cims.csv maps every commercial Space Heating CER row to BOTH a
 # "(Marine)" and a "(Cold)" node variant (see e.g. .Commercial.HVAC (Cold) /
 # .Commercial.HVAC (Marine), and .Commercial.Buildings.Shell.<Activity>
 # (Cold) / (Marine)) since CER's own data carries no climate-zone split.
@@ -225,7 +225,7 @@ def main() -> pl.DataFrame:
         .select(OUTPUT_COLS)
     )
 
-    print('Filtering to regions with Commercial (see sector_region_map.csv)...')
+    print('Filtering to regions with Commercial (see config/mapping/sector-region.csv)...')
     allowed_regions = load_sector_regions().get(SECTOR_NAME)
     if allowed_regions:
         before_count = len(output)

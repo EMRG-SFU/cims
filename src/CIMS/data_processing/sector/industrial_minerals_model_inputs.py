@@ -231,7 +231,7 @@ def main() -> pl.DataFrame:
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     # Restrict to regions with actual fixed structural data — price_rows carries
     # a multiplier_price row for every CIMS region (Industrial Minerals is
-    # classified as Industrial for all 13 in sector_map.csv), which would
+    # classified as Industrial for all 13 in config/mapping/sector.csv), which would
     # otherwise leak extra region files with no structural data behind them.
     regions = fixed_str['Region'].drop_nulls().unique().sort().to_list()
     for region in regions:

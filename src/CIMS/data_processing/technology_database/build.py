@@ -26,7 +26,7 @@ Stages (src/CIMS/data_processing/technology_database/docs/pipeline.md):
  10. reports     source list, citation review, mapping review, data/processed_data/technology_database/vocabulary.md
  11. workbook    the Excel workbook, last, from the outputs
 
-Reads data/raw_data/technology_database/ and data/technology_database/. Writes data/processed_data/technology_database/
+Reads data/raw_data/technology_database/ and data/config/technology-database/. Writes data/processed_data/technology_database/
 and data/processed_data/technology_database/vocabulary.md, and appends new examples to records/source-example.csv.
 """
 from __future__ import annotations

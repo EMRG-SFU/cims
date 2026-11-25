@@ -38,8 +38,8 @@ def reset_model_files():
     base_model = 'CIMS_base'
 
     ### Default values and parameter list files
-    default_path = str(paths.DEFAULTS / 'defaults_Parameters.csv')
-    list_path = str(paths.DEFAULTS / 'defaults_Lists.csv')
+    default_path = str(paths.DEFAULTS / 'default-parameter.csv')
+    list_path = str(paths.DEFAULTS / 'default-list.csv')
     deflator_path = str(paths.PROCESSED / 'deflator_exchange' / 'currency_deflator.csv')
     exchange_path = str(paths.PROCESSED / 'deflator_exchange' / 'currency_exchange.csv')
 
@@ -496,7 +496,7 @@ def _(model, results_path):
     results_df = CIMS.log_model(
        model=model,
        output_file = f"{results_path}/results_general.csv",
-       parameter_file=str(paths.CONFIG / "results_general.txt"),
+       parameter_file=str(paths.CONFIG / "results-general.txt"),
        ensure_dir=True
     )
     return
@@ -508,7 +508,7 @@ def _(model, results_path):
     tech_results_df = CIMS.log_model(
        model=model,
        output_file=f'{results_path}/results_tech.csv',
-       parameter_file=str(paths.CONFIG / "results_tech.txt"),
+       parameter_file=str(paths.CONFIG / "results-tech.txt"),
        ensure_dir=True
     )
     return

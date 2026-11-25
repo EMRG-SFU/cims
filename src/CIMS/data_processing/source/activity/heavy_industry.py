@@ -23,7 +23,7 @@ INPUTS:
     raw_data/stats_can/activity/18100267.csv         <- StatsCan IPPI (incl. primary metals)
     raw_data/stats_can/activity/18100268.csv         <- StatsCan RMPI (raw materials)
     raw_data/ceedc/Production.xlsx                   <- CEEDC annual physical output
-    raw_data/assumptions/activity_cagr_projections.csv  <- CAGR projection assumptions
+    config/assumption/activity-cagr-projections.csv  <- CAGR projection assumptions
 
 OUTPUTS:
     processed_data/activity/heavy_industry.csv
@@ -64,8 +64,8 @@ GO_FILE               = paths.RAW / 'stats_can/activity/36100488.csv'
 IPPI_FILE             = paths.RAW / 'stats_can/activity/18100267.csv'
 RMPI_FILE             = paths.RAW / 'stats_can/activity/18100268.csv'
 PRODUCTION_FILE       = paths.RAW / 'ceedc/Production.xlsx'
-CAGR_ASSUMPTIONS_FILE = paths.ASSUMPTIONS / 'activity_cagr_projections.csv'
-REGION_MAP_FILE       = paths.MAPPINGS / 'region_map.csv'
+CAGR_ASSUMPTIONS_FILE = paths.ASSUMPTIONS / 'activity-cagr-projections.csv'
+REGION_MAP_FILE       = paths.CONFIG / 'mapping/region.csv'
 
 BASE_YEAR = 2020   # real GO base year (index = 100); matches IPPI/RMPI base period.
 

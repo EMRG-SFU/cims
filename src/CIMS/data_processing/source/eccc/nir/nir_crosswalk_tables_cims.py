@@ -65,7 +65,7 @@ ALL_REGIONS    = FULL_REGIONS + SPARSE_REGIONS
 # Each NIR combination can map to multiple CIMS nodes rows (one row per target).
 # When a NIR row has multiple targets its value is split equally across them.
 
-MAPPING_FILE = paths.MAPPINGS / 'nir_crosswalk_map.csv'
+MAPPING_FILE = paths.CONFIG / 'mapping/nir-crosswalk.csv'
 
 def load_nir_to_cims_map(path):
     """
@@ -87,7 +87,7 @@ def load_nir_to_cims_map(path):
 
 
 # ── Row offset → (Source, Sector, Sub-sector, Sub-sub-sector) ─────────────────
-# Tuples match the four key columns in nir_crosswalk_map.csv exactly.
+# Tuples match the four key columns in config/mapping/nir-crosswalk.csv exactly.
 SUBSECTOR_MAP = {
     3:  ('Oil and Gas', 'Upstream Oil and Gas',   'Natural Gas Production and Processing',        ''),
     5:  ('Oil and Gas', 'Upstream Oil and Gas',   'Conventional Oil Production',                  'Conventional Light Oil Production'),

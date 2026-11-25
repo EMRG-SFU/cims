@@ -64,14 +64,14 @@ from CIMS.data_processing.common import paths
 from CIMS.data_processing.utils.controls_conversions import load_control_config
 
 # Configuration
-MAPPINGS_PATH   = paths.MAPPINGS
-REGION_MAP_FILE = MAPPINGS_PATH / 'region_map.csv'
+MAPPINGS_PATH   = paths.CONFIG / 'mapping'
+REGION_MAP_FILE = MAPPINGS_PATH / 'region.csv'
 OUTPUT_DIR      = paths.PROCESSED / 'activity'
 
 DATA_START     = 2000
 LAST_DATA_YEAR = load_control_config()["last_data_year"]
 
-ASSUMPTIONS_FILE = paths.ASSUMPTIONS / 'activity_cagr_projections.csv'
+ASSUMPTIONS_FILE = paths.ASSUMPTIONS / 'activity-cagr-projections.csv'
 CAGR_START, CAGR_END, CAGR_PERIODS = load_cagr_assumptions('Petroleum Refining', ASSUMPTIONS_FILE)
 
 # Per-region overrides — one explicit annual rate per period.

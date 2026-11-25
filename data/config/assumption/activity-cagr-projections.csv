@@ -1,0 +1,10 @@
+Sector,CAGR Period,1st period,1st period dampener,2nd period,2nd period dampener,3d period,3rd period dampener
+Heavy Industry,2014-2024,2025-2035,60%,2036-2050,40%,2051-2100,5%
+Natural Gas,2040-2050,2051-2100,20%,,,,
+Oil,2040-2050,2051-2100,20%,,,,
+Light Industrial,2014-2024,2025-2035,60%,2036-2050,40%,2051-2100,5%
+Coal Mining,2015-2025,2025-2035,1%,2036-2050,1%,2051-2100,0%
+Petroleum Refining,2015-2025,2026-2035,60%,2036-2050,40%,2051-2100,5%
+Emissions Drivers,2014-2024,2025-2035,60%,2036-2050,40%,2051-2100,5%
+Commercial,2013-2023,2024-2050,60%,2051-2100,20%,,
+Residential,2013-2023,2024-2050,60%,2051-2100,20%,,

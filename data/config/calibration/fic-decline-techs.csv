@@ -1,0 +1,22 @@
+Technology,Node_Pattern,Include,Reason
+BEV 500,Passenger Vehicle Motors,yes,Battery-electric vehicle
+BEV 800,Passenger Vehicle Motors,yes,Battery-electric vehicle
+Fuel Cell 650,Passenger Vehicle Motors,yes,Hydrogen fuel-cell vehicle
+Bus Urban Electric,,yes,Battery-electric bus
+Bus Urban Hydrogen,,yes,Hydrogen bus
+Bus Intercity Hydrogen,,yes,Hydrogen bus
+Electric,Transportation Freight,yes,Battery-electric truck
+Hydrogen,Transportation Freight,yes,Hydrogen truck
+Catenary,Transportation Freight,yes,Overhead-wire electric truck
+Electricity_ASHP,,yes,Electric air-source heat pump
+Electricity_ASHP_Electricity_Backup,,yes,"Electric air-source heat pump, electric backup"
+Electricity_GSHP,,yes,Ground-source heat pump
+Plug-in Hybrid,,no,REVIEW: not zero-emission (uses fuel part of the time)
+Electricity_ASHP_Natural Gas_Backup,,no,REVIEW: hybrid heat pump with gas backup
+Electricity_ASHP_Oil_Backup,,no,REVIEW: hybrid heat pump with oil backup
+Electricity_ASHP_Wood_Backup,,no,REVIEW: hybrid heat pump with wood backup
+Natural Gas_ASHP,,no,REVIEW: gas-fired heat pump
+Natural Gas_ASHP_Natural Gas_Backup,,no,REVIEW: gas-fired heat pump
+Renewable Diesel,,no,"REVIEW: low-carbon drop-in fuel, not zero-emission"
+Renewable Gasoline,,no,"REVIEW: low-carbon drop-in fuel, not zero-emission"
+Electricity_Resistance_High Efficiency,,no,Zero-emission at point of use but a mature technology

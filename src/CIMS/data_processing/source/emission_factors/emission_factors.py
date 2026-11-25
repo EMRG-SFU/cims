@@ -93,15 +93,15 @@ from CIMS.data_processing.utils.controls_conversions import load_energy_conversi
 # ==============================================================================
 # CONFIGURATION
 # ==============================================================================
-MAPPINGS_PATH    = paths.MAPPINGS
+MAPPINGS_PATH    = paths.CONFIG / "mapping"
 RAW_PATH         = paths.RAW
 
 NIR_XLSX         = RAW_PATH / "eccc" / "nir" / "EN_Annex6_Emission_Factors_Tables.xlsx"
 NIR_PDF          = RAW_PATH / "eccc" / "nir" / "EN_Annex6_Emission_Factors.pdf"
 COAL_XLSX        = RAW_PATH / "CEEDC" / "CEEDC_coal_electricity_energy_emission_factors_260313.xlsx"
 IPCC_PDF         = RAW_PATH / "IPCC" / "V2_2_Ch2_Stationary_Combustion.pdf"
-CONVERSIONS_FILE = MAPPINGS_PATH / "energy_conversions.csv"
-ENERGY_MAP_FILE  = MAPPINGS_PATH / "energy_map.csv"
+CONVERSIONS_FILE = paths.CONFIG / "conversion/energy-conversion.csv"
+ENERGY_MAP_FILE  = MAPPINGS_PATH / "energy.csv"
 OUTPUT_DIR       = paths.PROCESSED / "emission_factors"
 
 YEAR_START = 2000
@@ -141,7 +141,7 @@ DEFAULT_EMISSION_SOURCE = "combustion"
 
 def validate_fuel_map(fuels: list, path: Path = ENERGY_MAP_FILE) -> None:
     """
-    Cross-check the FUELS list against the CIMS column of energy_map.csv.
+    Cross-check the FUELS list against the CIMS column of config/mapping/energy.csv.
     Prints a warning for any fuel present in one but not the other.
     """
     if not path.exists():
@@ -157,10 +157,10 @@ def validate_fuel_map(fuels: list, path: Path = ENERGY_MAP_FILE) -> None:
 
     if missing_from_script:
         for name in sorted(missing_from_script):
-            print(f"  ⚠️  In energy_map.csv but not in FUELS: '{name}'")
+            print(f"  ⚠️  In config/mapping/energy.csv but not in FUELS: '{name}'")
     if missing_from_map:
         for name in sorted(missing_from_map):
-            print(f"  ⚠️  In FUELS but not in energy_map.csv: '{name}'")
+            print(f"  ⚠️  In FUELS but not in config/mapping/energy.csv: '{name}'")
     if not missing_from_script and not missing_from_map:
         print("  ✅ Fuel map validation passed — all fuels accounted for")
 
@@ -635,7 +635,7 @@ FUELS = [
     },
 
     # -- Zero-EF fuels ---------------------------------------------------------
-    # These fuels are retained in FUELS so energy_map.csv validation passes and
+    # These fuels are retained in FUELS so config/mapping/energy.csv validation passes and
     # their zero-EF treatment is documented, but "exclude_from_output": True
     # prevents them from appearing in either output CSV.
 
@@ -1198,7 +1198,7 @@ def main() -> None:
     print("=" * 80)
 
     # -- Fuel map validation ---------------------------------------------------
-    print("\nValidating fuels against energy_map.csv...")
+    print("\nValidating fuels against config/mapping/energy.csv...")
     validate_fuel_map(FUELS)
 
     df = build_records()

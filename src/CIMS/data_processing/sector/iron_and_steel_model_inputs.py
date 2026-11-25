@@ -46,7 +46,7 @@ Total production  (service_request at sector level)
 
 Energy price multipliers  (multiplier_price rows)
     pipeline/source/energy_prices/energy_price_multipliers.py  (called directly via main())
-    Iron and Steel is classified as Industrial in sector_map.csv.
+    Iron and Steel is classified as Industrial in config/mapping/sector.csv.
 
 Output columns
 --------------

@@ -44,7 +44,7 @@ class Model:
     year_list : Years to include; combined with defaults_Lists Columns to build the column list.
     sector_list : Sectors to include/filter.
     default_values_csv_path : Path to defaults values CSV (parameter defaults).
-    list_csv_path : Path to defaults_Lists.csv
+    list_csv_path : Path to config/model-default/default-list.csv
     sector_folders : Update-file entries that define sectors (e.g., the notebook's sector_req).
         Only files collected from these folders count toward the Region x Sector coverage
         matrix; cross-cutting entries (DCC/DIC/FIC, market share limits, policies) feed the

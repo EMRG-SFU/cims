@@ -211,8 +211,8 @@ def main():
     from CIMS.data_processing.common import paths
     ap.add_argument("--outputs-dir", default=str(paths.CALIBRATION_OUTPUTS))
     ap.add_argument("--model-dir", default=str(paths.MODEL))
-    ap.add_argument("--proxy-map", default=str(paths.CALIBRATION_OUTPUTS / "fic-proxy-map.csv"))
-    ap.add_argument("--decline-list", default=str(paths.CALIBRATION_OUTPUTS / "fic-decline-techs.csv"))
+    ap.add_argument("--proxy-map", default=str(paths.CALIBRATION_CONFIG / "fic-proxy-map.csv"))
+    ap.add_argument("--decline-list", default=str(paths.CALIBRATION_CONFIG / "fic-decline-techs.csv"))
     ap.add_argument("--window", type=int, nargs=2, default=(2017, 2023))
     ap.add_argument("--min-fitted-years", type=int, default=5)
     ap.add_argument("--fallback-min-years", type=int, default=3)

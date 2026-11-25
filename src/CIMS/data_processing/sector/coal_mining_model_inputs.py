@@ -41,7 +41,7 @@ Metallurgical finishing share  (service_request at Coal branch level)
 
 Energy price multipliers  (multiplier_price rows)
     pipeline/source/energy_prices/energy_price_multipliers.py  (called directly via main())
-    Coal Mining is classified as Industrial in sector_map.csv.
+    Coal Mining is classified as Industrial in config/mapping/sector.csv.
 
 Output columns
 --------------

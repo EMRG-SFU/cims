@@ -3,7 +3,7 @@ Replace CER-based Steam node calibration targets with MECS-based targets.
 
 Background
 ----------
-cer_to_cims_map.csv sends each sector's whole CER 'Process Heat' end use to
+config/mapping/cer-to-cims.csv sends each sector's whole CER 'Process Heat' end use to
 the sector's .Steam node (Chemical Products, Iron and Steel, Metal Smelting,
 Pulp and Paper). Process heat also includes direct-fired heat (furnaces,
 kilns, heaters), so that target overstates steam. Light Industrial and
