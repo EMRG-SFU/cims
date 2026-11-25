@@ -20,10 +20,10 @@ COLS = ["archetype", "unit", "calculated", "calculated-incl-energy", "sourced-ce
 
 BASIS = [
     ("includes feedstock or is a selling price", r"feedstock|feed\b|selling price|MFSP|MJSP|MSP|minimum .*price|incl(?:\.|udes|uding)? (?:raw|material|feed)"),
-    ("includes a return on capital", r"return|IRR|profit|margin"),
-    ("includes CO2 transport and storage", r"transport and storage|T&S|transport|storage cost"),
+    ("includes a return on capital", r"return|\bIRR\b|profit|margin"),
+    ("includes CO2 transport and storage", r"^(?!.*\bexcl(?:\.|udes|uding)?\s+(?:CO2\s+)?(?:transport|T&S|storage)).*(?:transport and storage|T&S|transport|storage cost)"),
     ("per t CO2 net removed", r"net removed"),
-    ("includes a CO2 price", r"CO2 price|carbon price|ETS|CO2 cost"),
+    ("includes a CO2 price", r"CO2 price|carbon price|\bETS\b|CO2 cost"),
     ("by-products not credited", r"by-?products? (?:revenues? )?not|not deducted|no (?:co|by)-?product credit"),
     ("excludes energy", r"excl(?:\.|udes|uding)? (?:energy|fuel|electricity)|non-energy"),
     ("from market prices", r"market price|spot|plant-gate|Argus|price data"),
