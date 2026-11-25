@@ -23,14 +23,14 @@ import polars as pl
 # ── path setup ─────────────────────────────────────────────────────────────────
 from CIMS.data_processing.utils.flatten_fixed_data import read_fixed_data_file
 
-from CIMS.data_processing.utils.controls_conversions import BASE_PATH
+from CIMS.data_processing.common import paths
 from CIMS.data_processing.utils.currency import write_model_csv
 from CIMS.data_processing.utils.collapse_constant_years import collapse_constant_years
 from CIMS.data_processing.utils.techdb_steam import drop_replaced_steam_rows
 
 # ── configuration ──────────────────────────────────────────────────────────────
-FIXED_INPUT_DIR = BASE_PATH / 'raw_data/fixed_data/fic'
-OUTPUT_DIR      = BASE_PATH / 'model_inputs/model/fic'
+FIXED_INPUT_DIR = paths.FIXED_DATA / 'fic'
+OUTPUT_DIR      = paths.MODEL / 'fic'
 
 OUTPUT_COLS = [
     'Branch', 'Type', 'Region', 'Sector', 'Service', 'Technology',

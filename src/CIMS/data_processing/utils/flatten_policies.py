@@ -1,12 +1,12 @@
 """
 Build the long, annual policy files the model reads from policy source files.
 
-Input:  BASE_PATH / raw_data/policies/<source folder>/*.csv
+Input:  paths.RAW / policies/<source folder>/*.csv
         Wide files with 5-year columns (2000, 2005, ... 2050), or files already
         in long format (Year and Value columns). Source folders keep the names
         they were authored with (for example Off_OBPS_Fed), or already use the
         output name (for example carbon-tax_ref).
-Output: BASE_PATH / model_inputs/policies/<policy folder>/<policy folder>_<region>.csv
+Output: paths.POLICIES / <policy folder>/<policy folder>_<region>.csv
         Long files with Year and Value columns, one row per year, in
         kebab-snake names (for example obps_federal_off/obps_federal_off_ab.csv).
 
@@ -37,13 +37,13 @@ import csv
 import re
 from pathlib import Path
 
-from CIMS.data_processing.utils.controls_conversions import BASE_PATH
+from CIMS.data_processing.common import paths
 from CIMS.data_processing.utils.currency import finalise_currency_csv
 from CIMS.data_processing.utils.flatten_fixed_data import BLANK_LITERAL_SENTINELS
 
 # ── configuration ──────────────────────────────────────────────────────────────
-INPUT_DIR  = BASE_PATH / 'raw_data/policies'
-OUTPUT_DIR = BASE_PATH / 'model_inputs/policies'
+INPUT_DIR  = paths.RAW / 'policies'
+OUTPUT_DIR = paths.POLICIES
 
 AT_PROVINCES = ['NB', 'NS', 'PE', 'NL']
 

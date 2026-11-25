@@ -49,7 +49,8 @@ from CIMS.data_processing.utils.data_extensions import (
     compute_cagr,
     extend_cagr_periods,
 )
-from CIMS.data_processing.utils.controls_conversions import DATA_START, PROJECTION_END, BASE_PATH as _CIMS_BASE
+from CIMS.data_processing.common import paths
+from CIMS.data_processing.utils.controls_conversions import DATA_START, PROJECTION_END
 from CIMS.data_processing.utils.controls_conversions import load_control_config
 
 CONTROLS = load_control_config()
@@ -58,16 +59,16 @@ CONTROLS = load_control_config()
 # CONFIGURATION
 # ==============================================================================
 
-FIXED_DATA_DIR   = _CIMS_BASE / 'raw_data/fixed_data/commercial'
-CALIBRATION_DIR  = _CIMS_BASE / 'calibration/commercial'
-BASE_PATH        = _CIMS_BASE / 'raw_data/nrcan/ceud/commercial'
-ASSUMPTIONS_CSV  = _CIMS_BASE / 'raw_data/assumptions/commercial_assumptions.csv'
-ACTIVITY_CAGR_CSV = _CIMS_BASE / 'raw_data/assumptions/activity_cagr_projections.csv'
-NG_EFFICIENCY_CSV = _CIMS_BASE / 'raw_data/assumptions/ng_eff_assumptions_commercial.csv'
-OUTPUT_DIR       = _CIMS_BASE / 'processed_data/nrcan/ceud'
-CER_DEMAND_CSV = _CIMS_BASE / 'raw_data/cer/cer_demand_data_update/vDmd-CIMS.csv'
-POP_CSV        = _CIMS_BASE / 'raw_data/stats_can/population/1710000901.csv'
-EFFICIENCY_XLS = _CIMS_BASE / 'raw_data/nrcan/ceud/residential/res_ca_e_32.xls'
+FIXED_DATA_DIR   = paths.FIXED_DATA / 'commercial'
+CALIBRATION_DIR  = paths.CALIBRATION_TARGETS / 'commercial'
+SOURCE_DIR        = paths.RAW / 'nrcan/ceud/commercial'
+ASSUMPTIONS_CSV  = paths.ASSUMPTIONS / 'commercial_assumptions.csv'
+ACTIVITY_CAGR_CSV = paths.ASSUMPTIONS / 'activity_cagr_projections.csv'
+NG_EFFICIENCY_CSV = paths.ASSUMPTIONS / 'ng_eff_assumptions_commercial.csv'
+OUTPUT_DIR       = paths.PROCESSED / 'nrcan/ceud'
+CER_DEMAND_CSV = paths.RAW / 'cer/cer_demand_data_update/vDmd-CIMS.csv'
+POP_CSV        = paths.RAW / 'stats_can/population/1710000901.csv'
+EFFICIENCY_XLS = paths.RAW / 'nrcan/ceud/residential/res_ca_e_32.xls'
 YEARS            = list(range(DATA_START, PROJECTION_END + 1))
 LAST_HIST_YEAR   = CONTROLS["last_data_year"]["ceud"]
 
@@ -417,7 +418,7 @@ def load_ng_efficiency_splits(ng_efficiency_csv: Path = NG_EFFICIENCY_CSV) -> di
 def load_tables(region_code: str) -> dict:
     """Load and clean CEUD Excel sheets for a commercial region."""
     region_lower = FILE_NAME_MAP.get(region_code.upper(), region_code.lower())
-    file_path = BASE_PATH / f"com_{region_lower}_e.xls"
+    file_path = SOURCE_DIR / f"com_{region_lower}_e.xls"
 
     if not file_path.exists():
         raise FileNotFoundError(f"Data file not found: {file_path}")

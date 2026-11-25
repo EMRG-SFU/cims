@@ -5,27 +5,22 @@ import csv
 import re
 from pathlib import Path
 
+from CIMS.data_processing.common import paths
+
 HERE = Path(__file__).resolve().parent
 PACKAGE = HERE.parent                     # src/technology_database (src/CIMS/data_processing/technology_database in CIMS)
 
 
-def _repo_root() -> Path:
-    """The folder that holds data/technology_database/: the repo root, found by
-    walking up from this file, so the package runs from tech_data and from CIMS."""
-    for p in HERE.parents:
-        if (p / "data" / "technology_database").is_dir():
-            return p
-    raise SystemExit("data/technology_database/ not found above " + str(HERE))
-
-
-ROOT = _repo_root()
-DATA = ROOT / "data"
-RAW = DATA / "raw_data" / "technology_database"            # the extractions and the manifest (FRDR)
+# The data layers come from common/paths.py, like every other stage (plan Phase 2,
+# step 10), so CIMS_DATA_ROOT now applies to the database build too.
+ROOT = paths.REPO_ROOT
+DATA = paths.DATA_ROOT
+RAW = paths.TECHDB_EXTRACTED                               # the extractions and the manifest (FRDR)
 PRIMARY = ROOT / "primary-sources"                         # the source documents (local only, may be absent)
-RECORDS = DATA / "technology_database"                     # hand-edited records
+RECORDS = paths.TECHDB_RECORDS                             # hand-edited records
 VOCAB = RECORDS / "vocabulary"            # controlled vocabularies
 REFERENCE = RECORDS / "reference"         # conversion and ranking tables
-OUTPUT = DATA / "processed_data" / "technology_database"   # everything the build writes
+OUTPUT = paths.TECHDB_OUTPUT                               # everything the build writes
 DB = DATA                                 # paths in messages are shown relative to data/
 HIERARCHY = RECORDS / "cims-hierarchy.csv"
 

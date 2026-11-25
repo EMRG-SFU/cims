@@ -84,16 +84,16 @@ import pandas as pd
 import polars as pl
 
 from CIMS.data_processing.utils.extractors.nrcan_ceud import find_row_indices, _to_float
-from CIMS.data_processing.utils.controls_conversions import (
-    BASE_PATH, LAST_DATA_YEAR, PROJECTION_END,
+from CIMS.data_processing.common import paths
+from CIMS.data_processing.utils.controls_conversions import ( LAST_DATA_YEAR, PROJECTION_END,
 )
 
 # ==============================================================================
 # CONFIGURATION
 # ==============================================================================
 
-RAW_DIR = BASE_PATH / 'raw_data/nrcan/ceud/residential'
-OUTPUT_DIR = BASE_PATH / 'processed_data/nrcan/ceud'
+RAW_DIR = paths.RAW / 'nrcan/ceud/residential'
+OUTPUT_DIR = paths.PROCESSED / 'nrcan/ceud'
 OUTPUT_FILE = 'residential_heating_intensity.csv'
 LAST_HIST_YEAR = LAST_DATA_YEAR['ceud']
 

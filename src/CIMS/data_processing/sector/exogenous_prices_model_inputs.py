@@ -37,13 +37,13 @@ import CIMS.data_processing.source.energy_prices.energy_prices as _energy_prices
 
 import CIMS.data_processing.source.emission_factors.emission_factors as _ef_mod
 
-from CIMS.data_processing.utils.controls_conversions import BASE_PATH
+from CIMS.data_processing.common import paths
 from CIMS.data_processing.utils.currency import write_model_csv
 from CIMS.data_processing.utils.collapse_constant_years import collapse_constant_years
 
 # ── configuration ──────────────────────────────────────────────────────────────
-FIXED_INPUT_DIR = BASE_PATH / 'raw_data/fixed_data/exogenous_prices'
-OUTPUT_DIR      = BASE_PATH / 'model_inputs/model/exogenous_prices'
+FIXED_INPUT_DIR = paths.FIXED_DATA / 'exogenous_prices'
+OUTPUT_DIR      = paths.MODEL / 'exogenous_prices'
 
 OUTPUT_COLS = [
     'Branch', 'Type', 'Region', 'Sector', 'Service', 'Technology',

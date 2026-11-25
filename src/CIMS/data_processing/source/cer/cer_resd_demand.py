@@ -25,15 +25,16 @@ labelled Source = 'StatCan RESD 25-10-0029 (refinery_fuel)'.
 
 import pandas as pd
 from pathlib import Path
-from CIMS.data_processing.utils.controls_conversions import BASE_PATH, MAPPINGS_PATH
+from CIMS.data_processing.common import paths
+from CIMS.data_processing.utils.controls_conversions import MAPPINGS_PATH
 from CIMS.data_processing.source.stats_can.biomass_demand import replace_cer_biomass
 from CIMS.data_processing.source.stats_can.refinery_fuel import replace_cer_refinery_fuel
 
-CER_DIR         = BASE_PATH / "raw_data/cer/cer_demand_data_update"
+CER_DIR         = paths.RAW / "cer/cer_demand_data_update"
 MAP_FILE        = MAPPINGS_PATH / "cer_to_cims_map.csv"
 ENERGY_MAP_FILE = MAPPINGS_PATH / "energy_map.csv"
 REGION_MAP_FILE = MAPPINGS_PATH / "region_map.csv"
-OUTPUT_DIR      = BASE_PATH / "processed_data/cer"
+OUTPUT_DIR      = paths.PROCESSED / "cer"
 OUTPUT_FILE     = OUTPUT_DIR / "cer_resd_demand.csv"
 
 # CER Area values that don't match the region_map CER column exactly

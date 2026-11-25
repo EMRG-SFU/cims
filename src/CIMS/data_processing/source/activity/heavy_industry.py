@@ -54,17 +54,18 @@ from pathlib import Path
 from CIMS.data_processing.utils.data_fill import interpolate_gaps
 from CIMS.data_processing.utils.data_extensions import extend_cagr_periods
 from CIMS.data_processing.utils.extractors.stats_can import read_statscan_csv
-from CIMS.data_processing.utils.controls_conversions import load_control_config, DATA_START, BASE_PATH
+from CIMS.data_processing.common import paths
+from CIMS.data_processing.utils.controls_conversions import load_control_config, DATA_START
 
 # =============================================================================
 # Configuration
 # =============================================================================
-GO_FILE               = BASE_PATH / 'raw_data/stats_can/activity/36100488.csv'
-IPPI_FILE             = BASE_PATH / 'raw_data/stats_can/activity/18100267.csv'
-RMPI_FILE             = BASE_PATH / 'raw_data/stats_can/activity/18100268.csv'
-PRODUCTION_FILE       = BASE_PATH / 'raw_data/ceedc/Production.xlsx'
-CAGR_ASSUMPTIONS_FILE = BASE_PATH / 'raw_data/assumptions/activity_cagr_projections.csv'
-REGION_MAP_FILE       = BASE_PATH / 'mappings_conversions/region_map.csv'
+GO_FILE               = paths.RAW / 'stats_can/activity/36100488.csv'
+IPPI_FILE             = paths.RAW / 'stats_can/activity/18100267.csv'
+RMPI_FILE             = paths.RAW / 'stats_can/activity/18100268.csv'
+PRODUCTION_FILE       = paths.RAW / 'ceedc/Production.xlsx'
+CAGR_ASSUMPTIONS_FILE = paths.ASSUMPTIONS / 'activity_cagr_projections.csv'
+REGION_MAP_FILE       = paths.MAPPINGS / 'region_map.csv'
 
 BASE_YEAR = 2020   # real GO base year (index = 100); matches IPPI/RMPI base period.
 
@@ -1428,7 +1429,7 @@ def main() -> pl.DataFrame:
     print(f"   Regions processed:   {output_df['Region'].n_unique()}")
     print(f"   Variables:           {sorted(output_df['Variable'].unique().to_list())}")
     print(f"   Years covered:       {output_df['Year'].min()} – {output_df['Year'].max()}")
-    _heavy_industry_path = BASE_PATH / 'processed_data/activity/heavy_industry.csv'
+    _heavy_industry_path = paths.PROCESSED / 'activity/heavy_industry.csv'
     _heavy_industry_path.parent.mkdir(parents=True, exist_ok=True)
     output_df.to_pandas().to_csv(
         _heavy_industry_path,

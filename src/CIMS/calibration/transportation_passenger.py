@@ -89,8 +89,8 @@ def _():
 def _():
     # model_pickle_path = "/path/to/your/model/here.pkl"
     # or "C:\path\to\your\model.pkl"
-    model_pickle_path = "C:/calibration/cims/results/Reference/paper_fitted.pkl"
-    # model_pickle_path = "C:/_dev/data_processing_calibration/cims/results/residential/model.pkl"
+    from CIMS.data_processing.common import paths as _paths
+    model_pickle_path = str(_paths.RESULTS / "Reference" / "paper_fitted.pkl")
     return (model_pickle_path,)
 
 

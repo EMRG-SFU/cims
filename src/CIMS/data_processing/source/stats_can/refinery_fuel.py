@@ -222,10 +222,10 @@ def replace_cer_refinery_fuel(cer_df):
 
 
 def _paths():
-    from CIMS.data_processing.utils.controls_conversions import BASE_PATH
-    return (BASE_PATH / "raw_data/stats_can/resd/25100029.csv",
-            BASE_PATH / "processed_data/activity/petroleum_refining.csv",
-            BASE_PATH / "processed_data/stats_can/refinery_fuel.csv")
+    from CIMS.data_processing.common import paths
+    return (paths.RAW / "stats_can/resd/25100029.csv",
+            paths.PROCESSED / "activity/petroleum_refining.csv",
+            paths.PROCESSED / "stats_can/refinery_fuel.csv")
 
 
 @lru_cache(maxsize=1)

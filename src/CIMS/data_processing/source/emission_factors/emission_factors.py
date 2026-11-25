@@ -86,14 +86,15 @@ import pandas as pd
 import polars as pl
 
 from CIMS.data_processing.utils.data_extensions import extend_series_constant
-from CIMS.data_processing.utils.controls_conversions import load_energy_conversions, BASE_PATH
+from CIMS.data_processing.common import paths
+from CIMS.data_processing.utils.controls_conversions import load_energy_conversions
 
 
 # ==============================================================================
 # CONFIGURATION
 # ==============================================================================
-MAPPINGS_PATH    = BASE_PATH / "mappings_conversions"
-RAW_PATH         = BASE_PATH / "raw_data"
+MAPPINGS_PATH    = paths.MAPPINGS
+RAW_PATH         = paths.RAW
 
 NIR_XLSX         = RAW_PATH / "eccc" / "nir" / "EN_Annex6_Emission_Factors_Tables.xlsx"
 NIR_PDF          = RAW_PATH / "eccc" / "nir" / "EN_Annex6_Emission_Factors.pdf"
@@ -101,7 +102,7 @@ COAL_XLSX        = RAW_PATH / "CEEDC" / "CEEDC_coal_electricity_energy_emission_
 IPCC_PDF         = RAW_PATH / "IPCC" / "V2_2_Ch2_Stationary_Combustion.pdf"
 CONVERSIONS_FILE = MAPPINGS_PATH / "energy_conversions.csv"
 ENERGY_MAP_FILE  = MAPPINGS_PATH / "energy_map.csv"
-OUTPUT_DIR       = BASE_PATH / "processed_data" / "emission_factors"
+OUTPUT_DIR       = paths.PROCESSED / "emission_factors"
 
 YEAR_START = 2000
 YEAR_END   = 2100

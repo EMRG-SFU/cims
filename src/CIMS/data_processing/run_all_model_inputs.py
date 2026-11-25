@@ -10,6 +10,7 @@ Usage:
     python -m CIMS.data_processing.run_all_model_inputs --stop-on-error
     python -m CIMS.data_processing.run_all_model_inputs --from natural_gas
     python -m CIMS.data_processing.run_all_model_inputs --only natural_gas residential
+    python -m CIMS.data_processing.run_all_model_inputs --strict
 
 --from NAME    Start at the step whose name starts with NAME (for example after a
                failure), and run every step after it.
@@ -23,6 +24,8 @@ import os
 import subprocess
 import sys
 import time
+
+from CIMS.data_processing.common import paths
 
 PACKAGE = "CIMS.data_processing.sector"
 MODULES = [
@@ -79,6 +82,8 @@ def _match(name: str, steps: list[str]) -> str:
 def select_modules(argv: list[str]) -> tuple[list[str], bool]:
     parser = argparse.ArgumentParser(description="Run the sector model-input scripts.")
     parser.add_argument("--stop-on-error", action="store_true")
+    parser.add_argument("--strict", action="store_true",
+                        help="stop if the data root is not inside the current folder")
     group = parser.add_mutually_exclusive_group()
     group.add_argument("--from", dest="start", metavar="NAME",
                        help="start at this step and run every step after it")
@@ -98,6 +103,7 @@ def select_modules(argv: list[str]) -> tuple[list[str], bool]:
 
 def main() -> int:
     modules, STOP_ON_ERROR = select_modules(sys.argv[1:])
+    paths.announce(strict=True if "--strict" in sys.argv[1:] else None)
 
     GREEN = "\033[92m"
     RED   = "\033[91m"

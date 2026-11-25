@@ -56,13 +56,13 @@ from functools import lru_cache
 import pandas as pd
 import polars as pl
 
-from CIMS.data_processing.utils.controls_conversions import (
-    BASE_PATH, filter_excluded_branches, load_sector_regions,
+from CIMS.data_processing.common import paths
+from CIMS.data_processing.utils.controls_conversions import ( filter_excluded_branches, load_sector_regions,
 )
 from CIMS.data_processing.utils.calibration_helpers import OUTPUT_COLS, build_cer_energy
 from CIMS.data_processing.utils.mecs_steam_calibration import build_mecs_steam_rows
 
-OUTPUT_DIR  = BASE_PATH / 'processed_data/steam'
+OUTPUT_DIR  = paths.PROCESSED / 'steam'
 OUTPUT_FILE = OUTPUT_DIR / 'steam_fuel_targets.csv'
 
 

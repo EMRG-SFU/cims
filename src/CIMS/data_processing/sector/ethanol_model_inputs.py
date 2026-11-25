@@ -29,13 +29,13 @@ from CIMS.data_processing.utils.flatten_fixed_data import read_fixed_data_file
 
 import CIMS.data_processing.source.energy_prices.energy_price_multipliers as _energy_price_mod
 
-from CIMS.data_processing.utils.controls_conversions import BASE_PATH
+from CIMS.data_processing.common import paths
 from CIMS.data_processing.utils.currency import write_model_csv
 from CIMS.data_processing.utils.collapse_constant_years import collapse_constant_years
 
 # ── configuration ──────────────────────────────────────────────────────────────
-FIXED_INPUT_DIR = BASE_PATH / 'raw_data/fixed_data/ethanol'
-OUTPUT_DIR      = BASE_PATH / 'model_inputs/model/ethanol'
+FIXED_INPUT_DIR = paths.FIXED_DATA / 'ethanol'
+OUTPUT_DIR      = paths.MODEL / 'ethanol'
 
 OUTPUT_COLS = [
     'Branch', 'Type', 'Region', 'Sector', 'Service', 'Technology',

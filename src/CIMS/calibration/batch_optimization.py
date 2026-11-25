@@ -11,6 +11,8 @@ with app.setup:
 
     import polars as pl
 
+    from CIMS.data_processing.common import paths
+
     import CIMS.calibration.Calibration.Data.node_info as node_info
     import CIMS.calibration.Calibration.Plotting.plot_ms_for_node as plotMS
     from CIMS.calibration.Calibration.Optimization.optimize_ms import (
@@ -77,7 +79,7 @@ def _():
 @app.cell
 def _():
     # Point this at the model.pkl produced by the Reference.py run for this stage
-    model_pickle_path = "results/Reference/petroleum_refining.pkl"
+    model_pickle_path = str(paths.RESULTS / "Reference" / "petroleum_refining.pkl")
     return (model_pickle_path,)
 
 
@@ -110,7 +112,7 @@ def _(nodeNames):
     # <calibration_output_root>/<sector>/fitted_fics (and fitted_lifetimes), and
     # read back in by the next Reference.py run via calibration_output_sectors —
     # every sector listed below must be in that list.
-    calibration_output_root = "data/model_inputs/calibration_outputs"
+    calibration_output_root = str(paths.CALIBRATION_OUTPUTS)
     for _sector, _nodes in group_by_sector(nodeNames).items():
         print(f"{_sector}: {len(_nodes)} node(s) -> {calibration_output_root}/{_sector}")
     return (calibration_output_root,)

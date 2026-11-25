@@ -136,10 +136,10 @@ from functools import lru_cache
 import pandas as pd
 import polars as pl
 
-from CIMS.data_processing.utils.controls_conversions import BASE_PATH
+from CIMS.data_processing.common import paths
 
-TECHDB_DIR      = BASE_PATH / 'processed_data/technology_database'
-MECS_FILE       = BASE_PATH / 'raw_data/eia/mecs/emrg_2026_mecs-footprint-metrics.csv'
+TECHDB_DIR      = paths.TECHDB_OUTPUT
+MECS_FILE       = paths.RAW / 'eia/mecs/emrg_2026_mecs-footprint-metrics.csv'
 
 SECTORS = {     # CIMS sector name -> calibration folder
     'Pulp and Paper':    'pulp_and_paper',

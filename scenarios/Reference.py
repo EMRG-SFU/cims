@@ -6,6 +6,10 @@ app = marimo.App(width="medium")
 with app.setup:
     import marimo as mo
     import CIMS
+    from CIMS.data_processing.common import paths
+
+    # The data root follows the imported code, not the current folder (common/paths.py).
+    paths.announce()
 
 
 @app.cell(hide_code=True)
@@ -27,17 +31,17 @@ def _():
 @app.function
 def reset_model_files():
     ### Base model and standard files below are required for the model to run
-    model_path = 'data/model_inputs/model'
+    model_path = str(paths.MODEL)
     # Model files should be located at: data/model_inputs/
 
     ### Base model to start initialisation
     base_model = 'CIMS_base'
 
     ### Default values and parameter list files
-    default_path = 'data/model_inputs/defaults/defaults_Parameters.csv'
-    list_path = 'data/model_inputs/defaults/defaults_Lists.csv'
-    deflator_path = 'data/processed_data/deflator_exchange/currency_deflator.csv'
-    exchange_path = 'data/processed_data/deflator_exchange/currency_exchange.csv'
+    default_path = str(paths.DEFAULTS / 'defaults_Parameters.csv')
+    list_path = str(paths.DEFAULTS / 'defaults_Lists.csv')
+    deflator_path = str(paths.PROCESSED / 'deflator_exchange' / 'currency_deflator.csv')
+    exchange_path = str(paths.PROCESSED / 'deflator_exchange' / 'currency_exchange.csv')
 
     update_files = {}
 
@@ -259,7 +263,7 @@ def _(calibration_data, calibration_path, model_path, update_files):
     ### Policy files: one folder per policy under data/model_inputs/policies/
     # (<policy>/<policy>_<region>.csv). Entries are applied in list order, so the
     # reference policies come first, then turn-off files, then scenario files.
-    policy_path = 'data/model_inputs/policies'
+    policy_path = str(paths.POLICIES)
 
     ### Reference scenario policies (always included as the base model
     # specification, but they can be excluded if appropriate for your scenario)
@@ -319,7 +323,7 @@ def _(calibration_data, calibration_path, model_path, update_files):
         ]
 
     ### Calibration Counterfactual Files
-    # calibration_path = 'data/calibration'
+    # calibration_path = str(paths.CALIBRATION_TARGETS)
     # calibration_data = [
     #     'agriculture',
     #     'biodiesel',
@@ -351,7 +355,7 @@ def _(calibration_data, calibration_path, model_path, update_files):
     # One subfolder per sector, each with its own fitted_fics/ and fitted_lifetimes/
     # (data/model_inputs/calibration_outputs/<sector>/fitted_fics, ...), so several
     # sectors' calibration outputs can be loaded together without overwriting each other.
-    calibration_outputs_path = 'data/model_inputs/calibration_outputs'
+    calibration_outputs_path = str(paths.CALIBRATION_OUTPUTS)
     calibration_output_sectors = [
         'transportation_passenger',
         'transportation_freight',
@@ -482,7 +486,7 @@ def _(model, scenario_name):
     #################### Run scenario and output results ###########################
     model.run(equilibrium_threshold=0.05, max_iterations=10, show_warnings=False, print_eq=True)
 
-    results_path = f'results/{scenario_name}'
+    results_path = str(paths.RESULTS / scenario_name)
     return (results_path,)
 
 
@@ -492,7 +496,7 @@ def _(model, results_path):
     results_df = CIMS.log_model(
        model=model,
        output_file = f"{results_path}/results_general.csv",
-       parameter_file="data/config/results_general.txt",
+       parameter_file=str(paths.CONFIG / "results_general.txt"),
        ensure_dir=True
     )
     return
@@ -504,7 +508,7 @@ def _(model, results_path):
     tech_results_df = CIMS.log_model(
        model=model,
        output_file=f'{results_path}/results_tech.csv',
-       parameter_file = "data/config/results_tech.txt",
+       parameter_file=str(paths.CONFIG / "results_tech.txt"),
        ensure_dir=True
     )
     return

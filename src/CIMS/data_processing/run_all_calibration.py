@@ -6,14 +6,17 @@ processed_data/steam/steam_fuel_targets.csv and the technology database
 build output (processed_data/technology_database/), which it writes last.
 
 Usage:
-    python -m CIMS.data_processing.process_calibration
-    python -m CIMS.data_processing.process_calibration --stop-on-error
+    python -m CIMS.data_processing.run_all_calibration
+    python -m CIMS.data_processing.run_all_calibration --stop-on-error
+    python -m CIMS.data_processing.run_all_calibration --strict
 """
 
 import os
 import subprocess
 import sys
 import time
+
+from CIMS.data_processing.common import paths
 
 PACKAGE = "CIMS.data_processing.sector"
 MODULES = [
@@ -45,6 +48,7 @@ MODULES = [
 
 def main() -> int:
     STOP_ON_ERROR = "--stop-on-error" in sys.argv[1:]
+    paths.announce(strict=True if "--strict" in sys.argv[1:] else None)
 
     GREEN = "\033[92m"
     RED   = "\033[91m"

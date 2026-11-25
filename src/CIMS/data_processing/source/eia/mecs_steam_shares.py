@@ -40,13 +40,13 @@ Output: processed_data/eia/mecs_steam_shares.csv
 
 import pandas as pd
 
-from CIMS.data_processing.utils.controls_conversions import (
-    BASE_PATH, DATA_START, LAST_DATA_YEAR,
+from CIMS.data_processing.common import paths
+from CIMS.data_processing.utils.controls_conversions import ( DATA_START, LAST_DATA_YEAR,
 )
 
-RAW_DIR     = BASE_PATH / 'raw_data/eia/mecs'
+RAW_DIR     = paths.RAW / 'eia/mecs'
 RAW_STEM    = 'emrg_2026_mecs-footprint-metrics'
-OUTPUT_DIR  = BASE_PATH / 'processed_data/eia'
+OUTPUT_DIR  = paths.PROCESSED / 'eia'
 OUTPUT_FILE = OUTPUT_DIR / 'mecs_steam_shares.csv'
 
 STEAM_END_USES = {'boilers', 'cogeneration'}

@@ -100,17 +100,17 @@ from functools import lru_cache
 
 import pandas as pd
 
-from CIMS.data_processing.utils.controls_conversions import BASE_PATH
+from CIMS.data_processing.common import paths
 from CIMS.data_processing.source.eia.mecs_steam_shares import CIMS_TO_MECS
 from CIMS.data_processing.utils import techdb_steam as T
 
-GEN_DIR      = BASE_PATH / 'raw_data/stats_can/electricity_generation'
-THIRD_PARTY  = BASE_PATH / 'raw_data/assumptions/third_party_industrial_cogeneration.csv'
-OUTPUT_FILE  = BASE_PATH / 'processed_data/steam_chp/chp_shares.csv'
+GEN_DIR      = paths.RAW / 'stats_can/electricity_generation'
+THIRD_PARTY  = paths.ASSUMPTIONS / 'third_party_industrial_cogeneration.csv'
+OUTPUT_FILE  = paths.PROCESSED / 'steam_chp/chp_shares.csv'
 YEARS        = range(2000, 2025)
 FIRST_0084   = 2020           # use 25-10-0084 from this year (no suppression, wood vs SPL)
 K_SMOOTH_YEARS = 3            # rolling-median window for k (years)
-CEEDC_FILE   = BASE_PATH / 'raw_data/ceedc/elec_gen.csv'
+CEEDC_FILE   = paths.RAW / 'ceedc/elec_gen.csv'
 CEEDC_SCALING = True          # scale each sector's Canada total to CEEDC
 MAX_CHP_SHARE = 0.95          # most of a fuel's steam fuel that can go to CHP
 CHP_SHARE_SMOOTH_YEARS = 5    # centred rolling-median window for the final CHP share (years)

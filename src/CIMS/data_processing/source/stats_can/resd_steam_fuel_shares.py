@@ -229,9 +229,9 @@ REGION_CODES = {
 
 
 def _paths():
-    from CIMS.data_processing.utils.controls_conversions import BASE_PATH
-    return (BASE_PATH / "raw_data/stats_can/resd/RESD_filled_2000-2024.xlsx",
-            BASE_PATH / "processed_data/stats_can/resd_steam_fuel_shares.csv")
+    from CIMS.data_processing.common import paths
+    return (paths.RAW / "stats_can/resd/RESD_filled_2000-2024.xlsx",
+            paths.PROCESSED / "stats_can/resd_steam_fuel_shares.csv")
 
 
 @lru_cache(maxsize=1)

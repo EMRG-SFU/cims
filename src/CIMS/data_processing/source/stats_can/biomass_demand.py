@@ -575,11 +575,11 @@ def replace_cer_biomass(cer_df):
 # Pipeline entry point
 # --------------------------------------------------------------------------
 def _paths():
-    from CIMS.data_processing.utils.controls_conversions import BASE_PATH
-    return (BASE_PATH / "raw_data/stats_can/resd/2510003101-eng.csv",
-            BASE_PATH / "raw_data/stats_can/resd/CEEDC_national energy_2000-2024.xlsx",
-            BASE_PATH / "raw_data/stats_can/activity/36100488.csv",
-            BASE_PATH / "processed_data/stats_can/biomass_demand.csv")
+    from CIMS.data_processing.common import paths
+    return (paths.RAW / "stats_can/resd/2510003101-eng.csv",
+            paths.RAW / "stats_can/resd/CEEDC_national energy_2000-2024.xlsx",
+            paths.RAW / "stats_can/activity/36100488.csv",
+            paths.PROCESSED / "stats_can/biomass_demand.csv")
 
 
 @lru_cache(maxsize=1)

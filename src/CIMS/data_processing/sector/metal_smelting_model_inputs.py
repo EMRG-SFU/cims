@@ -85,14 +85,14 @@ import CIMS.data_processing.source.activity.heavy_industry as _heavy_industry_mo
 
 import CIMS.data_processing.source.energy_prices.energy_price_multipliers as _energy_price_mod
 
-from CIMS.data_processing.utils.controls_conversions import BASE_PATH
+from CIMS.data_processing.common import paths
 from CIMS.data_processing.utils.currency import write_model_csv
 from CIMS.data_processing.utils.collapse_constant_years import collapse_constant_years
 from CIMS.data_processing.utils.drop_zero_activity import drop_zero_activity_regions
 
 # ── configuration ──────────────────────────────────────────────────────────────
-FIXED_INPUT_DIR = BASE_PATH / 'raw_data/fixed_data/metal_smelting'
-OUTPUT_DIR      = BASE_PATH / 'model_inputs/model/metal_smelting'
+FIXED_INPUT_DIR = paths.FIXED_DATA / 'metal_smelting'
+OUTPUT_DIR      = paths.MODEL / 'metal_smelting'
 
 OUTPUT_COLS = [
     'Branch', 'Type', 'Region', 'Sector', 'Service', 'Technology',

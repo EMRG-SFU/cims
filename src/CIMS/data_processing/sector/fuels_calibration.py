@@ -33,11 +33,11 @@ import pandas as pd
 import polars as pl
 
 import CIMS.data_processing.source.cer.cer_resd_demand as _cer_mod
-from CIMS.data_processing.utils.controls_conversions import BASE_PATH
+from CIMS.data_processing.common import paths
 
 # ── configuration ─────────────────────────────────────────────────────────────
-OUTPUT_DIR = BASE_PATH / 'calibration/fuels'
-FIXED_INPUT_DIR = BASE_PATH / 'raw_data/fixed_data/fuels'
+OUTPUT_DIR = paths.CALIBRATION_TARGETS / 'fuels'
+FIXED_INPUT_DIR = paths.FIXED_DATA / 'fuels'
 
 OUTPUT_COLS = [
     'Branch', 'Type', 'Region', 'Sector', 'Service', 'Technology',

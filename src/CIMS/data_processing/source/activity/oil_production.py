@@ -27,20 +27,21 @@ from CIMS.data_processing.utils.controls_conversions import load_control_config
 from CIMS.data_processing.utils.data_fill import trend_backwards
 from CIMS.data_processing.utils.data_extensions import extend_cagr_periods, compute_cagr, load_cagr_assumptions
 from CIMS.data_processing.utils.extractors.cer import find_cer_file
-from CIMS.data_processing.utils.controls_conversions import DATA_START, PROJECTION_END, BASE_PATH
+from CIMS.data_processing.common import paths
+from CIMS.data_processing.utils.controls_conversions import DATA_START, PROJECTION_END
 
 # Configuration
-CER_DIR   = BASE_PATH / 'raw_data/cer'
+CER_DIR   = paths.RAW / 'cer'
 CRUDE_OIL_PRODUCTION_FILE   = find_cer_file(CER_DIR, 'crude-oil-production')
-REGION_MAP_FILE             = BASE_PATH / 'mappings_conversions/region_map.csv'
-OUTPUT_DIR                  = BASE_PATH / 'processed_data/activity'
+REGION_MAP_FILE             = paths.MAPPINGS / 'region_map.csv'
+OUTPUT_DIR                  = paths.PROCESSED / 'activity'
 _config                     = load_control_config()
 SCENARIO                    = _config["cer_ef_reference_scenario"]
 LAST_DATA_YEAR              = _config["last_data_year"]
 
 OIL_CONVERSION = 1_000 * 365   # Thousand m3/day -> m3/year
 
-ASSUMPTIONS_FILE = BASE_PATH / 'raw_data/assumptions/activity_cagr_projections.csv'
+ASSUMPTIONS_FILE = paths.ASSUMPTIONS / 'activity_cagr_projections.csv'
 CAGR_START, CAGR_END, CAGR_PERIODS = load_cagr_assumptions('Oil', ASSUMPTIONS_FILE)
 
 # Per-region overrides — one explicit annual rate per period.

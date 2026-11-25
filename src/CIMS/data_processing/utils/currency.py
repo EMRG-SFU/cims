@@ -53,10 +53,11 @@ import pandas as pd
 import polars as pl
 
 from CIMS.unit_conversion import MONETARY_PREFIX_RE, CurrencyConverter
-from CIMS.data_processing.utils.controls_conversions import BASE_PATH, load_control_config
+from CIMS.data_processing.common import paths
+from CIMS.data_processing.utils.controls_conversions import load_control_config
 
-DEFLATOR_TABLE = BASE_PATH / 'processed_data' / 'deflator_exchange' / 'currency_deflator.csv'
-EXCHANGE_TABLE = BASE_PATH / 'processed_data' / 'deflator_exchange' / 'currency_exchange.csv'
+DEFLATOR_TABLE = paths.PROCESSED / 'deflator_exchange' / 'currency_deflator.csv'
+EXCHANGE_TABLE = paths.PROCESSED / 'deflator_exchange' / 'currency_exchange.csv'
 
 _CONTROLS = load_control_config()
 UNTAGGED_YEAR = int(_CONTROLS.get('currency_year_untagged', 2020))
