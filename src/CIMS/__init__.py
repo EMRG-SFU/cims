@@ -8,8 +8,15 @@ doesn't load the model and its dependencies (networkx and the rest).
 `from CIMS import Model` and `CIMS.Model` work as before.
 """
 from importlib import import_module
+from typing import TYPE_CHECKING
 
 from .about import __version__
+
+if TYPE_CHECKING:  # read by editors and type checkers only; never runs. Keep in step with _LAZY.
+    from .download import download_models
+    from .logging import log_model, search_parameter
+    from .model import Model, load_model
+    from .quantities import ProvidedQuantity, RequestedQuantity
 
 # Public name -> module that defines it
 _LAZY = {

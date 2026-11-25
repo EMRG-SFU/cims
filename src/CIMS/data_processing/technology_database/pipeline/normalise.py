@@ -33,9 +33,10 @@ import re
 from collections import defaultdict
 from statistics import median
 
-from .common import REFERENCE, fnum, read, split_list
+from .common import RECORDS, REFERENCE, fnum, read, split_list
 from . import bridge, convert, heating
 from .currency import TARGET
+from .roll_up import _product_targets
 from .whole_plant import NEEDS_HOST
 
 PER_CAPACITY = {"capex", "opex-fixed", "decommissioning-cost"}
@@ -1254,6 +1255,20 @@ GAS_DENSITY = {"oxygen": 0.001429, "nitrogen": 0.0012506, "co2": 0.001977, "co2-
 GAS_VOLUME = {"m3": 1.0, "1000 m3": 1000.0, "scf": 0.0283168 * 273.15 / 288.71, "Mscf": 28.3168 * 273.15 / 288.71}
 
 
+def _scale(r, k, note, fid="", cls=""):
+    """Multiply a row's normalised value and range by k, and record why (and,
+    if given, the factor id and the conversion class it brings)."""
+    for c in ("value-norm", "value-min-norm", "value-max-norm"):
+        v = fnum(r.get(c))
+        if v is not None:
+            r[c] = f"{v * k:.6g}"
+    r["conversion"] = "; ".join(x for x in (r.get("conversion", ""), note) if x)
+    if fid:
+        r["conversion-factors"] = "; ".join(x for x in (r.get("conversion-factors", ""), fid) if x)
+    if cls:
+        r["conversion-class"] = convert.weakest([r.get("conversion-class") or "unit", cls])
+
+
 def apply_flow_exclusions(flows, factors) -> dict:
     """records/reference/excluded-flow.csv: a flow row ruled out (action exclude) or
     put on the archetype's basis by a registered factor (divide or multiply), as
@@ -1276,11 +1291,7 @@ def apply_flow_exclusions(flows, factors) -> dict:
             stats["factor not found"] += 1
             continue
         k = 1.0 / f if act == "divide" else f
-        for c in ("value-norm", "value-min-norm", "value-max-norm"):
-            v = fnum(r.get(c))
-            if v is not None:
-                r[c] = f"{v * k:.6g}"
-        r["conversion"] = "; ".join(y for y in [r.get("conversion", ""), f"{act} by {x['factor-id']}"] if y)
+        _scale(r, k, f"{act} by {x['factor-id']}")
         stats[act] += 1
     unknown = set(T) - {r.get("record-id", "") for r in flows}
     if unknown:
@@ -1311,11 +1322,7 @@ def _flow_hhv(r, a, pu, per, tnum, units) -> None:
     if h is None:
         r["conversion"] = "; ".join(x for x in [r.get("conversion", ""), f"{label}? no stream, not converted"] if x)
         return
-    for c in ("value-norm", "value-min-norm", "value-max-norm"):
-        x = fnum(r.get(c))
-        if x is not None:
-            r[c] = f"{x * h[0]:.6g}"
-    r["conversion"] = "; ".join(x for x in [r.get("conversion", ""), f"{label} -> HHV x {h[0]:.4g} ({', '.join(h[1])})"] if x)
+    _scale(r, h[0], f"{label} -> HHV x {h[0]:.4g} ({', '.join(h[1])})")
 
 
 def normalise_flows(flows, records, units, examples=None) -> None:
@@ -1520,7 +1527,6 @@ def installation_factors():
     """archetype equipment -> (factor-id, factor, row) from
     records/reference/installation-factor.csv by the equipment's lifetime class
     (records/fill/equipment-class.csv); classes with no pair take `default`."""
-    from .common import RECORDS
     fac = {r["class"]: r for r in read(REFERENCE / "installation-factor.csv")}
     cls = {r["equipment"]: r["lifetime-class"] for r in read(RECORDS / "fill" / "equipment-class.csv")}
     # equipment whose installation factor is not its lifetime class's (S179, Brad 2026-11-20)
@@ -1558,17 +1564,12 @@ def _equipment_to_installed(facts) -> None:
                              "(duplicate-of); pooled once, on the installed figure (S179, Brad 2026-11-20)")
             continue
         fid, f, row = of(r.get("archetype"))
-        if not f or f == 1.0:            # bought ready to run (mobile equipment): no change
+        if f is None or f <= 0:
+            raise SystemExit(f"installation-factor.csv: {fid} has no usable factor")
+        if f == 1.0:                     # bought ready to run (mobile equipment): no change
             continue
-        for c in ("value-norm", "value-min-norm", "value-max-norm"):
-            v = fnum(r.get(c))
-            if v is not None:
-                r[c] = f"{v * f:.6g}"
-        r["conversion"] = "; ".join(x for x in (r.get("conversion", ""),
-                                               f"equipment-only -> installed x {f:g} ({fid}; S179)") if x)
-        r["conversion-factors"] = "; ".join(x for x in (r.get("conversion-factors", ""), fid) if x)
-        r["conversion-class"] = convert.weakest([r.get("conversion-class") or "unit",
-                                                 "ratio" if row.get("grade") == "sourced" else "assumption"])
+        _scale(r, f, f"equipment-only -> installed x {f:g} ({fid}; S179)", fid,
+               "ratio" if row.get("grade") == "sourced" else "assumption")
 
 SCALE_CLAMP = 10.0   # an example more than 10x from the reference size is scaled as if at 10x
 
@@ -1593,7 +1594,6 @@ def _scale_to_reference_size(facts, records=None) -> None:
     exps = {r["archetype"]: fnum(r["exponent"]) for r in read(REFERENCE / "scale-exponent.csv")}
     if not exps:
         return
-    from .roll_up import _product_targets
     arch = {a["archetype"]: a for a in (records.archetypes if records else [])}
     prod = {a: _product_targets(arch.get(a, {"archetype": a})) for a in exps}
 
@@ -1660,12 +1660,6 @@ def _scale_to_reference_size(facts, records=None) -> None:
         if abs(ratio - 1) < 1e-9:
             continue
         k = ratio ** (exps[a] - 1)
-        for c in ("value-norm", "value-min-norm", "value-max-norm"):
-            v = fnum(r.get(c))
-            if v is not None:
-                r[c] = f"{v * k:.6g}"
         fid = f"cf-scale-{a}"
-        r["conversion"] = "; ".join(y for y in (r.get("conversion", ""),
-            f"scaled from {cex:g}{how} to the reference {cref:g} {u} at exponent {exps[a]:g}: x {k:.4g} ({fid}; S173)") if y)
-        r["conversion-factors"] = "; ".join(y for y in (r.get("conversion-factors", ""), fid) if y)
-        r["conversion-class"] = convert.weakest([r.get("conversion-class") or "unit", cls])
+        _scale(r, k, f"scaled from {cex:g}{how} to the reference {cref:g} {u} at exponent {exps[a]:g}: "
+                     f"x {k:.4g} ({fid}; S173)", fid, cls)

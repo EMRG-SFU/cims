@@ -16,8 +16,7 @@ import re
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
-from paths import RAW, RECORDS  # noqa: E402
+from CIMS.data_processing.technology_database.extraction.paths import RAW, RECORDS
 
 REF = RECORDS / "reference"
 EXTRACT = Path(__file__).resolve().parents[1] / "pipeline" / "extract.py"

@@ -30,8 +30,7 @@ import re
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
-from paths import PRIMARY, RAW, RECORDS, ROOT  # noqa: E402
+from CIMS.data_processing.technology_database.extraction.paths import PRIMARY, RAW, RECORDS, ROOT
 
 VOCAB_CSV = RAW / "extraction-vocabulary.csv"
 STM = ROOT / "cims" / "service-technology-map"   # the CIMS YAML layer; tech_data only, skipped when absent

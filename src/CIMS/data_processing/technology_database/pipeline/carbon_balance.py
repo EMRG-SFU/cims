@@ -30,7 +30,7 @@ from __future__ import annotations
 from collections import defaultdict
 
 from .common import OUTPUT, REFERENCE, fnum, read, write
-from . import convert
+from . import convert, gwp
 
 BIOGENIC = {"ethanol", "biomass", "biomass-solid", "black-liquor", "liquid-biomass", "biogas", "landfill-gas",
             "biomethane", "renewable-natural-gas", "bioliquid", "charcoal"}
@@ -38,7 +38,6 @@ NO_CARBON = {"electricity", "steam", "heat", "hot-water", "waste-heat", "solar",
              "hydrogen", "ammonia"}
 SKIP_TARGETS = {"", "fuel", "total", "not-stated", "component"}
 DERIVED = ("as-sourced", "host-plant", "ccs-add-on", "calculated")
-GWP = {"ch4": 28.0, "n2o": 265.0}
 COLS = ["archetype", "family", "product", "product-unit", "result", "co2-total", "co2-total-grade",
         "co2-process", "co2-captured", "fossil-carbon-in", "product-carbon", "balance", "ratio",
         "carbon-in-by-carrier", "fixed", "note"]
@@ -249,13 +248,16 @@ def apply_fixes(psum, records) -> int:
             r = h.get((p, rule["target"] or "co2e"))
             if r is None:
                 raise SystemExit(f"carbon-balance-fix.csv: {k} has no {p} {rule['target']}")
-            v = sum((fnum(h[(p, s)].get("central")) or 0.0) * g for s, g in GWP.items() if (p, s) in h)
+            G = gwp.ar5(convert.Factors())      # AR5 GWP100 from conversion-factor.csv
+            v = sum((fnum(h[(p, s)].get("central")) or 0.0) * G[s] for s in ("ch4", "n2o") if (p, s) in h)
             how = "CO2-eq of CH4 and N2O only (AR5 GWP100): the fuel is biogenic"
             _set(r, v, how, rule)
             n += 1
             continue
         else:
             raise SystemExit(f"carbon-balance-fix.csv: unknown action {act!r} for {k}")
+        if not targets:
+            raise SystemExit(f"carbon-balance-fix.csv: {k} has no {p} row to fix (give a target)")
         old_c = fnum((h.get((p, "co2")) or {}).get("central"))
         old_e = fnum((h.get((p, "co2e")) or {}).get("central"))
         for t in targets:
