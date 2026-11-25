@@ -183,16 +183,21 @@ def conversion_references(fail, records, loader) -> None:
         fail["source registered in both the reference and the main manifest"].append(k)
     F = convert.Factors()
     backed = set()
+
+    def registered(sids, label, where):
+        """Mark each source-id as backing something; fail if it isn't registered."""
+        for sid in sids:
+            backed.add(sid)
+            if sid not in rid and sid not in main:
+                fail[f"{label} source-id not registered"].append(f"{where}: {sid}")
+
     for fid, f in F.rows.items():
         if f.get("class") not in convert.CLASSES:
             fail["conversion factor with no valid class"].append(f"{fid}: {f.get('class')}")
         sids = split_list(f.get("source-id", ""))
         if not sids:
             fail["conversion factor with no source-id"].append(fid)
-        for sid in sids:
-            backed.add(sid)
-            if sid not in rid and sid not in main:
-                fail["conversion factor source-id not registered"].append(f"{fid}: {sid}")
+        registered(sids, "conversion factor", fid)
         dims = {(convert.atom(u) or ("",))[0] for u in (f["from-unit"], f["to-unit"])}
         if "energy" in dims and "HHV" not in (f.get("basis") or ""):
             fail["energy factor not on a higher-heating-value basis"].append(fid)
@@ -201,10 +206,7 @@ def conversion_references(fail, records, loader) -> None:
                 fail["conversion factor applies to an unknown archetype"].append(f"{fid}: {a}")
     # a reference source may also back a fill assumption (records/fill/fill-assumption.csv)
     for a in fill.assumptions():
-        for sid in split_list(a.get("source-id", "")):
-            backed.add(sid)
-            if sid not in rid and sid not in main:
-                fail["fill-assumption source-id not registered"].append(f"{a.get('assumption-id')}: {sid}")
+        registered(split_list(a.get("source-id", "")), "fill-assumption", a.get("assumption-id"))
     for e in read(REFERENCE / "energy-price.csv"):
         if e.get("kind") not in ("sourced", "derived", "internal", "pending"):
             fail["energy-price kind must be sourced, derived, internal or pending"].append(e.get("carrier", ""))
@@ -215,17 +217,11 @@ def conversion_references(fail, records, loader) -> None:
             fail["energy-price derived-per names an unknown conversion factor"].append(f"{e.get('carrier')}: {per}")
         if e.get("kind") == "sourced" and not (e.get("price") and e.get("source-id")):
             fail["energy-price sourced with no price or source-id"].append(e.get("carrier", ""))
-        for sid in split_list(e.get("source-id", "")):
-            backed.add(sid)
-            if sid not in rid and sid not in main:
-                fail["energy-price source-id not registered"].append(f"{e.get('carrier')}: {sid}")
+        registered(split_list(e.get("source-id", "")), "energy-price", e.get("carrier"))
     # or an archetype size or central choice (reference-size.csv, central-choice.csv)
     for fn in ("reference-size.csv", "central-choice.csv"):
         for c in read(REFERENCE / fn):
-            for sid in split_list(c.get("source-id", "")):
-                backed.add(sid)
-                if sid not in rid and sid not in main:
-                    fail[f"{fn} source-id not registered"].append(f"{c.get('archetype')}: {sid}")
+            registered(split_list(c.get("source-id", "")), fn, c.get("archetype"))
     for r in ref:
         if r["source_id"] not in backed and "currency" not in (r.get("used_for") or ""):
             fail["reference source backs no conversion factor or fill assumption"].append(r["source_id"])

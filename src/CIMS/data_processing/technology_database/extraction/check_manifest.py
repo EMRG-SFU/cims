@@ -27,8 +27,7 @@ import csv
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
-from paths import OUTPUT, PRIMARY, RAW, RECORDS, ROOT  # noqa: E402
+from CIMS.data_processing.technology_database.extraction.paths import OUTPUT, PRIMARY, RAW, RECORDS, ROOT
 
 SOURCES = RAW / "source-details_sources.csv"
 FILES = RAW / "source-details_files.csv"

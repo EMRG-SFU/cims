@@ -33,18 +33,12 @@ from __future__ import annotations
 
 import sys
 from collections import Counter
-from pathlib import Path
 
-if __package__ in (None, ""):
-    # run as a script (python src/CIMS/data_processing/technology_database/build.py): import the package it sits in
-    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-    __package__ = "technology_database"
-    import technology_database  # noqa: F401,E402
-
-from .pipeline import (assembly, net_sec, feedstock, supplied_heat, capital_share, service_request, chain_validation, gwp, capture_energy, capture_share, carriers, checks, correction, ukerc_saving, currency, examples, extract,  # noqa: E402
+from .pipeline import (assembly, net_sec, feedstock, supplied_heat, capital_share, service_request, chain_validation, gwp, capture_energy, capture_share, carriers, checks, correction, ukerc_saving, currency, examples, extract,
                       bands, factor_use, facts, fill, hierarchy, normalise, placement, records, reports, roll_in, roll_up, sources,
-                      summarise, views, whole_plant, workbook)
-from .pipeline.common import OUTPUT, write  # noqa: E402
+                      summarise, views, whole_plant, workbook,
+                      carbon_balance, fuel_choice, levelized_check, midden_carriers, sector_size)
+from .pipeline.common import OUTPUT, REFERENCE, read, split_list, write
 
 FACT_COLS = ["record-id", "example-id", "archetype", "source-technology", "parameter", "target",
              "value", "value-min", "value-max", "unit", "value-norm", "value-min-norm",
@@ -114,7 +108,6 @@ def main(argv) -> int:
               "(records/reference/source-correction.csv)")
     # a record whose parameter the extraction got wrong (biogenic CO2 entered as
     # combustion or process CO2): records/reference/parameter-remap.csv (2026-10-14)
-    from .pipeline.common import REFERENCE, read, split_list
     remap = {r["record-id"]: r for r in read(REFERENCE / "parameter-remap.csv")}
     unknown = set(remap) - {r["record-id"] for r in L.facts}
     if unknown:
@@ -128,7 +121,6 @@ def main(argv) -> int:
             r["parameter"] = x["parameter"]
     if remap:
         print(f"  parameters re-mapped: {len(remap)} rows (records/reference/parameter-remap.csv)")
-    from .pipeline import midden_carriers
     mc = midden_carriers.apply(L.facts)
     print("  " + ", ".join(f"{k} {v}" for k, v in mc.items()))
     if "--record-keys" in argv:
@@ -243,8 +235,7 @@ def main(argv) -> int:
     have = {(r["archetype"], r.get("target", "")) for r in psum
             if r["parameter"] == "specific-energy-consumption" and r.get("central") not in ("", None)}
     # carriers moved to the alternatives table on purpose (fuel_choice, 2026-11-07)
-    from .pipeline import fuel_choice as _fc
-    moved = {(r["archetype"], r.get("target", "")) for r in _fc.alternatives}
+    moved = {(r["archetype"], r.get("target", "")) for r in fuel_choice.alternatives}
     gaps = {}
     for r in L.facts:
         a = rec.by_key.get(r.get("archetype", ""))
@@ -322,7 +313,6 @@ def main(argv) -> int:
     write(OUTPUT / "example-constraint.csv", CONS_COLS, L.cons)
     order = {a["archetype"]: i for i, a in enumerate(rec.archetypes)}
     psum.sort(key=lambda r: (order.get(r["archetype"], 9999), r["parameter"], r["target"]))
-    from .pipeline import carbon_balance
     print(f"  carbon-balance fixes (S184): {carbon_balance.apply_fixes(psum, rec)} rows")
     post = checks.summaries(psum)
     if post:
@@ -341,14 +331,11 @@ def main(argv) -> int:
     main = [r for r in psum if placement.placement(r["parameter"], r["target"]) != "secondary"]
     write(OUTPUT / "archetype-parameter.csv",
           ["archetype", "parameter", "target", "unit"] + SUM_COLS + FILL_COLS, main)
-    from .pipeline import levelized_check
     levelized_check.write_check(psum, L.facts)
-    from .pipeline import sector_size
     print(f"  sector sizes for the export to CIMS: {sector_size.write_sizes(psum, OUTPUT)} rows")
     print("  carbon balance (S184): " + ", ".join(f"{k} {v}" for k, v in sorted(carbon_balance.check(psum, rec).items())))
     # the carriers left out of the wide view: other fuels, purchased steam against
     # on-site firing, other estimates (Brad 2026-11-07); CSV only, not in the workbook
-    from .pipeline import fuel_choice
     alt = fuel_choice.alt_rows(psum, rec)
     alt.sort(key=lambda r: (order.get(r["archetype"], 9999), r["rank"] == "", r["rank"] or 0, r["carrier"]))
     write(OUTPUT / "archetype-alternative-carrier.csv", fuel_choice.ALT_COLS, alt)

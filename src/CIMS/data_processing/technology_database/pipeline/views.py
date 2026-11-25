@@ -20,7 +20,7 @@ from collections import defaultdict
 
 from .common import OUTPUT, read, split_list, write
 from .hierarchy import Hierarchy
-from .normalise import target_unit
+from .normalise import installation_factors, target_unit
 from .placement import placement
 from .bands import families
 from . import capacity_unit
@@ -242,7 +242,6 @@ def build(records, hier, examples, summaries, flow_summaries, include_empty=True
             if ok and t not in fuel_basis[x["archetype"]]:
                 fuel_basis[x["archetype"]].append(t)
     fuel_basis = {k: "; ".join(sorted(v)) for k, v in fuel_basis.items()}
-    from .normalise import installation_factors
     inst_of = installation_factors()
 
     # ---- archetype.csv: every archetype, with what the database holds ------
