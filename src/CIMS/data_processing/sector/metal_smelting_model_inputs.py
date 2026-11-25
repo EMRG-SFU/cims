@@ -7,7 +7,7 @@ CIMS-formatted CSVs (one per region).
 Sources
 -------
 Fixed structural parameters
-    raw_data/fixed_data/metal_smelting/metal_smelting_{region}.csv
+    extracted/legacy/fixed-data/metal_smelting/metal_smelting_{region}.csv
     Flattened from wide (2000–2050 year columns) to long format.
     Encodes the full Metal Smelting hierarchy:
       Metal Smelting (Sector)

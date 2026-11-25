@@ -1,4 +1,6 @@
 old,new,note
+raw_data/technology_database/,extracted/technology-database/,whole: the database extractions and manifest
+raw_data/ab_gov/st98-2025-coal-production-demand-data.xlsx,extracted/gov-ab/st98-2025-coal-production-demand-data.xlsx,read by the build
 raw_data/assumptions/activity_cagr_projections.csv,config/assumption/activity-cagr-projections.csv,hand-set assumption: now in git
 raw_data/assumptions/commercial_assumptions.csv,config/assumption/commercial-assumptions.csv,hand-set assumption: now in git
 raw_data/assumptions/ng_eff_assumptions_commercial.csv,config/assumption/ng-eff-assumptions-commercial.csv,hand-set assumption: now in git
@@ -6,6 +8,619 @@ raw_data/assumptions/residential_assumptions.csv,config/assumption/residential-a
 raw_data/assumptions/third_party_industrial_cogeneration.csv,config/assumption/third-party-industrial-cogeneration.csv,hand-set assumption: now in git
 raw_data/assumptions/transport_freight_assumptions.csv,config/assumption/transport-freight-assumptions.csv,hand-set assumption: now in git
 raw_data/assumptions/transport_passenger_assumptions.csv,config/assumption/transport-passenger-assumptions.csv,hand-set assumption: now in git
+raw_data/bc_gov/bcannualcoalproduction.csv,extracted/gov-bc/bcannualcoalproduction.csv,read by the build
+raw_data/ceedc/CEEDC_coal_electricity_energy_emission_factors_260313.xlsx,extracted/ceedc/CEEDC_coal_electricity_energy_emission_factors_260313.xlsx,read by the build (on Windows: the code asked for CEEDC/)
+raw_data/ceedc/Production.xlsx,extracted/ceedc/Production.xlsx,read by the build
+raw_data/ceedc/elec_gen.csv,extracted/ceedc/elec_gen.csv,read by the build
+raw_data/ceedc/elec_gj.csv,extracted/ceedc/elec_gj.csv,"not read: extraction, script, or metadata"
+raw_data/cer/benchmark-prices-2026.csv,extracted/gov-can/cer/benchmark-prices-2026.csv,read by the build
+raw_data/cer/cer_demand_data_update/vDmd-CIMS.csv,extracted/gov-can/cer/demand-data-update/vDmd-CIMS.csv,read by the build
+raw_data/cer/cer_demand_data_update/vDmd_OG-CIMS.csv,extracted/gov-can/cer/demand-data-update/vDmd_OG-CIMS.csv,read by the build
+raw_data/cer/cer_demand_data_update/vFsDmd-CIMS.csv,extracted/gov-can/cer/demand-data-update/vFsDmd-CIMS.csv,read by the build
+raw_data/cer/cer_demand_data_update/vTrDmd-CIMS.csv,extracted/gov-can/cer/demand-data-update/vTrDmd-CIMS.csv,read by the build
+raw_data/cer/cer_demand_data_update/vTrFsDmd-CIMS.csv,extracted/gov-can/cer/demand-data-update/vTrFsDmd-CIMS.csv,read by the build
+raw_data/cer/crude-oil-production-2026.csv,extracted/gov-can/cer/crude-oil-production-2026.csv,read by the build
+raw_data/cer/end-use-demand-2026.csv,extracted/gov-can/cer/end-use-demand-2026.csv,read by the build
+raw_data/cer/end-use-prices-2026.csv,extracted/gov-can/cer/end-use-prices-2026.csv,read by the build
+raw_data/cer/lng-export-assumptions-2026.csv,extracted/gov-can/cer/lng-export-assumptions-2026.csv,read by the build
+raw_data/cer/macro-indicators-2026.csv,extracted/gov-can/cer/macro-indicators-2026.csv,read by the build
+raw_data/cer/natural-gas-production-2026.csv,extracted/gov-can/cer/natural-gas-production-2026.csv,read by the build
+raw_data/clean_fuel_production/biodiesel_activity_jcims.csv,extracted/legacy/clean-fuel-production/biodiesel_activity_jcims.csv,"not read: extraction, script, or metadata"
+raw_data/clean_fuel_production/electricity_activity_jcims.csv,extracted/legacy/clean-fuel-production/electricity_activity_jcims.csv,read by the build
+raw_data/clean_fuel_production/ethanol_activity_jcims.csv,extracted/legacy/clean-fuel-production/ethanol_activity_jcims.csv,"not read: extraction, script, or metadata"
+raw_data/clean_fuel_production/hydrogen_activity_jcims.csv,extracted/legacy/clean-fuel-production/hydrogen_activity_jcims.csv,"not read: extraction, script, or metadata"
+raw_data/deflator_exchange/bank-of-canada_2026_fx-rates-pre-2017.csv,extracted/currency/bank-of-canada_2026_fx-rates-pre-2017.csv,read by the build
+raw_data/deflator_exchange/can-statcan_2026_fx-rates-post-2017.csv,extracted/currency/can-statcan_2026_fx-rates-post-2017.csv,read by the build
+raw_data/deflator_exchange/ecb_2026_euro-reference-rates.csv,extracted/currency/ecb_2026_euro-reference-rates.csv,read by the build
+raw_data/deflator_exchange/ecb_2026_gdp-deflator.csv,extracted/currency/ecb_2026_gdp-deflator.csv,read by the build
+raw_data/deflator_exchange/oecd_2026_gdp-deflator-forecast.csv,extracted/currency/oecd_2026_gdp-deflator-forecast.csv,read by the build
+raw_data/deflator_exchange/world-bank_2026_gdp-deflator.csv,extracted/currency/world-bank_2026_gdp-deflator.csv,read by the build
+raw_data/eccc/nir/2022_shares.csv,extracted/gov-can/eccc/nir/2022_shares.csv,"not read: extraction, script, or metadata"
+raw_data/eccc/nir/2024_national_detail.csv,extracted/gov-can/eccc/nir/2024_national_detail.csv,"not read: extraction, script, or metadata"
+raw_data/eccc/nir/2024_sector_totals.csv,extracted/gov-can/eccc/nir/2024_sector_totals.csv,"not read: extraction, script, or metadata"
+raw_data/eccc/nir/EN_Annex6_Emission_Factors.pdf,primary-sources/gov-can/eccc/nir/EN_Annex6_Emission_Factors.pdf,"document, not read"
+raw_data/eccc/nir/EN_Annex6_Emission_Factors_Tables.xlsx,extracted/gov-can/eccc/nir/EN_Annex6_Emission_Factors_Tables.xlsx,read by the build
+raw_data/eccc/nir/GHG_Econ_Can_Prov_Terr.csv,extracted/gov-can/eccc/nir/GHG_Econ_Can_Prov_Terr.csv,read by the build
+raw_data/eccc/nir/GHG_IPCC_Can_Prov_Terr.csv,extracted/gov-can/eccc/nir/GHG_IPCC_Can_Prov_Terr.csv,read by the build
+raw_data/eccc/nir/ab_crosswalk_nir.csv,extracted/gov-can/eccc/nir/ab_crosswalk_nir.csv,read by the build
+raw_data/eccc/nir/bc_crosswalk_nir.csv,extracted/gov-can/eccc/nir/bc_crosswalk_nir.csv,read by the build
+raw_data/eccc/nir/can_crosswalk_nir.csv,extracted/gov-can/eccc/nir/can_crosswalk_nir.csv,read by the build
+raw_data/eccc/nir/estimate_province_detail.py,extracted/gov-can/eccc/nir/estimate_province_detail.py,"not read: extraction, script, or metadata"
+raw_data/eccc/nir/estimated_province_detail.csv,extracted/gov-can/eccc/nir/estimated_province_detail.csv,"not read: extraction, script, or metadata"
+raw_data/eccc/nir/estimation_diagnostics.csv,extracted/gov-can/eccc/nir/estimation_diagnostics.csv,"not read: extraction, script, or metadata"
+raw_data/eccc/nir/estimation_summary.txt,extracted/gov-can/eccc/nir/estimation_summary.txt,"not read: extraction, script, or metadata"
+raw_data/eccc/nir/mb_crosswalk_nir.csv,extracted/gov-can/eccc/nir/mb_crosswalk_nir.csv,read by the build
+raw_data/eccc/nir/nb_crosswalk_nir.csv,extracted/gov-can/eccc/nir/nb_crosswalk_nir.csv,read by the build
+raw_data/eccc/nir/nl_crosswalk_nir.csv,extracted/gov-can/eccc/nir/nl_crosswalk_nir.csv,read by the build
+raw_data/eccc/nir/ns_crosswalk_nir.csv,extracted/gov-can/eccc/nir/ns_crosswalk_nir.csv,read by the build
+raw_data/eccc/nir/nt_crosswalk_nir.csv,extracted/gov-can/eccc/nir/nt_crosswalk_nir.csv,read by the build
+raw_data/eccc/nir/nu_crosswalk_nir.csv,extracted/gov-can/eccc/nir/nu_crosswalk_nir.csv,read by the build
+raw_data/eccc/nir/on_crosswalk_nir.csv,extracted/gov-can/eccc/nir/on_crosswalk_nir.csv,read by the build
+raw_data/eccc/nir/pe_crosswalk_nir.csv,extracted/gov-can/eccc/nir/pe_crosswalk_nir.csv,read by the build
+raw_data/eccc/nir/qc_crosswalk_nir.csv,extracted/gov-can/eccc/nir/qc_crosswalk_nir.csv,read by the build
+raw_data/eccc/nir/sk_crosswalk_nir.csv,extracted/gov-can/eccc/nir/sk_crosswalk_nir.csv,read by the build
+raw_data/eccc/nir/yt_crosswalk_nir.csv,extracted/gov-can/eccc/nir/yt_crosswalk_nir.csv,read by the build
+raw_data/eccc/reports/Canada%20NC8%20BR5%20EN.pdf,primary-sources/gov-can/eccc/reports/Canada%20NC8%20BR5%20EN.pdf,"document, not read"
+raw_data/eia/mecs/2002/eia_2005_mecs-2002-table-3-2.xls,primary-sources/gov-usa/eia/mecs/2002/eia_2005_mecs-2002-table-3-2.xls,"document, not read"
+raw_data/eia/mecs/2002/eia_2005_mecs-2002-table-3-5.xls,primary-sources/gov-usa/eia/mecs/2002/eia_2005_mecs-2002-table-3-5.xls,"document, not read"
+raw_data/eia/mecs/2002/eia_2005_mecs-2002-table-5-4.xls,primary-sources/gov-usa/eia/mecs/2002/eia_2005_mecs-2002-table-5-4.xls,"document, not read"
+raw_data/eia/mecs/2006/doe_2012_mecs-2006-energy-footprint.csv,extracted/gov-usa/eia/mecs/2006/doe_2012_mecs-2006-energy-footprint.csv,"not read: extraction, script, or metadata"
+raw_data/eia/mecs/2006/doe_2012_mecs-2006-footprint-all-manufacturing.pdf,primary-sources/gov-usa/eia/mecs/2006/doe_2012_mecs-2006-footprint-all-manufacturing.pdf,"document, not read"
+raw_data/eia/mecs/2006/doe_2012_mecs-2006-footprint-alumina-and-aluminum.pdf,primary-sources/gov-usa/eia/mecs/2006/doe_2012_mecs-2006-footprint-alumina-and-aluminum.pdf,"document, not read"
+raw_data/eia/mecs/2006/doe_2012_mecs-2006-footprint-cement.pdf,primary-sources/gov-usa/eia/mecs/2006/doe_2012_mecs-2006-footprint-cement.pdf,"document, not read"
+raw_data/eia/mecs/2006/doe_2012_mecs-2006-footprint-chemicals.pdf,primary-sources/gov-usa/eia/mecs/2006/doe_2012_mecs-2006-footprint-chemicals.pdf,"document, not read"
+raw_data/eia/mecs/2006/doe_2012_mecs-2006-footprint-computers-electronics-and-electrical-equipment.pdf,primary-sources/gov-usa/eia/mecs/2006/doe_2012_mecs-2006-footprint-computers-electronics-and-electrical-equipment.pdf,"document, not read"
+raw_data/eia/mecs/2006/doe_2012_mecs-2006-footprint-fabricated-metals.pdf,primary-sources/gov-usa/eia/mecs/2006/doe_2012_mecs-2006-footprint-fabricated-metals.pdf,"document, not read"
+raw_data/eia/mecs/2006/doe_2012_mecs-2006-footprint-food-and-beverage.pdf,primary-sources/gov-usa/eia/mecs/2006/doe_2012_mecs-2006-footprint-food-and-beverage.pdf,"document, not read"
+raw_data/eia/mecs/2006/doe_2012_mecs-2006-footprint-forest-products.pdf,primary-sources/gov-usa/eia/mecs/2006/doe_2012_mecs-2006-footprint-forest-products.pdf,"document, not read"
+raw_data/eia/mecs/2006/doe_2012_mecs-2006-footprint-foundries.pdf,primary-sources/gov-usa/eia/mecs/2006/doe_2012_mecs-2006-footprint-foundries.pdf,"document, not read"
+raw_data/eia/mecs/2006/doe_2012_mecs-2006-footprint-glass.pdf,primary-sources/gov-usa/eia/mecs/2006/doe_2012_mecs-2006-footprint-glass.pdf,"document, not read"
+raw_data/eia/mecs/2006/doe_2012_mecs-2006-footprint-iron-and-steel.pdf,primary-sources/gov-usa/eia/mecs/2006/doe_2012_mecs-2006-footprint-iron-and-steel.pdf,"document, not read"
+raw_data/eia/mecs/2006/doe_2012_mecs-2006-footprint-machinery.pdf,primary-sources/gov-usa/eia/mecs/2006/doe_2012_mecs-2006-footprint-machinery.pdf,"document, not read"
+raw_data/eia/mecs/2006/doe_2012_mecs-2006-footprint-petroleum-refining.pdf,primary-sources/gov-usa/eia/mecs/2006/doe_2012_mecs-2006-footprint-petroleum-refining.pdf,"document, not read"
+raw_data/eia/mecs/2006/doe_2012_mecs-2006-footprint-plastics-and-rubber.pdf,primary-sources/gov-usa/eia/mecs/2006/doe_2012_mecs-2006-footprint-plastics-and-rubber.pdf,"document, not read"
+raw_data/eia/mecs/2006/doe_2012_mecs-2006-footprint-textiles.pdf,primary-sources/gov-usa/eia/mecs/2006/doe_2012_mecs-2006-footprint-textiles.pdf,"document, not read"
+raw_data/eia/mecs/2006/doe_2012_mecs-2006-footprint-transportation-equipment.pdf,primary-sources/gov-usa/eia/mecs/2006/doe_2012_mecs-2006-footprint-transportation-equipment.pdf,"document, not read"
+raw_data/eia/mecs/2006/eia_2010_mecs-2006-table-3-2.xls,primary-sources/gov-usa/eia/mecs/2006/eia_2010_mecs-2006-table-3-2.xls,"document, not read"
+raw_data/eia/mecs/2006/eia_2010_mecs-2006-table-3-5.xls,primary-sources/gov-usa/eia/mecs/2006/eia_2010_mecs-2006-table-3-5.xls,"document, not read"
+raw_data/eia/mecs/2006/eia_2010_mecs-2006-table-5-4.xls,primary-sources/gov-usa/eia/mecs/2006/eia_2010_mecs-2006-table-5-4.xls,"document, not read"
+raw_data/eia/mecs/2006/realloc2006.py,extracted/gov-usa/eia/mecs/2006/realloc2006.py,"not read: extraction, script, or metadata"
+raw_data/eia/mecs/2010/doe_2014_mecs-2010-energy-footprint.csv,extracted/gov-usa/eia/mecs/2010/doe_2014_mecs-2010-energy-footprint.csv,"not read: extraction, script, or metadata"
+raw_data/eia/mecs/2010/doe_2014_mecs-2010-footprint-all-manufacturing.pdf,primary-sources/gov-usa/eia/mecs/2010/doe_2014_mecs-2010-footprint-all-manufacturing.pdf,"document, not read"
+raw_data/eia/mecs/2010/doe_2014_mecs-2010-footprint-alumina-and-aluminum.pdf,primary-sources/gov-usa/eia/mecs/2010/doe_2014_mecs-2010-footprint-alumina-and-aluminum.pdf,"document, not read"
+raw_data/eia/mecs/2010/doe_2014_mecs-2010-footprint-cement.pdf,primary-sources/gov-usa/eia/mecs/2010/doe_2014_mecs-2010-footprint-cement.pdf,"document, not read"
+raw_data/eia/mecs/2010/doe_2014_mecs-2010-footprint-chemicals.pdf,primary-sources/gov-usa/eia/mecs/2010/doe_2014_mecs-2010-footprint-chemicals.pdf,"document, not read"
+raw_data/eia/mecs/2010/doe_2014_mecs-2010-footprint-computers-electronics-and-electrical-equipment.pdf,primary-sources/gov-usa/eia/mecs/2010/doe_2014_mecs-2010-footprint-computers-electronics-and-electrical-equipment.pdf,"document, not read"
+raw_data/eia/mecs/2010/doe_2014_mecs-2010-footprint-fabricated-metals.pdf,primary-sources/gov-usa/eia/mecs/2010/doe_2014_mecs-2010-footprint-fabricated-metals.pdf,"document, not read"
+raw_data/eia/mecs/2010/doe_2014_mecs-2010-footprint-food-and-beverage.pdf,primary-sources/gov-usa/eia/mecs/2010/doe_2014_mecs-2010-footprint-food-and-beverage.pdf,"document, not read"
+raw_data/eia/mecs/2010/doe_2014_mecs-2010-footprint-forest-products.pdf,primary-sources/gov-usa/eia/mecs/2010/doe_2014_mecs-2010-footprint-forest-products.pdf,"document, not read"
+raw_data/eia/mecs/2010/doe_2014_mecs-2010-footprint-foundries.pdf,primary-sources/gov-usa/eia/mecs/2010/doe_2014_mecs-2010-footprint-foundries.pdf,"document, not read"
+raw_data/eia/mecs/2010/doe_2014_mecs-2010-footprint-glass.pdf,primary-sources/gov-usa/eia/mecs/2010/doe_2014_mecs-2010-footprint-glass.pdf,"document, not read"
+raw_data/eia/mecs/2010/doe_2014_mecs-2010-footprint-iron-and-steel.pdf,primary-sources/gov-usa/eia/mecs/2010/doe_2014_mecs-2010-footprint-iron-and-steel.pdf,"document, not read"
+raw_data/eia/mecs/2010/doe_2014_mecs-2010-footprint-machinery.pdf,primary-sources/gov-usa/eia/mecs/2010/doe_2014_mecs-2010-footprint-machinery.pdf,"document, not read"
+raw_data/eia/mecs/2010/doe_2014_mecs-2010-footprint-petroleum-refining.pdf,primary-sources/gov-usa/eia/mecs/2010/doe_2014_mecs-2010-footprint-petroleum-refining.pdf,"document, not read"
+raw_data/eia/mecs/2010/doe_2014_mecs-2010-footprint-plastics-and-rubber.pdf,primary-sources/gov-usa/eia/mecs/2010/doe_2014_mecs-2010-footprint-plastics-and-rubber.pdf,"document, not read"
+raw_data/eia/mecs/2010/doe_2014_mecs-2010-footprint-textiles.pdf,primary-sources/gov-usa/eia/mecs/2010/doe_2014_mecs-2010-footprint-textiles.pdf,"document, not read"
+raw_data/eia/mecs/2010/doe_2014_mecs-2010-footprint-transportation-equipment.pdf,primary-sources/gov-usa/eia/mecs/2010/doe_2014_mecs-2010-footprint-transportation-equipment.pdf,"document, not read"
+raw_data/eia/mecs/2010/eia_2013_mecs-2010-table-3-2.xls,primary-sources/gov-usa/eia/mecs/2010/eia_2013_mecs-2010-table-3-2.xls,"document, not read"
+raw_data/eia/mecs/2010/eia_2013_mecs-2010-table-3-5.xls,primary-sources/gov-usa/eia/mecs/2010/eia_2013_mecs-2010-table-3-5.xls,"document, not read"
+raw_data/eia/mecs/2010/eia_2013_mecs-2010-table-5-4.xls,primary-sources/gov-usa/eia/mecs/2010/eia_2013_mecs-2010-table-5-4.xls,"document, not read"
+raw_data/eia/mecs/2014/doe_2018_mecs-2014-energy-footprint.csv,extracted/gov-usa/eia/mecs/2014/doe_2018_mecs-2014-energy-footprint.csv,"not read: extraction, script, or metadata"
+raw_data/eia/mecs/2014/doe_2018_mecs-2014-footprint-all-manufacturing.pdf,primary-sources/gov-usa/eia/mecs/2014/doe_2018_mecs-2014-footprint-all-manufacturing.pdf,"document, not read"
+raw_data/eia/mecs/2014/doe_2018_mecs-2014-footprint-alumina-and-aluminum.pdf,primary-sources/gov-usa/eia/mecs/2014/doe_2018_mecs-2014-footprint-alumina-and-aluminum.pdf,"document, not read"
+raw_data/eia/mecs/2014/doe_2018_mecs-2014-footprint-cement.pdf,primary-sources/gov-usa/eia/mecs/2014/doe_2018_mecs-2014-footprint-cement.pdf,"document, not read"
+raw_data/eia/mecs/2014/doe_2018_mecs-2014-footprint-chemicals.pdf,primary-sources/gov-usa/eia/mecs/2014/doe_2018_mecs-2014-footprint-chemicals.pdf,"document, not read"
+raw_data/eia/mecs/2014/doe_2018_mecs-2014-footprint-computers-electronics-and-electrical-equipment.pdf,primary-sources/gov-usa/eia/mecs/2014/doe_2018_mecs-2014-footprint-computers-electronics-and-electrical-equipment.pdf,"document, not read"
+raw_data/eia/mecs/2014/doe_2018_mecs-2014-footprint-fabricated-metals.pdf,primary-sources/gov-usa/eia/mecs/2014/doe_2018_mecs-2014-footprint-fabricated-metals.pdf,"document, not read"
+raw_data/eia/mecs/2014/doe_2018_mecs-2014-footprint-food-and-beverage.pdf,primary-sources/gov-usa/eia/mecs/2014/doe_2018_mecs-2014-footprint-food-and-beverage.pdf,"document, not read"
+raw_data/eia/mecs/2014/doe_2018_mecs-2014-footprint-forest-products.pdf,primary-sources/gov-usa/eia/mecs/2014/doe_2018_mecs-2014-footprint-forest-products.pdf,"document, not read"
+raw_data/eia/mecs/2014/doe_2018_mecs-2014-footprint-foundries.pdf,primary-sources/gov-usa/eia/mecs/2014/doe_2018_mecs-2014-footprint-foundries.pdf,"document, not read"
+raw_data/eia/mecs/2014/doe_2018_mecs-2014-footprint-glass.pdf,primary-sources/gov-usa/eia/mecs/2014/doe_2018_mecs-2014-footprint-glass.pdf,"document, not read"
+raw_data/eia/mecs/2014/doe_2018_mecs-2014-footprint-iron-and-steel.pdf,primary-sources/gov-usa/eia/mecs/2014/doe_2018_mecs-2014-footprint-iron-and-steel.pdf,"document, not read"
+raw_data/eia/mecs/2014/doe_2018_mecs-2014-footprint-machinery.pdf,primary-sources/gov-usa/eia/mecs/2014/doe_2018_mecs-2014-footprint-machinery.pdf,"document, not read"
+raw_data/eia/mecs/2014/doe_2018_mecs-2014-footprint-petroleum-refining.pdf,primary-sources/gov-usa/eia/mecs/2014/doe_2018_mecs-2014-footprint-petroleum-refining.pdf,"document, not read"
+raw_data/eia/mecs/2014/doe_2018_mecs-2014-footprint-plastics-and-rubber.pdf,primary-sources/gov-usa/eia/mecs/2014/doe_2018_mecs-2014-footprint-plastics-and-rubber.pdf,"document, not read"
+raw_data/eia/mecs/2014/doe_2018_mecs-2014-footprint-textiles.pdf,primary-sources/gov-usa/eia/mecs/2014/doe_2018_mecs-2014-footprint-textiles.pdf,"document, not read"
+raw_data/eia/mecs/2014/doe_2018_mecs-2014-footprint-transportation-equipment.pdf,primary-sources/gov-usa/eia/mecs/2014/doe_2018_mecs-2014-footprint-transportation-equipment.pdf,"document, not read"
+raw_data/eia/mecs/2014/eia_2017_mecs-2014-table-3-2.xlsx,primary-sources/gov-usa/eia/mecs/2014/eia_2017_mecs-2014-table-3-2.xlsx,"document, not read"
+raw_data/eia/mecs/2014/eia_2017_mecs-2014-table-3-5.xlsx,primary-sources/gov-usa/eia/mecs/2014/eia_2017_mecs-2014-table-3-5.xlsx,"document, not read"
+raw_data/eia/mecs/2014/eia_2017_mecs-2014-table-5-4.xlsx,primary-sources/gov-usa/eia/mecs/2014/eia_2017_mecs-2014-table-5-4.xlsx,"document, not read"
+raw_data/eia/mecs/2018/doe_2021_mecs-2018-energy-footprint.csv,extracted/gov-usa/eia/mecs/2018/doe_2021_mecs-2018-energy-footprint.csv,"not read: extraction, script, or metadata"
+raw_data/eia/mecs/2018/doe_2021_mecs-2018-footprint-aerospace-products-and-parts.pdf,primary-sources/gov-usa/eia/mecs/2018/doe_2021_mecs-2018-footprint-aerospace-products-and-parts.pdf,"document, not read"
+raw_data/eia/mecs/2018/doe_2021_mecs-2018-footprint-all-manufacturing.pdf,primary-sources/gov-usa/eia/mecs/2018/doe_2021_mecs-2018-footprint-all-manufacturing.pdf,"document, not read"
+raw_data/eia/mecs/2018/doe_2021_mecs-2018-footprint-alumina-and-aluminum.pdf,primary-sources/gov-usa/eia/mecs/2018/doe_2021_mecs-2018-footprint-alumina-and-aluminum.pdf,"document, not read"
+raw_data/eia/mecs/2018/doe_2021_mecs-2018-footprint-automobiles-and-light-duty-vehicles.pdf,primary-sources/gov-usa/eia/mecs/2018/doe_2021_mecs-2018-footprint-automobiles-and-light-duty-vehicles.pdf,"document, not read"
+raw_data/eia/mecs/2018/doe_2021_mecs-2018-footprint-cement.pdf,primary-sources/gov-usa/eia/mecs/2018/doe_2021_mecs-2018-footprint-cement.pdf,"document, not read"
+raw_data/eia/mecs/2018/doe_2021_mecs-2018-footprint-chemicals.pdf,primary-sources/gov-usa/eia/mecs/2018/doe_2021_mecs-2018-footprint-chemicals.pdf,"document, not read"
+raw_data/eia/mecs/2018/doe_2021_mecs-2018-footprint-computers-electronics-and-electrical-equipment.pdf,primary-sources/gov-usa/eia/mecs/2018/doe_2021_mecs-2018-footprint-computers-electronics-and-electrical-equipment.pdf,"document, not read"
+raw_data/eia/mecs/2018/doe_2021_mecs-2018-footprint-fabricated-metals.pdf,primary-sources/gov-usa/eia/mecs/2018/doe_2021_mecs-2018-footprint-fabricated-metals.pdf,"document, not read"
+raw_data/eia/mecs/2018/doe_2021_mecs-2018-footprint-food-and-beverage.pdf,primary-sources/gov-usa/eia/mecs/2018/doe_2021_mecs-2018-footprint-food-and-beverage.pdf,"document, not read"
+raw_data/eia/mecs/2018/doe_2021_mecs-2018-footprint-forest-products.pdf,primary-sources/gov-usa/eia/mecs/2018/doe_2021_mecs-2018-footprint-forest-products.pdf,"document, not read"
+raw_data/eia/mecs/2018/doe_2021_mecs-2018-footprint-foundries.pdf,primary-sources/gov-usa/eia/mecs/2018/doe_2021_mecs-2018-footprint-foundries.pdf,"document, not read"
+raw_data/eia/mecs/2018/doe_2021_mecs-2018-footprint-glass.pdf,primary-sources/gov-usa/eia/mecs/2018/doe_2021_mecs-2018-footprint-glass.pdf,"document, not read"
+raw_data/eia/mecs/2018/doe_2021_mecs-2018-footprint-iron-and-steel.pdf,primary-sources/gov-usa/eia/mecs/2018/doe_2021_mecs-2018-footprint-iron-and-steel.pdf,"document, not read"
+raw_data/eia/mecs/2018/doe_2021_mecs-2018-footprint-machinery.pdf,primary-sources/gov-usa/eia/mecs/2018/doe_2021_mecs-2018-footprint-machinery.pdf,"document, not read"
+raw_data/eia/mecs/2018/doe_2021_mecs-2018-footprint-petrochemicals.pdf,primary-sources/gov-usa/eia/mecs/2018/doe_2021_mecs-2018-footprint-petrochemicals.pdf,"document, not read"
+raw_data/eia/mecs/2018/doe_2021_mecs-2018-footprint-petroleum-refining.pdf,primary-sources/gov-usa/eia/mecs/2018/doe_2021_mecs-2018-footprint-petroleum-refining.pdf,"document, not read"
+raw_data/eia/mecs/2018/doe_2021_mecs-2018-footprint-plastics-and-rubber.pdf,primary-sources/gov-usa/eia/mecs/2018/doe_2021_mecs-2018-footprint-plastics-and-rubber.pdf,"document, not read"
+raw_data/eia/mecs/2018/doe_2021_mecs-2018-footprint-plastics-materials-and-resins.pdf,primary-sources/gov-usa/eia/mecs/2018/doe_2021_mecs-2018-footprint-plastics-materials-and-resins.pdf,"document, not read"
+raw_data/eia/mecs/2018/doe_2021_mecs-2018-footprint-semiconductors.pdf,primary-sources/gov-usa/eia/mecs/2018/doe_2021_mecs-2018-footprint-semiconductors.pdf,"document, not read"
+raw_data/eia/mecs/2018/doe_2021_mecs-2018-footprint-textiles.pdf,primary-sources/gov-usa/eia/mecs/2018/doe_2021_mecs-2018-footprint-textiles.pdf,"document, not read"
+raw_data/eia/mecs/2018/doe_2021_mecs-2018-footprint-transportation-equipment.pdf,primary-sources/gov-usa/eia/mecs/2018/doe_2021_mecs-2018-footprint-transportation-equipment.pdf,"document, not read"
+raw_data/eia/mecs/2018/eia_2021_mecs-2018-table-3-2.xlsx,primary-sources/gov-usa/eia/mecs/2018/eia_2021_mecs-2018-table-3-2.xlsx,"document, not read"
+raw_data/eia/mecs/2018/eia_2021_mecs-2018-table-3-5.xlsx,primary-sources/gov-usa/eia/mecs/2018/eia_2021_mecs-2018-table-3-5.xlsx,"document, not read"
+raw_data/eia/mecs/2018/eia_2021_mecs-2018-table-5-4.xlsx,primary-sources/gov-usa/eia/mecs/2018/eia_2021_mecs-2018-table-5-4.xlsx,"document, not read"
+raw_data/eia/mecs/2022/eia_2025_mecs-2022-table-3-2.xlsx,primary-sources/gov-usa/eia/mecs/2022/eia_2025_mecs-2022-table-3-2.xlsx,"document, not read"
+raw_data/eia/mecs/2022/eia_2025_mecs-2022-table-3-5.xlsx,primary-sources/gov-usa/eia/mecs/2022/eia_2025_mecs-2022-table-3-5.xlsx,"document, not read"
+raw_data/eia/mecs/2022/eia_2025_mecs-2022-table-5-4.xlsx,primary-sources/gov-usa/eia/mecs/2022/eia_2025_mecs-2022-table-5-4.xlsx,"document, not read"
+raw_data/eia/mecs/emrg_2026_mecs-footprint-metrics.csv,extracted/gov-usa/eia/mecs/emrg_2026_mecs-footprint-metrics.csv,read by the build
+raw_data/eia/mecs/emrg_2026_mecs-footprint-metrics_metadata.md,extracted/gov-usa/eia/mecs/emrg_2026_mecs-footprint-metrics_metadata.md,"not read: extraction, script, or metadata"
+raw_data/eia/mecs/mecs_footprint_metrics.py,extracted/gov-usa/eia/mecs/mecs_footprint_metrics.py,"not read: extraction, script, or metadata"
+raw_data/energy_prices/CIMS Prices and Calcs.xlsx,extracted/legacy/energy-prices/CIMS Prices and Calcs.xlsx,read by the build
+raw_data/energy_prices/alternative_fuels_data_center/10326_retail_fuel_prices_1-23-26.xlsx,extracted/gov-usa/doe/alternative-fuels-data-center/10326_retail_fuel_prices_1-23-26.xlsx,read by the build
+raw_data/energy_prices/alternative_fuels_data_center/10969_renewable_diesel_prices_2-3-26.xlsx,extracted/gov-usa/doe/alternative-fuels-data-center/10969_renewable_diesel_prices_2-3-26.xlsx,read by the build
+raw_data/epa/table_export.csv,extracted/gov-usa/epa/table_export.csv,read by the build
+raw_data/fixed_data/agriculture/agriculture_ab.csv,extracted/legacy/fixed-data/agriculture/agriculture_ab.csv,read by the build
+raw_data/fixed_data/agriculture/agriculture_bc.csv,extracted/legacy/fixed-data/agriculture/agriculture_bc.csv,read by the build
+raw_data/fixed_data/agriculture/agriculture_mb.csv,extracted/legacy/fixed-data/agriculture/agriculture_mb.csv,read by the build
+raw_data/fixed_data/agriculture/agriculture_nb.csv,extracted/legacy/fixed-data/agriculture/agriculture_nb.csv,read by the build
+raw_data/fixed_data/agriculture/agriculture_nl.csv,extracted/legacy/fixed-data/agriculture/agriculture_nl.csv,read by the build
+raw_data/fixed_data/agriculture/agriculture_ns.csv,extracted/legacy/fixed-data/agriculture/agriculture_ns.csv,read by the build
+raw_data/fixed_data/agriculture/agriculture_nt.csv,extracted/legacy/fixed-data/agriculture/agriculture_nt.csv,read by the build
+raw_data/fixed_data/agriculture/agriculture_nu.csv,extracted/legacy/fixed-data/agriculture/agriculture_nu.csv,read by the build
+raw_data/fixed_data/agriculture/agriculture_on.csv,extracted/legacy/fixed-data/agriculture/agriculture_on.csv,read by the build
+raw_data/fixed_data/agriculture/agriculture_pe.csv,extracted/legacy/fixed-data/agriculture/agriculture_pe.csv,read by the build
+raw_data/fixed_data/agriculture/agriculture_qc.csv,extracted/legacy/fixed-data/agriculture/agriculture_qc.csv,read by the build
+raw_data/fixed_data/agriculture/agriculture_sk.csv,extracted/legacy/fixed-data/agriculture/agriculture_sk.csv,read by the build
+raw_data/fixed_data/agriculture/agriculture_yt.csv,extracted/legacy/fixed-data/agriculture/agriculture_yt.csv,read by the build
+raw_data/fixed_data/biodiesel/biodiesel_ab.csv,extracted/legacy/fixed-data/biodiesel/biodiesel_ab.csv,read by the build
+raw_data/fixed_data/biodiesel/biodiesel_bc.csv,extracted/legacy/fixed-data/biodiesel/biodiesel_bc.csv,read by the build
+raw_data/fixed_data/biodiesel/biodiesel_mb.csv,extracted/legacy/fixed-data/biodiesel/biodiesel_mb.csv,read by the build
+raw_data/fixed_data/biodiesel/biodiesel_nb.csv,extracted/legacy/fixed-data/biodiesel/biodiesel_nb.csv,read by the build
+raw_data/fixed_data/biodiesel/biodiesel_nl.csv,extracted/legacy/fixed-data/biodiesel/biodiesel_nl.csv,read by the build
+raw_data/fixed_data/biodiesel/biodiesel_ns.csv,extracted/legacy/fixed-data/biodiesel/biodiesel_ns.csv,read by the build
+raw_data/fixed_data/biodiesel/biodiesel_nt.csv,extracted/legacy/fixed-data/biodiesel/biodiesel_nt.csv,read by the build
+raw_data/fixed_data/biodiesel/biodiesel_nu.csv,extracted/legacy/fixed-data/biodiesel/biodiesel_nu.csv,read by the build
+raw_data/fixed_data/biodiesel/biodiesel_on.csv,extracted/legacy/fixed-data/biodiesel/biodiesel_on.csv,read by the build
+raw_data/fixed_data/biodiesel/biodiesel_pe.csv,extracted/legacy/fixed-data/biodiesel/biodiesel_pe.csv,read by the build
+raw_data/fixed_data/biodiesel/biodiesel_qc.csv,extracted/legacy/fixed-data/biodiesel/biodiesel_qc.csv,read by the build
+raw_data/fixed_data/biodiesel/biodiesel_sk.csv,extracted/legacy/fixed-data/biodiesel/biodiesel_sk.csv,read by the build
+raw_data/fixed_data/biodiesel/biodiesel_yt.csv,extracted/legacy/fixed-data/biodiesel/biodiesel_yt.csv,read by the build
+raw_data/fixed_data/biodiesel/sources/NETL-DOE-USA-2022 Cost of Capturing CO2 from Industrial Sources.pdf,primary-sources/legacy/fixed-data/biodiesel/sources/NETL-DOE-USA-2022 Cost of Capturing CO2 from Industrial Sources.pdf,"document, not read"
+raw_data/fixed_data/chemical_products/chemical_products_ab.csv,extracted/legacy/fixed-data/chemical_products/chemical_products_ab.csv,read by the build
+raw_data/fixed_data/chemical_products/chemical_products_bc.csv,extracted/legacy/fixed-data/chemical_products/chemical_products_bc.csv,read by the build
+raw_data/fixed_data/chemical_products/chemical_products_mb.csv,extracted/legacy/fixed-data/chemical_products/chemical_products_mb.csv,read by the build
+raw_data/fixed_data/chemical_products/chemical_products_nb.csv,extracted/legacy/fixed-data/chemical_products/chemical_products_nb.csv,read by the build
+raw_data/fixed_data/chemical_products/chemical_products_nl.csv,extracted/legacy/fixed-data/chemical_products/chemical_products_nl.csv,read by the build
+raw_data/fixed_data/chemical_products/chemical_products_ns.csv,extracted/legacy/fixed-data/chemical_products/chemical_products_ns.csv,read by the build
+raw_data/fixed_data/chemical_products/chemical_products_on.csv,extracted/legacy/fixed-data/chemical_products/chemical_products_on.csv,read by the build
+raw_data/fixed_data/chemical_products/chemical_products_pe.csv,extracted/legacy/fixed-data/chemical_products/chemical_products_pe.csv,read by the build
+raw_data/fixed_data/chemical_products/chemical_products_qc.csv,extracted/legacy/fixed-data/chemical_products/chemical_products_qc.csv,read by the build
+raw_data/fixed_data/chemical_products/chemical_products_sk.csv,extracted/legacy/fixed-data/chemical_products/chemical_products_sk.csv,read by the build
+raw_data/fixed_data/chemical_products/sources/EUD 2013.pdf,primary-sources/legacy/fixed-data/chemical_products/sources/EUD 2013.pdf,"document, not read"
+"raw_data/fixed_data/chemical_products/sources/Gabi Diner Thesis, 2021.pdf","primary-sources/legacy/fixed-data/chemical_products/sources/Gabi Diner Thesis, 2021.pdf","document, not read"
+raw_data/fixed_data/chemical_products/sources/NETL-DOE-USA-2022 Cost of Capturing CO2 from Industrial Sources.pdf,primary-sources/legacy/fixed-data/chemical_products/sources/NETL-DOE-USA-2022 Cost of Capturing CO2 from Industrial Sources.pdf,"document, not read"
+raw_data/fixed_data/cims_base/cims_base_ab.csv,extracted/legacy/fixed-data/cims_base/cims_base_ab.csv,read by the build
+raw_data/fixed_data/cims_base/cims_base_bc.csv,extracted/legacy/fixed-data/cims_base/cims_base_bc.csv,read by the build
+raw_data/fixed_data/cims_base/cims_base_can.csv,extracted/legacy/fixed-data/cims_base/cims_base_can.csv,read by the build
+raw_data/fixed_data/cims_base/cims_base_cims.csv,extracted/legacy/fixed-data/cims_base/cims_base_cims.csv,read by the build
+raw_data/fixed_data/cims_base/cims_base_mb.csv,extracted/legacy/fixed-data/cims_base/cims_base_mb.csv,read by the build
+raw_data/fixed_data/cims_base/cims_base_nb.csv,extracted/legacy/fixed-data/cims_base/cims_base_nb.csv,read by the build
+raw_data/fixed_data/cims_base/cims_base_nl.csv,extracted/legacy/fixed-data/cims_base/cims_base_nl.csv,read by the build
+raw_data/fixed_data/cims_base/cims_base_ns.csv,extracted/legacy/fixed-data/cims_base/cims_base_ns.csv,read by the build
+raw_data/fixed_data/cims_base/cims_base_nt.csv,extracted/legacy/fixed-data/cims_base/cims_base_nt.csv,read by the build
+raw_data/fixed_data/cims_base/cims_base_nu.csv,extracted/legacy/fixed-data/cims_base/cims_base_nu.csv,read by the build
+raw_data/fixed_data/cims_base/cims_base_on.csv,extracted/legacy/fixed-data/cims_base/cims_base_on.csv,read by the build
+raw_data/fixed_data/cims_base/cims_base_pe.csv,extracted/legacy/fixed-data/cims_base/cims_base_pe.csv,read by the build
+raw_data/fixed_data/cims_base/cims_base_qc.csv,extracted/legacy/fixed-data/cims_base/cims_base_qc.csv,read by the build
+raw_data/fixed_data/cims_base/cims_base_row.csv,extracted/legacy/fixed-data/cims_base/cims_base_row.csv,read by the build
+raw_data/fixed_data/cims_base/cims_base_sk.csv,extracted/legacy/fixed-data/cims_base/cims_base_sk.csv,read by the build
+raw_data/fixed_data/cims_base/cims_base_yt.csv,extracted/legacy/fixed-data/cims_base/cims_base_yt.csv,read by the build
+raw_data/fixed_data/coal_mining/coal_mining_ab.csv,extracted/legacy/fixed-data/coal_mining/coal_mining_ab.csv,read by the build
+raw_data/fixed_data/coal_mining/coal_mining_bc.csv,extracted/legacy/fixed-data/coal_mining/coal_mining_bc.csv,read by the build
+raw_data/fixed_data/coal_mining/coal_mining_nb.csv,extracted/legacy/fixed-data/coal_mining/coal_mining_nb.csv,read by the build
+raw_data/fixed_data/coal_mining/coal_mining_ns.csv,extracted/legacy/fixed-data/coal_mining/coal_mining_ns.csv,read by the build
+raw_data/fixed_data/coal_mining/coal_mining_sk.csv,extracted/legacy/fixed-data/coal_mining/coal_mining_sk.csv,read by the build
+raw_data/fixed_data/commercial/commercial_ab.csv,extracted/legacy/fixed-data/commercial/commercial_ab.csv,read by the build
+raw_data/fixed_data/commercial/commercial_bc.csv,extracted/legacy/fixed-data/commercial/commercial_bc.csv,read by the build
+raw_data/fixed_data/commercial/commercial_mb.csv,extracted/legacy/fixed-data/commercial/commercial_mb.csv,read by the build
+raw_data/fixed_data/commercial/commercial_nb.csv,extracted/legacy/fixed-data/commercial/commercial_nb.csv,read by the build
+raw_data/fixed_data/commercial/commercial_nl.csv,extracted/legacy/fixed-data/commercial/commercial_nl.csv,read by the build
+raw_data/fixed_data/commercial/commercial_ns.csv,extracted/legacy/fixed-data/commercial/commercial_ns.csv,read by the build
+raw_data/fixed_data/commercial/commercial_nt.csv,extracted/legacy/fixed-data/commercial/commercial_nt.csv,read by the build
+raw_data/fixed_data/commercial/commercial_nu.csv,extracted/legacy/fixed-data/commercial/commercial_nu.csv,read by the build
+raw_data/fixed_data/commercial/commercial_on.csv,extracted/legacy/fixed-data/commercial/commercial_on.csv,read by the build
+raw_data/fixed_data/commercial/commercial_pe.csv,extracted/legacy/fixed-data/commercial/commercial_pe.csv,read by the build
+raw_data/fixed_data/commercial/commercial_qc.csv,extracted/legacy/fixed-data/commercial/commercial_qc.csv,read by the build
+raw_data/fixed_data/commercial/commercial_sk.csv,extracted/legacy/fixed-data/commercial/commercial_sk.csv,read by the build
+raw_data/fixed_data/commercial/commercial_yt.csv,extracted/legacy/fixed-data/commercial/commercial_yt.csv,read by the build
+raw_data/fixed_data/commercial/sources/h2rng-webinar-2-slides.pdf,primary-sources/legacy/fixed-data/commercial/sources/h2rng-webinar-2-slides.pdf,"document, not read"
+raw_data/fixed_data/commercial/sources/resource_supply_potential_for_renewable_natural_gas_in_bc_public_version.pdf,primary-sources/legacy/fixed-data/commercial/sources/resource_supply_potential_for_renewable_natural_gas_in_bc_public_version.pdf,"document, not read"
+raw_data/fixed_data/construction/construction_ab.csv,extracted/legacy/fixed-data/construction/construction_ab.csv,read by the build
+raw_data/fixed_data/construction/construction_bc.csv,extracted/legacy/fixed-data/construction/construction_bc.csv,read by the build
+raw_data/fixed_data/construction/construction_mb.csv,extracted/legacy/fixed-data/construction/construction_mb.csv,read by the build
+raw_data/fixed_data/construction/construction_nb.csv,extracted/legacy/fixed-data/construction/construction_nb.csv,read by the build
+raw_data/fixed_data/construction/construction_nl.csv,extracted/legacy/fixed-data/construction/construction_nl.csv,read by the build
+raw_data/fixed_data/construction/construction_ns.csv,extracted/legacy/fixed-data/construction/construction_ns.csv,read by the build
+raw_data/fixed_data/construction/construction_nt.csv,extracted/legacy/fixed-data/construction/construction_nt.csv,read by the build
+raw_data/fixed_data/construction/construction_nu.csv,extracted/legacy/fixed-data/construction/construction_nu.csv,read by the build
+raw_data/fixed_data/construction/construction_on.csv,extracted/legacy/fixed-data/construction/construction_on.csv,read by the build
+raw_data/fixed_data/construction/construction_pe.csv,extracted/legacy/fixed-data/construction/construction_pe.csv,read by the build
+raw_data/fixed_data/construction/construction_qc.csv,extracted/legacy/fixed-data/construction/construction_qc.csv,read by the build
+raw_data/fixed_data/construction/construction_sk.csv,extracted/legacy/fixed-data/construction/construction_sk.csv,read by the build
+raw_data/fixed_data/construction/construction_yt.csv,extracted/legacy/fixed-data/construction/construction_yt.csv,read by the build
+raw_data/fixed_data/dcc/dcc_ab.csv,extracted/legacy/fixed-data/dcc/dcc_ab.csv,read by the build
+raw_data/fixed_data/dcc/dcc_bc.csv,extracted/legacy/fixed-data/dcc/dcc_bc.csv,read by the build
+raw_data/fixed_data/dcc/dcc_mb.csv,extracted/legacy/fixed-data/dcc/dcc_mb.csv,read by the build
+raw_data/fixed_data/dcc/dcc_nb.csv,extracted/legacy/fixed-data/dcc/dcc_nb.csv,read by the build
+raw_data/fixed_data/dcc/dcc_nl.csv,extracted/legacy/fixed-data/dcc/dcc_nl.csv,read by the build
+raw_data/fixed_data/dcc/dcc_ns.csv,extracted/legacy/fixed-data/dcc/dcc_ns.csv,read by the build
+raw_data/fixed_data/dcc/dcc_nt.csv,extracted/legacy/fixed-data/dcc/dcc_nt.csv,read by the build
+raw_data/fixed_data/dcc/dcc_nu.csv,extracted/legacy/fixed-data/dcc/dcc_nu.csv,read by the build
+raw_data/fixed_data/dcc/dcc_on.csv,extracted/legacy/fixed-data/dcc/dcc_on.csv,read by the build
+raw_data/fixed_data/dcc/dcc_pe.csv,extracted/legacy/fixed-data/dcc/dcc_pe.csv,read by the build
+raw_data/fixed_data/dcc/dcc_qc.csv,extracted/legacy/fixed-data/dcc/dcc_qc.csv,read by the build
+raw_data/fixed_data/dcc/dcc_sk.csv,extracted/legacy/fixed-data/dcc/dcc_sk.csv,read by the build
+raw_data/fixed_data/dcc/dcc_yt.csv,extracted/legacy/fixed-data/dcc/dcc_yt.csv,read by the build
+raw_data/fixed_data/dic/dic_ab.csv,extracted/legacy/fixed-data/dic/dic_ab.csv,read by the build
+raw_data/fixed_data/dic/dic_bc.csv,extracted/legacy/fixed-data/dic/dic_bc.csv,read by the build
+raw_data/fixed_data/dic/dic_mb.csv,extracted/legacy/fixed-data/dic/dic_mb.csv,read by the build
+raw_data/fixed_data/dic/dic_nb.csv,extracted/legacy/fixed-data/dic/dic_nb.csv,read by the build
+raw_data/fixed_data/dic/dic_nl.csv,extracted/legacy/fixed-data/dic/dic_nl.csv,read by the build
+raw_data/fixed_data/dic/dic_ns.csv,extracted/legacy/fixed-data/dic/dic_ns.csv,read by the build
+raw_data/fixed_data/dic/dic_nt.csv,extracted/legacy/fixed-data/dic/dic_nt.csv,read by the build
+raw_data/fixed_data/dic/dic_nu.csv,extracted/legacy/fixed-data/dic/dic_nu.csv,read by the build
+raw_data/fixed_data/dic/dic_on.csv,extracted/legacy/fixed-data/dic/dic_on.csv,read by the build
+raw_data/fixed_data/dic/dic_pe.csv,extracted/legacy/fixed-data/dic/dic_pe.csv,read by the build
+raw_data/fixed_data/dic/dic_qc.csv,extracted/legacy/fixed-data/dic/dic_qc.csv,read by the build
+raw_data/fixed_data/dic/dic_sk.csv,extracted/legacy/fixed-data/dic/dic_sk.csv,read by the build
+raw_data/fixed_data/dic/dic_yt.csv,extracted/legacy/fixed-data/dic/dic_yt.csv,read by the build
+raw_data/fixed_data/electricity/electricity_ab.csv,extracted/legacy/fixed-data/electricity/electricity_ab.csv,read by the build
+raw_data/fixed_data/electricity/electricity_bc.csv,extracted/legacy/fixed-data/electricity/electricity_bc.csv,read by the build
+raw_data/fixed_data/electricity/electricity_mb.csv,extracted/legacy/fixed-data/electricity/electricity_mb.csv,read by the build
+raw_data/fixed_data/electricity/electricity_nb.csv,extracted/legacy/fixed-data/electricity/electricity_nb.csv,read by the build
+raw_data/fixed_data/electricity/electricity_nl.csv,extracted/legacy/fixed-data/electricity/electricity_nl.csv,read by the build
+raw_data/fixed_data/electricity/electricity_ns.csv,extracted/legacy/fixed-data/electricity/electricity_ns.csv,read by the build
+raw_data/fixed_data/electricity/electricity_nt.csv,extracted/legacy/fixed-data/electricity/electricity_nt.csv,read by the build
+raw_data/fixed_data/electricity/electricity_nu.csv,extracted/legacy/fixed-data/electricity/electricity_nu.csv,read by the build
+raw_data/fixed_data/electricity/electricity_on.csv,extracted/legacy/fixed-data/electricity/electricity_on.csv,read by the build
+raw_data/fixed_data/electricity/electricity_pe.csv,extracted/legacy/fixed-data/electricity/electricity_pe.csv,read by the build
+raw_data/fixed_data/electricity/electricity_qc.csv,extracted/legacy/fixed-data/electricity/electricity_qc.csv,read by the build
+raw_data/fixed_data/electricity/electricity_sk.csv,extracted/legacy/fixed-data/electricity/electricity_sk.csv,read by the build
+raw_data/fixed_data/electricity/electricity_yt.csv,extracted/legacy/fixed-data/electricity/electricity_yt.csv,read by the build
+raw_data/fixed_data/electricity/sources/2020-ATB-data.xlsm,primary-sources/legacy/fixed-data/electricity/sources/2020-ATB-data.xlsm,"document, not read"
+raw_data/fixed_data/electricity/sources/NETL-DOE-USA-2022 Cost of Capturing CO2 from Industrial Sources.pdf,primary-sources/legacy/fixed-data/electricity/sources/NETL-DOE-USA-2022 Cost of Capturing CO2 from Industrial Sources.pdf,"document, not read"
+"raw_data/fixed_data/electricity/sources/electricity - scenario 2000 updated on Jan 19, 2006.xls","primary-sources/legacy/fixed-data/electricity/sources/electricity - scenario 2000 updated on Jan 19, 2006.xls","document, not read"
+raw_data/fixed_data/ethanol/ethanol_ab.csv,extracted/legacy/fixed-data/ethanol/ethanol_ab.csv,read by the build
+raw_data/fixed_data/ethanol/ethanol_bc.csv,extracted/legacy/fixed-data/ethanol/ethanol_bc.csv,read by the build
+raw_data/fixed_data/ethanol/ethanol_mb.csv,extracted/legacy/fixed-data/ethanol/ethanol_mb.csv,read by the build
+raw_data/fixed_data/ethanol/ethanol_nb.csv,extracted/legacy/fixed-data/ethanol/ethanol_nb.csv,read by the build
+raw_data/fixed_data/ethanol/ethanol_nl.csv,extracted/legacy/fixed-data/ethanol/ethanol_nl.csv,read by the build
+raw_data/fixed_data/ethanol/ethanol_ns.csv,extracted/legacy/fixed-data/ethanol/ethanol_ns.csv,read by the build
+raw_data/fixed_data/ethanol/ethanol_nt.csv,extracted/legacy/fixed-data/ethanol/ethanol_nt.csv,read by the build
+raw_data/fixed_data/ethanol/ethanol_nu.csv,extracted/legacy/fixed-data/ethanol/ethanol_nu.csv,read by the build
+raw_data/fixed_data/ethanol/ethanol_on.csv,extracted/legacy/fixed-data/ethanol/ethanol_on.csv,read by the build
+raw_data/fixed_data/ethanol/ethanol_pe.csv,extracted/legacy/fixed-data/ethanol/ethanol_pe.csv,read by the build
+raw_data/fixed_data/ethanol/ethanol_qc.csv,extracted/legacy/fixed-data/ethanol/ethanol_qc.csv,read by the build
+raw_data/fixed_data/ethanol/ethanol_sk.csv,extracted/legacy/fixed-data/ethanol/ethanol_sk.csv,read by the build
+raw_data/fixed_data/ethanol/ethanol_yt.csv,extracted/legacy/fixed-data/ethanol/ethanol_yt.csv,read by the build
+raw_data/fixed_data/ethanol/sources/NETL-DOE-USA-2022 Cost of Capturing CO2 from Industrial Sources.pdf,primary-sources/legacy/fixed-data/ethanol/sources/NETL-DOE-USA-2022 Cost of Capturing CO2 from Industrial Sources.pdf,"document, not read"
+raw_data/fixed_data/exogenous_demand/exogenous_demand_ab.csv,extracted/legacy/fixed-data/exogenous_demand/exogenous_demand_ab.csv,"not read: extraction, script, or metadata"
+raw_data/fixed_data/exogenous_demand/exogenous_demand_at.csv,extracted/legacy/fixed-data/exogenous_demand/exogenous_demand_at.csv,"not read: extraction, script, or metadata"
+raw_data/fixed_data/exogenous_demand/exogenous_demand_bc.csv,extracted/legacy/fixed-data/exogenous_demand/exogenous_demand_bc.csv,"not read: extraction, script, or metadata"
+raw_data/fixed_data/exogenous_demand/exogenous_demand_mb.csv,extracted/legacy/fixed-data/exogenous_demand/exogenous_demand_mb.csv,"not read: extraction, script, or metadata"
+raw_data/fixed_data/exogenous_demand/exogenous_demand_on.csv,extracted/legacy/fixed-data/exogenous_demand/exogenous_demand_on.csv,"not read: extraction, script, or metadata"
+raw_data/fixed_data/exogenous_demand/exogenous_demand_qc.csv,extracted/legacy/fixed-data/exogenous_demand/exogenous_demand_qc.csv,"not read: extraction, script, or metadata"
+raw_data/fixed_data/exogenous_demand/exogenous_demand_sk.csv,extracted/legacy/fixed-data/exogenous_demand/exogenous_demand_sk.csv,"not read: extraction, script, or metadata"
+raw_data/fixed_data/exogenous_prices/exogenous_prices_ab.csv,extracted/legacy/fixed-data/exogenous_prices/exogenous_prices_ab.csv,read by the build
+raw_data/fixed_data/exogenous_prices/exogenous_prices_bc.csv,extracted/legacy/fixed-data/exogenous_prices/exogenous_prices_bc.csv,read by the build
+raw_data/fixed_data/exogenous_prices/exogenous_prices_mb.csv,extracted/legacy/fixed-data/exogenous_prices/exogenous_prices_mb.csv,read by the build
+raw_data/fixed_data/exogenous_prices/exogenous_prices_nb.csv,extracted/legacy/fixed-data/exogenous_prices/exogenous_prices_nb.csv,read by the build
+raw_data/fixed_data/exogenous_prices/exogenous_prices_nl.csv,extracted/legacy/fixed-data/exogenous_prices/exogenous_prices_nl.csv,read by the build
+raw_data/fixed_data/exogenous_prices/exogenous_prices_ns.csv,extracted/legacy/fixed-data/exogenous_prices/exogenous_prices_ns.csv,read by the build
+raw_data/fixed_data/exogenous_prices/exogenous_prices_nt.csv,extracted/legacy/fixed-data/exogenous_prices/exogenous_prices_nt.csv,read by the build
+raw_data/fixed_data/exogenous_prices/exogenous_prices_nu.csv,extracted/legacy/fixed-data/exogenous_prices/exogenous_prices_nu.csv,read by the build
+raw_data/fixed_data/exogenous_prices/exogenous_prices_on.csv,extracted/legacy/fixed-data/exogenous_prices/exogenous_prices_on.csv,read by the build
+raw_data/fixed_data/exogenous_prices/exogenous_prices_pe.csv,extracted/legacy/fixed-data/exogenous_prices/exogenous_prices_pe.csv,read by the build
+raw_data/fixed_data/exogenous_prices/exogenous_prices_qc.csv,extracted/legacy/fixed-data/exogenous_prices/exogenous_prices_qc.csv,read by the build
+raw_data/fixed_data/exogenous_prices/exogenous_prices_sk.csv,extracted/legacy/fixed-data/exogenous_prices/exogenous_prices_sk.csv,read by the build
+raw_data/fixed_data/exogenous_prices/exogenous_prices_yt.csv,extracted/legacy/fixed-data/exogenous_prices/exogenous_prices_yt.csv,read by the build
+raw_data/fixed_data/fic/fic_ab.csv,extracted/legacy/fixed-data/fic/fic_ab.csv,read by the build
+raw_data/fixed_data/fic/fic_bc.csv,extracted/legacy/fixed-data/fic/fic_bc.csv,read by the build
+raw_data/fixed_data/fic/fic_mb.csv,extracted/legacy/fixed-data/fic/fic_mb.csv,read by the build
+raw_data/fixed_data/fic/fic_nb.csv,extracted/legacy/fixed-data/fic/fic_nb.csv,read by the build
+raw_data/fixed_data/fic/fic_nl.csv,extracted/legacy/fixed-data/fic/fic_nl.csv,read by the build
+raw_data/fixed_data/fic/fic_ns.csv,extracted/legacy/fixed-data/fic/fic_ns.csv,read by the build
+raw_data/fixed_data/fic/fic_nt.csv,extracted/legacy/fixed-data/fic/fic_nt.csv,read by the build
+raw_data/fixed_data/fic/fic_nu.csv,extracted/legacy/fixed-data/fic/fic_nu.csv,read by the build
+raw_data/fixed_data/fic/fic_on.csv,extracted/legacy/fixed-data/fic/fic_on.csv,read by the build
+raw_data/fixed_data/fic/fic_pe.csv,extracted/legacy/fixed-data/fic/fic_pe.csv,read by the build
+raw_data/fixed_data/fic/fic_qc.csv,extracted/legacy/fixed-data/fic/fic_qc.csv,read by the build
+raw_data/fixed_data/fic/fic_sk.csv,extracted/legacy/fixed-data/fic/fic_sk.csv,read by the build
+raw_data/fixed_data/fic/fic_yt.csv,extracted/legacy/fixed-data/fic/fic_yt.csv,read by the build
+raw_data/fixed_data/fixed_data_list_of_uncertain_sources.docx,primary-sources/legacy/fixed-data/fixed_data_list_of_uncertain_sources.docx,"document, not read"
+raw_data/fixed_data/fixed_data_list_of_uncertain_sources_bg.docx,primary-sources/legacy/fixed-data/fixed_data_list_of_uncertain_sources_bg.docx,"document, not read"
+raw_data/fixed_data/forestry/forestry_ab.csv,extracted/legacy/fixed-data/forestry/forestry_ab.csv,read by the build
+raw_data/fixed_data/forestry/forestry_bc.csv,extracted/legacy/fixed-data/forestry/forestry_bc.csv,read by the build
+raw_data/fixed_data/forestry/forestry_mb.csv,extracted/legacy/fixed-data/forestry/forestry_mb.csv,read by the build
+raw_data/fixed_data/forestry/forestry_nb.csv,extracted/legacy/fixed-data/forestry/forestry_nb.csv,read by the build
+raw_data/fixed_data/forestry/forestry_nl.csv,extracted/legacy/fixed-data/forestry/forestry_nl.csv,read by the build
+raw_data/fixed_data/forestry/forestry_ns.csv,extracted/legacy/fixed-data/forestry/forestry_ns.csv,read by the build
+raw_data/fixed_data/forestry/forestry_nt.csv,extracted/legacy/fixed-data/forestry/forestry_nt.csv,read by the build
+raw_data/fixed_data/forestry/forestry_on.csv,extracted/legacy/fixed-data/forestry/forestry_on.csv,read by the build
+raw_data/fixed_data/forestry/forestry_pe.csv,extracted/legacy/fixed-data/forestry/forestry_pe.csv,read by the build
+raw_data/fixed_data/forestry/forestry_qc.csv,extracted/legacy/fixed-data/forestry/forestry_qc.csv,read by the build
+raw_data/fixed_data/forestry/forestry_sk.csv,extracted/legacy/fixed-data/forestry/forestry_sk.csv,read by the build
+raw_data/fixed_data/forestry/forestry_yt.csv,extracted/legacy/fixed-data/forestry/forestry_yt.csv,read by the build
+raw_data/fixed_data/fuels/fuels_ab.csv,extracted/legacy/fixed-data/fuels/fuels_ab.csv,read by the build
+raw_data/fixed_data/fuels/fuels_bc.csv,extracted/legacy/fixed-data/fuels/fuels_bc.csv,read by the build
+raw_data/fixed_data/fuels/fuels_cims.csv,extracted/legacy/fixed-data/fuels/fuels_cims.csv,read by the build
+raw_data/fixed_data/fuels/fuels_mb.csv,extracted/legacy/fixed-data/fuels/fuels_mb.csv,read by the build
+raw_data/fixed_data/fuels/fuels_nb.csv,extracted/legacy/fixed-data/fuels/fuels_nb.csv,read by the build
+raw_data/fixed_data/fuels/fuels_nl.csv,extracted/legacy/fixed-data/fuels/fuels_nl.csv,read by the build
+raw_data/fixed_data/fuels/fuels_ns.csv,extracted/legacy/fixed-data/fuels/fuels_ns.csv,read by the build
+raw_data/fixed_data/fuels/fuels_nt.csv,extracted/legacy/fixed-data/fuels/fuels_nt.csv,read by the build
+raw_data/fixed_data/fuels/fuels_nu.csv,extracted/legacy/fixed-data/fuels/fuels_nu.csv,read by the build
+raw_data/fixed_data/fuels/fuels_on.csv,extracted/legacy/fixed-data/fuels/fuels_on.csv,read by the build
+raw_data/fixed_data/fuels/fuels_pe.csv,extracted/legacy/fixed-data/fuels/fuels_pe.csv,read by the build
+raw_data/fixed_data/fuels/fuels_qc.csv,extracted/legacy/fixed-data/fuels/fuels_qc.csv,read by the build
+raw_data/fixed_data/fuels/fuels_sk.csv,extracted/legacy/fixed-data/fuels/fuels_sk.csv,read by the build
+raw_data/fixed_data/fuels/fuels_yt.csv,extracted/legacy/fixed-data/fuels/fuels_yt.csv,read by the build
+raw_data/fixed_data/hydrogen/hydrogen_ab.csv,extracted/legacy/fixed-data/hydrogen/hydrogen_ab.csv,read by the build
+raw_data/fixed_data/hydrogen/hydrogen_bc.csv,extracted/legacy/fixed-data/hydrogen/hydrogen_bc.csv,read by the build
+raw_data/fixed_data/hydrogen/hydrogen_mb.csv,extracted/legacy/fixed-data/hydrogen/hydrogen_mb.csv,read by the build
+raw_data/fixed_data/hydrogen/hydrogen_nb.csv,extracted/legacy/fixed-data/hydrogen/hydrogen_nb.csv,read by the build
+raw_data/fixed_data/hydrogen/hydrogen_nl.csv,extracted/legacy/fixed-data/hydrogen/hydrogen_nl.csv,read by the build
+raw_data/fixed_data/hydrogen/hydrogen_ns.csv,extracted/legacy/fixed-data/hydrogen/hydrogen_ns.csv,read by the build
+raw_data/fixed_data/hydrogen/hydrogen_nt.csv,extracted/legacy/fixed-data/hydrogen/hydrogen_nt.csv,read by the build
+raw_data/fixed_data/hydrogen/hydrogen_nu.csv,extracted/legacy/fixed-data/hydrogen/hydrogen_nu.csv,read by the build
+raw_data/fixed_data/hydrogen/hydrogen_on.csv,extracted/legacy/fixed-data/hydrogen/hydrogen_on.csv,read by the build
+raw_data/fixed_data/hydrogen/hydrogen_pe.csv,extracted/legacy/fixed-data/hydrogen/hydrogen_pe.csv,read by the build
+raw_data/fixed_data/hydrogen/hydrogen_qc.csv,extracted/legacy/fixed-data/hydrogen/hydrogen_qc.csv,read by the build
+raw_data/fixed_data/hydrogen/hydrogen_sk.csv,extracted/legacy/fixed-data/hydrogen/hydrogen_sk.csv,read by the build
+raw_data/fixed_data/hydrogen/hydrogen_yt.csv,extracted/legacy/fixed-data/hydrogen/hydrogen_yt.csv,read by the build
+raw_data/fixed_data/hydrogen/sources/Copy of Hydrogen data_old format.xlsb,primary-sources/legacy/fixed-data/hydrogen/sources/Copy of Hydrogen data_old format.xlsb,"document, not read"
+raw_data/fixed_data/hydrogen/sources/NETL-DOE-USA-2022 Cost of Capturing CO2 from Industrial Sources.pdf,primary-sources/legacy/fixed-data/hydrogen/sources/NETL-DOE-USA-2022 Cost of Capturing CO2 from Industrial Sources.pdf,"document, not read"
+raw_data/fixed_data/hydrogen/sources/The-Techno-Economics-of-Hydrogen-Pipelines-v2 - Transition Accelerator 2021.pdf,primary-sources/legacy/fixed-data/hydrogen/sources/The-Techno-Economics-of-Hydrogen-Pipelines-v2 - Transition Accelerator 2021.pdf,"document, not read"
+raw_data/fixed_data/hydrogen/sources/current-central-biomass-gasification-version-oct20.xlsm,primary-sources/legacy/fixed-data/hydrogen/sources/current-central-biomass-gasification-version-oct20.xlsm,"document, not read"
+raw_data/fixed_data/hydrogen/sources/current-central-coal-gasification-with-co2-sequestration-version-aug22.xlsm,primary-sources/legacy/fixed-data/hydrogen/sources/current-central-coal-gasification-with-co2-sequestration-version-aug22.xlsm,"document, not read"
+raw_data/fixed_data/hydrogen/sources/current-central-pem-electrolysis-version-nov20.xlsm,primary-sources/legacy/fixed-data/hydrogen/sources/current-central-pem-electrolysis-version-nov20.xlsm,"document, not read"
+raw_data/fixed_data/hydrogen/sources/current-central-solid-oxide-electrolysis-version-nov20.xlsm,primary-sources/legacy/fixed-data/hydrogen/sources/current-central-solid-oxide-electrolysis-version-nov20.xlsm,"document, not read"
+raw_data/fixed_data/hydrogen/sources/current-central-steam-methane-reforming-with-co2-sequestration-version-aug-22.xlsm,primary-sources/legacy/fixed-data/hydrogen/sources/current-central-steam-methane-reforming-with-co2-sequestration-version-aug-22.xlsm,"document, not read"
+raw_data/fixed_data/hydrogen/sources/current-central-steam-methane-reforming-without-co2-sequestration-version-aug22.xlsm,primary-sources/legacy/fixed-data/hydrogen/sources/current-central-steam-methane-reforming-without-co2-sequestration-version-aug22.xlsm,"document, not read"
+raw_data/fixed_data/hydrogen/sources/current-distributed-ethanol-version-may22.xlsm,primary-sources/legacy/fixed-data/hydrogen/sources/current-distributed-ethanol-version-may22.xlsm,"document, not read"
+raw_data/fixed_data/hydrogen/sources/current-distributed-natural-gas-version-apr22.xlsm,primary-sources/legacy/fixed-data/hydrogen/sources/current-distributed-natural-gas-version-apr22.xlsm,"document, not read"
+raw_data/fixed_data/hydrogen/sources/current-distributed-pem-electrolysis-version-apr22.xlsm,primary-sources/legacy/fixed-data/hydrogen/sources/current-distributed-pem-electrolysis-version-apr22.xlsm,"document, not read"
+raw_data/fixed_data/hydrogen/sources/future-central-biomass-gasification-version-oct20.xlsm,primary-sources/legacy/fixed-data/hydrogen/sources/future-central-biomass-gasification-version-oct20.xlsm,"document, not read"
+raw_data/fixed_data/hydrogen/sources/future-central-pem-electrolysis-version-nov20.xlsm,primary-sources/legacy/fixed-data/hydrogen/sources/future-central-pem-electrolysis-version-nov20.xlsm,"document, not read"
+raw_data/fixed_data/hydrogen/sources/future-central-solid-oxide-electrolysis-version-nov20.xlsm,primary-sources/legacy/fixed-data/hydrogen/sources/future-central-solid-oxide-electrolysis-version-nov20.xlsm,"document, not read"
+raw_data/fixed_data/hydrogen/sources/future-distributed-ethanol-version-may22.xlsm,primary-sources/legacy/fixed-data/hydrogen/sources/future-distributed-ethanol-version-may22.xlsm,"document, not read"
+raw_data/fixed_data/hydrogen/sources/future-distributed-natural-gas-version-may22.xlsm,primary-sources/legacy/fixed-data/hydrogen/sources/future-distributed-natural-gas-version-may22.xlsm,"document, not read"
+raw_data/fixed_data/hydrogen/sources/future-distributed-pem-electrolysis-version-apr22.xlsm,primary-sources/legacy/fixed-data/hydrogen/sources/future-distributed-pem-electrolysis-version-apr22.xlsm,"document, not read"
+raw_data/fixed_data/industrial_minerals/industrial_minerals_ab.csv,extracted/legacy/fixed-data/industrial_minerals/industrial_minerals_ab.csv,read by the build
+raw_data/fixed_data/industrial_minerals/industrial_minerals_bc.csv,extracted/legacy/fixed-data/industrial_minerals/industrial_minerals_bc.csv,read by the build
+raw_data/fixed_data/industrial_minerals/industrial_minerals_nl.csv,extracted/legacy/fixed-data/industrial_minerals/industrial_minerals_nl.csv,read by the build
+raw_data/fixed_data/industrial_minerals/industrial_minerals_ns.csv,extracted/legacy/fixed-data/industrial_minerals/industrial_minerals_ns.csv,read by the build
+raw_data/fixed_data/industrial_minerals/industrial_minerals_on.csv,extracted/legacy/fixed-data/industrial_minerals/industrial_minerals_on.csv,read by the build
+raw_data/fixed_data/industrial_minerals/industrial_minerals_qc.csv,extracted/legacy/fixed-data/industrial_minerals/industrial_minerals_qc.csv,read by the build
+raw_data/fixed_data/industrial_minerals/industrial_minerals_sk.csv,extracted/legacy/fixed-data/industrial_minerals/industrial_minerals_sk.csv,read by the build
+raw_data/fixed_data/industrial_minerals/sources/EUD 2013.pdf,primary-sources/legacy/fixed-data/industrial_minerals/sources/EUD 2013.pdf,"document, not read"
+"raw_data/fixed_data/industrial_minerals/sources/Ellis, L. D., Badel, A. F., Chiang, M. L., Park, R. J. Y., & Chiang, Y. M. (2020).pdf","primary-sources/legacy/fixed-data/industrial_minerals/sources/Ellis, L. D., Badel, A. F., Chiang, M. L., Park, R. J. Y., & Chiang, Y. M. (2020).pdf","document, not read"
+raw_data/fixed_data/industrial_minerals/sources/Hallbar - resource_supply_potential_for_renewable_natural_gas_in_bc_public_version.pdf,primary-sources/legacy/fixed-data/industrial_minerals/sources/Hallbar - resource_supply_potential_for_renewable_natural_gas_in_bc_public_version.pdf,"document, not read"
+"raw_data/fixed_data/industrial_minerals/sources/Hanifa, M., Agarwal, R., Sharma, U., Thapliyal, P. C., & Singh, L. P. (2023).pdf","primary-sources/legacy/fixed-data/industrial_minerals/sources/Hanifa, M., Agarwal, R., Sharma, U., Thapliyal, P. C., & Singh, L. P. (2023).pdf","document, not read"
+raw_data/fixed_data/industrial_minerals/sources/NETL-DOE-USA-2022 Cost of Capturing CO2 from Industrial Sources.pdf,primary-sources/legacy/fixed-data/industrial_minerals/sources/NETL-DOE-USA-2022 Cost of Capturing CO2 from Industrial Sources.pdf,"document, not read"
+raw_data/fixed_data/industrial_minerals/sources/Pembina - h2rng-webinar-2-slides.pdf,primary-sources/legacy/fixed-data/industrial_minerals/sources/Pembina - h2rng-webinar-2-slides.pdf,"document, not read"
+raw_data/fixed_data/iron_and_steel/iron_and_steel_ab.csv,extracted/legacy/fixed-data/iron_and_steel/iron_and_steel_ab.csv,read by the build
+raw_data/fixed_data/iron_and_steel/iron_and_steel_bc.csv,extracted/legacy/fixed-data/iron_and_steel/iron_and_steel_bc.csv,read by the build
+raw_data/fixed_data/iron_and_steel/iron_and_steel_mb.csv,extracted/legacy/fixed-data/iron_and_steel/iron_and_steel_mb.csv,read by the build
+raw_data/fixed_data/iron_and_steel/iron_and_steel_on.csv,extracted/legacy/fixed-data/iron_and_steel/iron_and_steel_on.csv,read by the build
+raw_data/fixed_data/iron_and_steel/iron_and_steel_qc.csv,extracted/legacy/fixed-data/iron_and_steel/iron_and_steel_qc.csv,read by the build
+raw_data/fixed_data/iron_and_steel/iron_and_steel_sk.csv,extracted/legacy/fixed-data/iron_and_steel/iron_and_steel_sk.csv,read by the build
+raw_data/fixed_data/iron_and_steel/sources/Hallbar - resource_supply_potential_for_renewable_natural_gas_in_bc_public_version.pdf,primary-sources/legacy/fixed-data/iron_and_steel/sources/Hallbar - resource_supply_potential_for_renewable_natural_gas_in_bc_public_version.pdf,"document, not read"
+raw_data/fixed_data/iron_and_steel/sources/NETL-DOE-USA-2022 Cost of Capturing CO2 from Industrial Sources.pdf,primary-sources/legacy/fixed-data/iron_and_steel/sources/NETL-DOE-USA-2022 Cost of Capturing CO2 from Industrial Sources.pdf,"document, not read"
+raw_data/fixed_data/iron_and_steel/sources/Pembina - h2rng-webinar-2-slides.pdf,primary-sources/legacy/fixed-data/iron_and_steel/sources/Pembina - h2rng-webinar-2-slides.pdf,"document, not read"
+raw_data/fixed_data/light_industrial/light_industrial_ab.csv,extracted/legacy/fixed-data/light_industrial/light_industrial_ab.csv,read by the build
+raw_data/fixed_data/light_industrial/light_industrial_bc.csv,extracted/legacy/fixed-data/light_industrial/light_industrial_bc.csv,read by the build
+raw_data/fixed_data/light_industrial/light_industrial_mb.csv,extracted/legacy/fixed-data/light_industrial/light_industrial_mb.csv,read by the build
+raw_data/fixed_data/light_industrial/light_industrial_nb.csv,extracted/legacy/fixed-data/light_industrial/light_industrial_nb.csv,read by the build
+raw_data/fixed_data/light_industrial/light_industrial_nl.csv,extracted/legacy/fixed-data/light_industrial/light_industrial_nl.csv,read by the build
+raw_data/fixed_data/light_industrial/light_industrial_ns.csv,extracted/legacy/fixed-data/light_industrial/light_industrial_ns.csv,read by the build
+raw_data/fixed_data/light_industrial/light_industrial_nt.csv,extracted/legacy/fixed-data/light_industrial/light_industrial_nt.csv,read by the build
+raw_data/fixed_data/light_industrial/light_industrial_nu.csv,extracted/legacy/fixed-data/light_industrial/light_industrial_nu.csv,read by the build
+raw_data/fixed_data/light_industrial/light_industrial_on.csv,extracted/legacy/fixed-data/light_industrial/light_industrial_on.csv,read by the build
+raw_data/fixed_data/light_industrial/light_industrial_pe.csv,extracted/legacy/fixed-data/light_industrial/light_industrial_pe.csv,read by the build
+raw_data/fixed_data/light_industrial/light_industrial_qc.csv,extracted/legacy/fixed-data/light_industrial/light_industrial_qc.csv,read by the build
+raw_data/fixed_data/light_industrial/light_industrial_sk.csv,extracted/legacy/fixed-data/light_industrial/light_industrial_sk.csv,read by the build
+raw_data/fixed_data/light_industrial/light_industrial_yt.csv,extracted/legacy/fixed-data/light_industrial/light_industrial_yt.csv,read by the build
+raw_data/fixed_data/light_industrial/sources/Hallbar - resource_supply_potential_for_renewable_natural_gas_in_bc_public_version.pdf,primary-sources/legacy/fixed-data/light_industrial/sources/Hallbar - resource_supply_potential_for_renewable_natural_gas_in_bc_public_version.pdf,"document, not read"
+raw_data/fixed_data/light_industrial/sources/Pembina - h2rng-webinar-2-slides.pdf,primary-sources/legacy/fixed-data/light_industrial/sources/Pembina - h2rng-webinar-2-slides.pdf,"document, not read"
+raw_data/fixed_data/market_share_limits/market_share_limits_ab.csv,extracted/legacy/fixed-data/market_share_limits/market_share_limits_ab.csv,read by the build
+raw_data/fixed_data/market_share_limits/market_share_limits_bc.csv,extracted/legacy/fixed-data/market_share_limits/market_share_limits_bc.csv,read by the build
+raw_data/fixed_data/market_share_limits/market_share_limits_mb.csv,extracted/legacy/fixed-data/market_share_limits/market_share_limits_mb.csv,read by the build
+raw_data/fixed_data/market_share_limits/market_share_limits_nb.csv,extracted/legacy/fixed-data/market_share_limits/market_share_limits_nb.csv,read by the build
+raw_data/fixed_data/market_share_limits/market_share_limits_nl.csv,extracted/legacy/fixed-data/market_share_limits/market_share_limits_nl.csv,read by the build
+raw_data/fixed_data/market_share_limits/market_share_limits_ns.csv,extracted/legacy/fixed-data/market_share_limits/market_share_limits_ns.csv,read by the build
+raw_data/fixed_data/market_share_limits/market_share_limits_nt.csv,extracted/legacy/fixed-data/market_share_limits/market_share_limits_nt.csv,read by the build
+raw_data/fixed_data/market_share_limits/market_share_limits_nu.csv,extracted/legacy/fixed-data/market_share_limits/market_share_limits_nu.csv,read by the build
+raw_data/fixed_data/market_share_limits/market_share_limits_on.csv,extracted/legacy/fixed-data/market_share_limits/market_share_limits_on.csv,read by the build
+raw_data/fixed_data/market_share_limits/market_share_limits_pe.csv,extracted/legacy/fixed-data/market_share_limits/market_share_limits_pe.csv,read by the build
+raw_data/fixed_data/market_share_limits/market_share_limits_qc.csv,extracted/legacy/fixed-data/market_share_limits/market_share_limits_qc.csv,read by the build
+raw_data/fixed_data/market_share_limits/market_share_limits_sk.csv,extracted/legacy/fixed-data/market_share_limits/market_share_limits_sk.csv,read by the build
+raw_data/fixed_data/market_share_limits/market_share_limits_yt.csv,extracted/legacy/fixed-data/market_share_limits/market_share_limits_yt.csv,read by the build
+raw_data/fixed_data/metal_smelting/metal_smelting_ab.csv,extracted/legacy/fixed-data/metal_smelting/metal_smelting_ab.csv,read by the build
+raw_data/fixed_data/metal_smelting/metal_smelting_bc.csv,extracted/legacy/fixed-data/metal_smelting/metal_smelting_bc.csv,read by the build
+raw_data/fixed_data/metal_smelting/metal_smelting_mb.csv,extracted/legacy/fixed-data/metal_smelting/metal_smelting_mb.csv,read by the build
+raw_data/fixed_data/metal_smelting/metal_smelting_nb.csv,extracted/legacy/fixed-data/metal_smelting/metal_smelting_nb.csv,read by the build
+raw_data/fixed_data/metal_smelting/metal_smelting_nl.csv,extracted/legacy/fixed-data/metal_smelting/metal_smelting_nl.csv,read by the build
+raw_data/fixed_data/metal_smelting/metal_smelting_on.csv,extracted/legacy/fixed-data/metal_smelting/metal_smelting_on.csv,read by the build
+raw_data/fixed_data/metal_smelting/metal_smelting_qc.csv,extracted/legacy/fixed-data/metal_smelting/metal_smelting_qc.csv,read by the build
+raw_data/fixed_data/mining/mining_ab.csv,extracted/legacy/fixed-data/mining/mining_ab.csv,read by the build
+raw_data/fixed_data/mining/mining_bc.csv,extracted/legacy/fixed-data/mining/mining_bc.csv,read by the build
+raw_data/fixed_data/mining/mining_mb.csv,extracted/legacy/fixed-data/mining/mining_mb.csv,read by the build
+raw_data/fixed_data/mining/mining_nb.csv,extracted/legacy/fixed-data/mining/mining_nb.csv,read by the build
+raw_data/fixed_data/mining/mining_nl.csv,extracted/legacy/fixed-data/mining/mining_nl.csv,read by the build
+raw_data/fixed_data/mining/mining_ns.csv,extracted/legacy/fixed-data/mining/mining_ns.csv,read by the build
+raw_data/fixed_data/mining/mining_nt.csv,extracted/legacy/fixed-data/mining/mining_nt.csv,read by the build
+raw_data/fixed_data/mining/mining_nu.csv,extracted/legacy/fixed-data/mining/mining_nu.csv,read by the build
+raw_data/fixed_data/mining/mining_on.csv,extracted/legacy/fixed-data/mining/mining_on.csv,read by the build
+raw_data/fixed_data/mining/mining_qc.csv,extracted/legacy/fixed-data/mining/mining_qc.csv,read by the build
+raw_data/fixed_data/mining/mining_sk.csv,extracted/legacy/fixed-data/mining/mining_sk.csv,read by the build
+raw_data/fixed_data/mining/mining_yt.csv,extracted/legacy/fixed-data/mining/mining_yt.csv,read by the build
+raw_data/fixed_data/natural_gas/natural_gas_ab.csv,extracted/legacy/fixed-data/natural_gas/natural_gas_ab.csv,read by the build
+raw_data/fixed_data/natural_gas/natural_gas_bc.csv,extracted/legacy/fixed-data/natural_gas/natural_gas_bc.csv,read by the build
+raw_data/fixed_data/natural_gas/natural_gas_can.csv,extracted/legacy/fixed-data/natural_gas/natural_gas_can.csv,read by the build
+raw_data/fixed_data/natural_gas/natural_gas_mb.csv,extracted/legacy/fixed-data/natural_gas/natural_gas_mb.csv,read by the build
+raw_data/fixed_data/natural_gas/natural_gas_nb.csv,extracted/legacy/fixed-data/natural_gas/natural_gas_nb.csv,read by the build
+raw_data/fixed_data/natural_gas/natural_gas_nl.csv,extracted/legacy/fixed-data/natural_gas/natural_gas_nl.csv,read by the build
+raw_data/fixed_data/natural_gas/natural_gas_ns.csv,extracted/legacy/fixed-data/natural_gas/natural_gas_ns.csv,read by the build
+raw_data/fixed_data/natural_gas/natural_gas_nt.csv,extracted/legacy/fixed-data/natural_gas/natural_gas_nt.csv,read by the build
+raw_data/fixed_data/natural_gas/natural_gas_nu.csv,extracted/legacy/fixed-data/natural_gas/natural_gas_nu.csv,read by the build
+raw_data/fixed_data/natural_gas/natural_gas_on.csv,extracted/legacy/fixed-data/natural_gas/natural_gas_on.csv,read by the build
+raw_data/fixed_data/natural_gas/natural_gas_pe.csv,extracted/legacy/fixed-data/natural_gas/natural_gas_pe.csv,read by the build
+raw_data/fixed_data/natural_gas/natural_gas_qc.csv,extracted/legacy/fixed-data/natural_gas/natural_gas_qc.csv,read by the build
+raw_data/fixed_data/natural_gas/natural_gas_row.csv,extracted/legacy/fixed-data/natural_gas/natural_gas_row.csv,read by the build
+raw_data/fixed_data/natural_gas/natural_gas_sk.csv,extracted/legacy/fixed-data/natural_gas/natural_gas_sk.csv,read by the build
+raw_data/fixed_data/natural_gas/natural_gas_yt.csv,extracted/legacy/fixed-data/natural_gas/natural_gas_yt.csv,read by the build
+raw_data/fixed_data/natural_gas/sources/CostofCapturingCO2fromIndustrialSources_071522.pdf.crdownload,primary-sources/legacy/fixed-data/natural_gas/sources/CostofCapturingCO2fromIndustrialSources_071522.pdf.crdownload,"document, not read"
+raw_data/fixed_data/natural_gas/sources/Zhang et al 2020.pdf,primary-sources/legacy/fixed-data/natural_gas/sources/Zhang et al 2020.pdf,"document, not read"
+raw_data/fixed_data/petroleum_crude/petroleum_crude_ab.csv,extracted/legacy/fixed-data/petroleum_crude/petroleum_crude_ab.csv,read by the build
+raw_data/fixed_data/petroleum_crude/petroleum_crude_bc.csv,extracted/legacy/fixed-data/petroleum_crude/petroleum_crude_bc.csv,read by the build
+raw_data/fixed_data/petroleum_crude/petroleum_crude_mb.csv,extracted/legacy/fixed-data/petroleum_crude/petroleum_crude_mb.csv,read by the build
+raw_data/fixed_data/petroleum_crude/petroleum_crude_nl.csv,extracted/legacy/fixed-data/petroleum_crude/petroleum_crude_nl.csv,read by the build
+raw_data/fixed_data/petroleum_crude/petroleum_crude_nt.csv,extracted/legacy/fixed-data/petroleum_crude/petroleum_crude_nt.csv,read by the build
+raw_data/fixed_data/petroleum_crude/petroleum_crude_on.csv,extracted/legacy/fixed-data/petroleum_crude/petroleum_crude_on.csv,read by the build
+raw_data/fixed_data/petroleum_crude/petroleum_crude_sk.csv,extracted/legacy/fixed-data/petroleum_crude/petroleum_crude_sk.csv,read by the build
+raw_data/fixed_data/petroleum_crude/sources/CostofCapturingCO2fromIndustrialSources_071522.pdf.crdownload,primary-sources/legacy/fixed-data/petroleum_crude/sources/CostofCapturingCO2fromIndustrialSources_071522.pdf.crdownload,"document, not read"
+raw_data/fixed_data/petroleum_refining/petroleum_refining_ab.csv,extracted/legacy/fixed-data/petroleum_refining/petroleum_refining_ab.csv,read by the build
+raw_data/fixed_data/petroleum_refining/petroleum_refining_bc.csv,extracted/legacy/fixed-data/petroleum_refining/petroleum_refining_bc.csv,read by the build
+raw_data/fixed_data/petroleum_refining/petroleum_refining_nb.csv,extracted/legacy/fixed-data/petroleum_refining/petroleum_refining_nb.csv,read by the build
+raw_data/fixed_data/petroleum_refining/petroleum_refining_nl.csv,extracted/legacy/fixed-data/petroleum_refining/petroleum_refining_nl.csv,read by the build
+raw_data/fixed_data/petroleum_refining/petroleum_refining_on.csv,extracted/legacy/fixed-data/petroleum_refining/petroleum_refining_on.csv,read by the build
+raw_data/fixed_data/petroleum_refining/petroleum_refining_qc.csv,extracted/legacy/fixed-data/petroleum_refining/petroleum_refining_qc.csv,read by the build
+raw_data/fixed_data/petroleum_refining/petroleum_refining_sk.csv,extracted/legacy/fixed-data/petroleum_refining/petroleum_refining_sk.csv,read by the build
+raw_data/fixed_data/petroleum_refining/sources/NETL-DOE-USA-2022 Cost of Capturing CO2 from Industrial Sources.pdf,primary-sources/legacy/fixed-data/petroleum_refining/sources/NETL-DOE-USA-2022 Cost of Capturing CO2 from Industrial Sources.pdf,"document, not read"
+raw_data/fixed_data/pulp_and_paper/pulp_and_paper_ab.csv,extracted/legacy/fixed-data/pulp_and_paper/pulp_and_paper_ab.csv,read by the build
+raw_data/fixed_data/pulp_and_paper/pulp_and_paper_bc.csv,extracted/legacy/fixed-data/pulp_and_paper/pulp_and_paper_bc.csv,read by the build
+raw_data/fixed_data/pulp_and_paper/pulp_and_paper_mb.csv,extracted/legacy/fixed-data/pulp_and_paper/pulp_and_paper_mb.csv,read by the build
+raw_data/fixed_data/pulp_and_paper/pulp_and_paper_nb.csv,extracted/legacy/fixed-data/pulp_and_paper/pulp_and_paper_nb.csv,read by the build
+raw_data/fixed_data/pulp_and_paper/pulp_and_paper_nl.csv,extracted/legacy/fixed-data/pulp_and_paper/pulp_and_paper_nl.csv,read by the build
+raw_data/fixed_data/pulp_and_paper/pulp_and_paper_ns.csv,extracted/legacy/fixed-data/pulp_and_paper/pulp_and_paper_ns.csv,read by the build
+raw_data/fixed_data/pulp_and_paper/pulp_and_paper_on.csv,extracted/legacy/fixed-data/pulp_and_paper/pulp_and_paper_on.csv,read by the build
+raw_data/fixed_data/pulp_and_paper/pulp_and_paper_pe.csv,extracted/legacy/fixed-data/pulp_and_paper/pulp_and_paper_pe.csv,read by the build
+raw_data/fixed_data/pulp_and_paper/pulp_and_paper_qc.csv,extracted/legacy/fixed-data/pulp_and_paper/pulp_and_paper_qc.csv,read by the build
+raw_data/fixed_data/pulp_and_paper/pulp_and_paper_sk.csv,extracted/legacy/fixed-data/pulp_and_paper/pulp_and_paper_sk.csv,read by the build
+raw_data/fixed_data/residential/residential_ab.csv,extracted/legacy/fixed-data/residential/residential_ab.csv,read by the build
+raw_data/fixed_data/residential/residential_bc.csv,extracted/legacy/fixed-data/residential/residential_bc.csv,read by the build
+raw_data/fixed_data/residential/residential_mb.csv,extracted/legacy/fixed-data/residential/residential_mb.csv,read by the build
+raw_data/fixed_data/residential/residential_nb.csv,extracted/legacy/fixed-data/residential/residential_nb.csv,read by the build
+raw_data/fixed_data/residential/residential_nl.csv,extracted/legacy/fixed-data/residential/residential_nl.csv,read by the build
+raw_data/fixed_data/residential/residential_ns.csv,extracted/legacy/fixed-data/residential/residential_ns.csv,read by the build
+raw_data/fixed_data/residential/residential_nt.csv,extracted/legacy/fixed-data/residential/residential_nt.csv,read by the build
+raw_data/fixed_data/residential/residential_nu.csv,extracted/legacy/fixed-data/residential/residential_nu.csv,"not read: extraction, script, or metadata"
+raw_data/fixed_data/residential/residential_on.csv,extracted/legacy/fixed-data/residential/residential_on.csv,read by the build
+raw_data/fixed_data/residential/residential_pe.csv,extracted/legacy/fixed-data/residential/residential_pe.csv,read by the build
+raw_data/fixed_data/residential/residential_qc.csv,extracted/legacy/fixed-data/residential/residential_qc.csv,read by the build
+raw_data/fixed_data/residential/residential_sk.csv,extracted/legacy/fixed-data/residential/residential_sk.csv,read by the build
+raw_data/fixed_data/residential/residential_yt.csv,extracted/legacy/fixed-data/residential/residential_yt.csv,read by the build
+raw_data/fixed_data/residential/sources/Bouillet MRM thesis 2024.pdf,primary-sources/legacy/fixed-data/residential/sources/Bouillet MRM thesis 2024.pdf,"document, not read"
+raw_data/fixed_data/residential/sources/h2rng-webinar-2-slides.pdf,primary-sources/legacy/fixed-data/residential/sources/h2rng-webinar-2-slides.pdf,"document, not read"
+raw_data/fixed_data/residential/sources/resource_supply_potential_for_renewable_natural_gas_in_bc_public_version.pdf,primary-sources/legacy/fixed-data/residential/sources/resource_supply_potential_for_renewable_natural_gas_in_bc_public_version.pdf,"document, not read"
+raw_data/fixed_data/transmission/transmission_cims.csv,extracted/legacy/fixed-data/transmission/transmission_cims.csv,read by the build
+raw_data/fixed_data/transportation_freight/source/Assessing Uncertainties of our Climate-Friendly Road Freight Options.pdf,primary-sources/legacy/fixed-data/transportation_freight/source/Assessing Uncertainties of our Climate-Friendly Road Freight Options.pdf,"document, not read"
+raw_data/fixed_data/transportation_freight/transportation_freight_ab.csv,extracted/legacy/fixed-data/transportation_freight/transportation_freight_ab.csv,read by the build
+raw_data/fixed_data/transportation_freight/transportation_freight_bc.csv,extracted/legacy/fixed-data/transportation_freight/transportation_freight_bc.csv,read by the build
+raw_data/fixed_data/transportation_freight/transportation_freight_mb.csv,extracted/legacy/fixed-data/transportation_freight/transportation_freight_mb.csv,read by the build
+raw_data/fixed_data/transportation_freight/transportation_freight_nb.csv,extracted/legacy/fixed-data/transportation_freight/transportation_freight_nb.csv,read by the build
+raw_data/fixed_data/transportation_freight/transportation_freight_nl.csv,extracted/legacy/fixed-data/transportation_freight/transportation_freight_nl.csv,read by the build
+raw_data/fixed_data/transportation_freight/transportation_freight_ns.csv,extracted/legacy/fixed-data/transportation_freight/transportation_freight_ns.csv,read by the build
+raw_data/fixed_data/transportation_freight/transportation_freight_nt.csv,extracted/legacy/fixed-data/transportation_freight/transportation_freight_nt.csv,read by the build
+raw_data/fixed_data/transportation_freight/transportation_freight_nu.csv,extracted/legacy/fixed-data/transportation_freight/transportation_freight_nu.csv,read by the build
+raw_data/fixed_data/transportation_freight/transportation_freight_on.csv,extracted/legacy/fixed-data/transportation_freight/transportation_freight_on.csv,read by the build
+raw_data/fixed_data/transportation_freight/transportation_freight_pe.csv,extracted/legacy/fixed-data/transportation_freight/transportation_freight_pe.csv,read by the build
+raw_data/fixed_data/transportation_freight/transportation_freight_qc.csv,extracted/legacy/fixed-data/transportation_freight/transportation_freight_qc.csv,read by the build
+raw_data/fixed_data/transportation_freight/transportation_freight_sk.csv,extracted/legacy/fixed-data/transportation_freight/transportation_freight_sk.csv,read by the build
+raw_data/fixed_data/transportation_freight/transportation_freight_yt.csv,extracted/legacy/fixed-data/transportation_freight/transportation_freight_yt.csv,read by the build
+raw_data/fixed_data/transportation_passenger/transportation_passenger_ab.csv,extracted/legacy/fixed-data/transportation_passenger/transportation_passenger_ab.csv,read by the build
+raw_data/fixed_data/transportation_passenger/transportation_passenger_bc.csv,extracted/legacy/fixed-data/transportation_passenger/transportation_passenger_bc.csv,read by the build
+raw_data/fixed_data/transportation_passenger/transportation_passenger_mb.csv,extracted/legacy/fixed-data/transportation_passenger/transportation_passenger_mb.csv,read by the build
+raw_data/fixed_data/transportation_passenger/transportation_passenger_nb.csv,extracted/legacy/fixed-data/transportation_passenger/transportation_passenger_nb.csv,read by the build
+raw_data/fixed_data/transportation_passenger/transportation_passenger_nl.csv,extracted/legacy/fixed-data/transportation_passenger/transportation_passenger_nl.csv,read by the build
+raw_data/fixed_data/transportation_passenger/transportation_passenger_ns.csv,extracted/legacy/fixed-data/transportation_passenger/transportation_passenger_ns.csv,read by the build
+raw_data/fixed_data/transportation_passenger/transportation_passenger_nt.csv,extracted/legacy/fixed-data/transportation_passenger/transportation_passenger_nt.csv,read by the build
+raw_data/fixed_data/transportation_passenger/transportation_passenger_nu.csv,extracted/legacy/fixed-data/transportation_passenger/transportation_passenger_nu.csv,read by the build
+raw_data/fixed_data/transportation_passenger/transportation_passenger_on.csv,extracted/legacy/fixed-data/transportation_passenger/transportation_passenger_on.csv,read by the build
+raw_data/fixed_data/transportation_passenger/transportation_passenger_pe.csv,extracted/legacy/fixed-data/transportation_passenger/transportation_passenger_pe.csv,read by the build
+raw_data/fixed_data/transportation_passenger/transportation_passenger_qc.csv,extracted/legacy/fixed-data/transportation_passenger/transportation_passenger_qc.csv,read by the build
+raw_data/fixed_data/transportation_passenger/transportation_passenger_sk.csv,extracted/legacy/fixed-data/transportation_passenger/transportation_passenger_sk.csv,read by the build
+raw_data/fixed_data/transportation_passenger/transportation_passenger_yt.csv,extracted/legacy/fixed-data/transportation_passenger/transportation_passenger_yt.csv,read by the build
+raw_data/fixed_data/waste/waste_ab.csv,extracted/legacy/fixed-data/waste/waste_ab.csv,read by the build
+raw_data/fixed_data/waste/waste_bc.csv,extracted/legacy/fixed-data/waste/waste_bc.csv,read by the build
+raw_data/fixed_data/waste/waste_mb.csv,extracted/legacy/fixed-data/waste/waste_mb.csv,read by the build
+raw_data/fixed_data/waste/waste_nb.csv,extracted/legacy/fixed-data/waste/waste_nb.csv,read by the build
+raw_data/fixed_data/waste/waste_nl.csv,extracted/legacy/fixed-data/waste/waste_nl.csv,read by the build
+raw_data/fixed_data/waste/waste_ns.csv,extracted/legacy/fixed-data/waste/waste_ns.csv,read by the build
+raw_data/fixed_data/waste/waste_nt.csv,extracted/legacy/fixed-data/waste/waste_nt.csv,read by the build
+raw_data/fixed_data/waste/waste_nu.csv,extracted/legacy/fixed-data/waste/waste_nu.csv,read by the build
+raw_data/fixed_data/waste/waste_on.csv,extracted/legacy/fixed-data/waste/waste_on.csv,read by the build
+raw_data/fixed_data/waste/waste_pe.csv,extracted/legacy/fixed-data/waste/waste_pe.csv,read by the build
+raw_data/fixed_data/waste/waste_qc.csv,extracted/legacy/fixed-data/waste/waste_qc.csv,read by the build
+raw_data/fixed_data/waste/waste_sk.csv,extracted/legacy/fixed-data/waste/waste_sk.csv,read by the build
+raw_data/fixed_data/waste/waste_yt.csv,extracted/legacy/fixed-data/waste/waste_yt.csv,read by the build
+raw_data/ipcc/V2_2_Ch2_Stationary_Combustion.pdf,primary-sources/ipcc/V2_2_Ch2_Stationary_Combustion.pdf,"document, not read"
+raw_data/nrcan/ceud/commercial/com_ab_e.xls,extracted/gov-can/nrcan/ceud/commercial/com_ab_e.xls,read by the build
+raw_data/nrcan/ceud/commercial/com_atl_e.xls,extracted/gov-can/nrcan/ceud/commercial/com_atl_e.xls,read by the build
+raw_data/nrcan/ceud/commercial/com_bct_e.xls,extracted/gov-can/nrcan/ceud/commercial/com_bct_e.xls,read by the build
+raw_data/nrcan/ceud/commercial/com_mb_e.xls,extracted/gov-can/nrcan/ceud/commercial/com_mb_e.xls,read by the build
+raw_data/nrcan/ceud/commercial/com_on_e.xls,extracted/gov-can/nrcan/ceud/commercial/com_on_e.xls,read by the build
+raw_data/nrcan/ceud/commercial/com_qc_e.xls,extracted/gov-can/nrcan/ceud/commercial/com_qc_e.xls,read by the build
+raw_data/nrcan/ceud/commercial/com_sk_e.xls,extracted/gov-can/nrcan/ceud/commercial/com_sk_e.xls,read by the build
+raw_data/nrcan/ceud/residential/Read Me.txt,extracted/gov-can/nrcan/ceud/residential/Read Me.txt,"not read: extraction, script, or metadata"
+raw_data/nrcan/ceud/residential/res_ab_e.xls,extracted/gov-can/nrcan/ceud/residential/res_ab_e.xls,read by the build
+raw_data/nrcan/ceud/residential/res_bc_e.xls,extracted/gov-can/nrcan/ceud/residential/res_bc_e.xls,read by the build
+raw_data/nrcan/ceud/residential/res_ca_e_32.xls,extracted/gov-can/nrcan/ceud/residential/res_ca_e_32.xls,read by the build
+raw_data/nrcan/ceud/residential/res_mb_e.xls,extracted/gov-can/nrcan/ceud/residential/res_mb_e.xls,read by the build
+raw_data/nrcan/ceud/residential/res_nb_e.xls,extracted/gov-can/nrcan/ceud/residential/res_nb_e.xls,read by the build
+raw_data/nrcan/ceud/residential/res_nl_e.xls,extracted/gov-can/nrcan/ceud/residential/res_nl_e.xls,read by the build
+raw_data/nrcan/ceud/residential/res_ns_e.xls,extracted/gov-can/nrcan/ceud/residential/res_ns_e.xls,read by the build
+raw_data/nrcan/ceud/residential/res_on_e.xls,extracted/gov-can/nrcan/ceud/residential/res_on_e.xls,read by the build
+raw_data/nrcan/ceud/residential/res_pe_e.xls,extracted/gov-can/nrcan/ceud/residential/res_pe_e.xls,read by the build
+raw_data/nrcan/ceud/residential/res_qc_e.xls,extracted/gov-can/nrcan/ceud/residential/res_qc_e.xls,read by the build
+raw_data/nrcan/ceud/residential/res_sk_e.xls,extracted/gov-can/nrcan/ceud/residential/res_sk_e.xls,read by the build
+raw_data/nrcan/ceud/residential/res_tr_e.xls,extracted/gov-can/nrcan/ceud/residential/res_tr_e.xls,read by the build
+raw_data/nrcan/ceud/transportation/tran_ab_e.xls,extracted/gov-can/nrcan/ceud/transportation/tran_ab_e.xls,read by the build
+raw_data/nrcan/ceud/transportation/tran_bct_e.xls,extracted/gov-can/nrcan/ceud/transportation/tran_bct_e.xls,read by the build
+raw_data/nrcan/ceud/transportation/tran_ca_e.xls,extracted/gov-can/nrcan/ceud/transportation/tran_ca_e.xls,read by the build
+raw_data/nrcan/ceud/transportation/tran_mb_e.xls,extracted/gov-can/nrcan/ceud/transportation/tran_mb_e.xls,read by the build
+raw_data/nrcan/ceud/transportation/tran_nb_e.xls,extracted/gov-can/nrcan/ceud/transportation/tran_nb_e.xls,read by the build
+raw_data/nrcan/ceud/transportation/tran_nl_e.xls,extracted/gov-can/nrcan/ceud/transportation/tran_nl_e.xls,read by the build
+raw_data/nrcan/ceud/transportation/tran_ns_e.xls,extracted/gov-can/nrcan/ceud/transportation/tran_ns_e.xls,read by the build
+raw_data/nrcan/ceud/transportation/tran_on_e.xls,extracted/gov-can/nrcan/ceud/transportation/tran_on_e.xls,read by the build
+raw_data/nrcan/ceud/transportation/tran_pe_e.xls,extracted/gov-can/nrcan/ceud/transportation/tran_pe_e.xls,read by the build
+raw_data/nrcan/ceud/transportation/tran_qc_e.xls,extracted/gov-can/nrcan/ceud/transportation/tran_qc_e.xls,read by the build
+raw_data/nrcan/ceud/transportation/tran_sk_e.xls,extracted/gov-can/nrcan/ceud/transportation/tran_sk_e.xls,read by the build
+raw_data/source_details.xlsx,primary-sources/source-details.xlsx,the old sources list; not read
+raw_data/stats_can/activity/18100267.csv,extracted/gov-can/statcan/activity/18100267.csv,read by the build
+raw_data/stats_can/activity/18100268.csv,extracted/gov-can/statcan/activity/18100268.csv,read by the build
+raw_data/stats_can/activity/25100014.csv,extracted/gov-can/statcan/activity/25100014.csv,read by the build
+raw_data/stats_can/activity/25100015.csv,extracted/gov-can/statcan/activity/25100015.csv,read by the build
+raw_data/stats_can/activity/25100063.csv,extracted/gov-can/statcan/activity/25100063.csv,read by the build
+raw_data/stats_can/activity/36100488.csv,extracted/gov-can/statcan/activity/36100488.csv,read by the build
+raw_data/stats_can/activity/36100711.csv,extracted/gov-can/statcan/activity/36100711.csv,read by the build
+raw_data/stats_can/activity/coal_production/25100046.csv,extracted/gov-can/statcan/activity/coal-production/25100046.csv,read by the build
+raw_data/stats_can/activity/coal_production/25100048.csv,extracted/gov-can/statcan/activity/coal-production/25100048.csv,read by the build
+raw_data/stats_can/cpi/18100005.xlsx,extracted/gov-can/statcan/cpi/18100005.xlsx,read by the build
+raw_data/stats_can/electricity_generation/25100028.csv,extracted/gov-can/statcan/electricity-generation/25100028.csv,read by the build
+raw_data/stats_can/electricity_generation/25100028_MetaData.csv,extracted/gov-can/statcan/electricity-generation/25100028_MetaData.csv,"not read: extraction, script, or metadata"
+raw_data/stats_can/electricity_generation/25100084.csv,extracted/gov-can/statcan/electricity-generation/25100084.csv,read by the build
+raw_data/stats_can/electricity_generation/25100084_MetaData.csv,extracted/gov-can/statcan/electricity-generation/25100084_MetaData.csv,"not read: extraction, script, or metadata"
+raw_data/stats_can/gdp/36100222.csv,extracted/gov-can/statcan/gdp/36100222.csv,read by the build
+raw_data/stats_can/market_shares/2010002501-eng.csv,extracted/gov-can/statcan/market-shares/2010002501-eng.csv,read by the build
+raw_data/stats_can/population/1710000901.csv,extracted/gov-can/statcan/population/1710000901.csv,read by the build
+raw_data/stats_can/resd/25100029.csv,extracted/gov-can/statcan/resd/25100029.csv,read by the build
+raw_data/stats_can/resd/2510003101-eng.csv,extracted/gov-can/statcan/resd/2510003101-eng.csv,read by the build
+raw_data/stats_can/resd/CEEDC_national energy_2000-2024.xlsx,extracted/gov-can/statcan/resd/CEEDC_national energy_2000-2024.xlsx,read by the build
+raw_data/stats_can/resd/RESD_filled_2000-2024.xlsx,extracted/gov-can/statcan/resd/RESD_filled_2000-2024.xlsx,read by the build
+raw_data/stats_can/resd/wood_waste_crosswalk.csv,extracted/gov-can/statcan/resd/wood_waste_crosswalk.csv,"not read: extraction, script, or metadata"
 mappings_conversions/README.md,config/README.md,
 mappings_conversions/control.py,config/control.py,
 mappings_conversions/cer_benchmark-prices_2000-2005.csv,config/interim-source/cer_benchmark-price_2000-2005.csv,
@@ -28,3 +643,41 @@ model_inputs/defaults/defaults_Parameters.csv,config/model-default/default-param
 model_inputs/defaults/defaults_Lists.csv,config/model-default/default-list.csv,hand-made: now in git
 model_inputs/calibration_outputs/fic-proxy-map.csv,config/calibration/fic-proxy-map.csv,hand-made: now in git
 model_inputs/calibration_outputs/fic-decline-techs.csv,config/calibration/fic-decline-techs.csv,hand-made: now in git
+processed_data/technology_database/,processed/technology-database/,
+processed_data/activity/coal_mining.csv,processed/activity/coal-mining.csv,
+processed_data/activity/electricity.csv,processed/activity/electricity.csv,
+processed_data/activity/emissions_drivers.csv,processed/activity/emissions-drivers.csv,
+processed_data/activity/gas_production.csv,processed/activity/gas-production.csv,
+processed_data/activity/heavy_industry.csv,processed/activity/heavy-industry.csv,
+processed_data/activity/light_industrial.csv,processed/activity/light-industrial.csv,
+processed_data/activity/oil_production.csv,processed/activity/oil-production.csv,
+processed_data/activity/petroleum_refining.csv,processed/activity/petroleum-refining.csv,
+processed_data/cer/benchmark-prices-2026.csv,processed/gov-can/cer/benchmark-prices-2026.csv,
+processed_data/cer/cer_resd_demand.csv,processed/gov-can/cer/cer-resd-demand.csv,
+processed_data/cer/end-use-demand-2026.csv,processed/gov-can/cer/end-use-demand-2026.csv,
+processed_data/cer/end-use-prices-2026.csv,processed/gov-can/cer/end-use-prices-2026.csv,
+processed_data/cer/end-use-prices_carbon-2026.csv,processed/gov-can/cer/end-use-prices_carbon-2026.csv,
+processed_data/cer/macro-indicators-2026.csv,processed/gov-can/cer/macro-indicators-2026.csv,
+processed_data/deflator_exchange/currency_deflator.csv,processed/currency/currency-deflator.csv,
+processed_data/deflator_exchange/currency_exchange.csv,processed/currency/currency-exchange.csv,
+processed_data/eccc/nir/nir_crossswalk_cims.csv,processed/gov-can/eccc/nir/nir-crosswalk-cims.csv,
+processed_data/eccc/nir/nir_to_cims.csv,processed/gov-can/eccc/nir/nir-to-cims.csv,
+processed_data/eia/mecs_steam_shares.csv,processed/gov-usa/eia/mecs-steam-shares.csv,
+processed_data/emission_factors/emission_factors.csv,processed/emission-factors/emission-factors.csv,
+processed_data/emission_factors/emission_factors_cims.csv,processed/emission-factors/emission-factors-cims.csv,
+processed_data/energy_prices/energy_price_multipliers.csv,processed/energy-prices/energy-price-multipliers.csv,
+processed_data/energy_prices/energy_prices.csv,processed/energy-prices/energy-prices.csv,
+processed_data/nrcan/ceud/commercial.csv,processed/gov-can/nrcan/ceud/commercial.csv,
+processed_data/nrcan/ceud/residential.csv,processed/gov-can/nrcan/ceud/residential.csv,
+processed_data/nrcan/ceud/residential_heating_intensity.csv,processed/gov-can/nrcan/ceud/residential-heating-intensity.csv,
+processed_data/nrcan/ceud/transportation_freight.csv,processed/gov-can/nrcan/ceud/transportation-freight.csv,
+processed_data/nrcan/ceud/transportation_passenger.csv,processed/gov-can/nrcan/ceud/transportation-passenger.csv,
+processed_data/stats_can/biomass_demand.csv,processed/gov-can/statcan/biomass-demand.csv,
+processed_data/stats_can/pop_gdp.csv,processed/gov-can/statcan/pop-gdp.csv,
+processed_data/stats_can/refinery_fuel.csv,processed/gov-can/statcan/refinery-fuel.csv,
+processed_data/stats_can/resd_steam_fuel_shares.csv,processed/gov-can/statcan/resd-steam-fuel-shares.csv,
+processed_data/steam/steam_fuel_targets.csv,processed/steam/steam-fuel-targets.csv,
+processed_data/eccc/NIR_Suppressed_Solved.csv,processed/gov-can/eccc/nir-suppressed-solved.csv,written outside the runners
+processed_data/eccc/nir/nir_walkthrough_cims_leaves.csv,processed/gov-can/eccc/nir/nir-walkthrough-cims-leaves.csv,written outside the runners
+processed_data/eccc/nir/nir_walkthrough_cims.csv,processed/gov-can/eccc/nir/nir-walkthrough-cims.csv,written outside the runners
+processed_data/steam_chp/chp_shares.csv,processed/steam-chp/chp-shares.csv,written outside the runners

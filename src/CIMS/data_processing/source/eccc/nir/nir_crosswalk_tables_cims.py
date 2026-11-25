@@ -46,8 +46,8 @@ from CIMS.data_processing.utils.controls_conversions import parse_cell
 
 # ── Configuration ─────────────────────────────────────────────────────────────
 
-DATA_DIR = paths.RAW / 'eccc/nir'
-OUTPUT   = paths.PROCESSED / 'eccc/nir/nir_crossswalk_cims.csv'
+DATA_DIR = paths.EXTRACTED / 'gov-can/eccc/nir'
+OUTPUT   = paths.PROCESSED / 'gov-can/eccc/nir/nir-crosswalk-cims.csv'
 
 YEARS     = [2000, 2005, 2010, 2015, 2020]
 YEAR_ROWS = [0, 59, 118, 177, 236]

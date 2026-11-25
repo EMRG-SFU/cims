@@ -29,15 +29,15 @@ from CIMS.data_processing.utils.controls_conversions import DATA_START, PROJECTI
 # Configuration
 # Processed CER files: carbon removed from end-use prices and history back to
 # 2000 (see source/cer/cer_source_files.py and source/cer/README.md).
-CER_DIR   = paths.PROCESSED / 'cer'
+CER_DIR   = paths.PROCESSED / 'gov-can/cer'
 MACRO_FILE          = find_cer_file(CER_DIR, 'macro-indicators')
 BENCHMARK_FILE      = find_cer_file(CER_DIR, 'benchmark-prices')
 END_USE_PRICES_FILE = find_cer_file(CER_DIR, 'end-use-prices')
 END_USE_DEMAND_FILE = find_cer_file(CER_DIR, 'end-use-demand')
-CIMS_PRICES_FILE = paths.RAW / 'energy_prices/CIMS Prices and Calcs.xlsx'
-RETAIL_FUEL_FILE = paths.RAW / 'energy_prices/alternative_fuels_data_center/10326_retail_fuel_prices_1-23-26.xlsx'
-RENEWABLE_DIESEL_FILE = paths.RAW / 'energy_prices/alternative_fuels_data_center/10969_renewable_diesel_prices_2-3-26.xlsx'
-OUTPUT_DIR = paths.PROCESSED / 'energy_prices'
+CIMS_PRICES_FILE = paths.LEGACY / 'energy-prices/CIMS Prices and Calcs.xlsx'
+RETAIL_FUEL_FILE = paths.EXTRACTED / 'gov-usa/doe/alternative-fuels-data-center/10326_retail_fuel_prices_1-23-26.xlsx'
+RENEWABLE_DIESEL_FILE = paths.EXTRACTED / 'gov-usa/doe/alternative-fuels-data-center/10969_renewable_diesel_prices_2-3-26.xlsx'
+OUTPUT_DIR = paths.PROCESSED / 'energy-prices'
 
 # Every price is converted to this basis (with the deflator and exchange tables
 # CIMS uses; see utils/currency.py) and labelled in CIMS's YYYY_CCC form. The
@@ -851,7 +851,7 @@ def main() -> pd.DataFrame:
     print(f"   Years covered:       {output_df['Year'].min()} – {output_df['Year'].max()}")
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    output_path = OUTPUT_DIR / 'energy_prices.csv'
+    output_path = OUTPUT_DIR / 'energy-prices.csv'
     output_df.to_csv(output_path, index=False)
     print(f"   Saved to:            {output_path}")
 

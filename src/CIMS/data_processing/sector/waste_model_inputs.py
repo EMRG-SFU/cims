@@ -4,7 +4,7 @@ Extract Waste model input data and save to CIMS-formatted CSV.
 Sources
 -------
 Fixed structural parameters
-    raw_data/fixed_data/waste/*.csv
+    extracted/legacy/fixed-data/waste/*.csv
     Flattened from wide (2000–2050 year columns) to long format via
     utils/flatten_fixed_data.
     Encodes the full hierarchy:

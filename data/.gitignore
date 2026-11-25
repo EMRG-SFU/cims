@@ -1,15 +1,18 @@
-# Raw source data — store locally or on SharePoint
-raw_data/*
-!raw_data/.gitkeep
+# Documents as obtained, and their extractions: local, SharePoint, or FRDR (conventions §2)
+primary-sources/
+extracted/
 
-# Generated outputs — do not commit
-processed_data/**/*.csv
-calibration/**/*.csv
-model_inputs/**/*.csv
-model_inputs/**/*.xlsx
+# Written by the build, never committed (Q2): processed/ and model/, apart from model/'s README
+processed/
+model/*
+!model/README.md
 
-# The technology database build also writes markdown reviews and a workbook beside its CSVs
-processed_data/technology_database/
+# The folders from before the data layout move (phase 3). Keep these until every worktree
+# has run tools/migrate_data_layout.py, so nothing left in them gets committed by accident.
+/raw_data/
+/processed_data/
+/model_inputs/
+/calibration/
 
 # Python cache
 __pycache__/

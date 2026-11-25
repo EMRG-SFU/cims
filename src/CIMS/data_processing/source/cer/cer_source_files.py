@@ -1,8 +1,8 @@
 """
 CER source files: carbon-free end-use prices and history back to 2000.
 
-Reads the Canada's Energy Future (CEF) open-data files in raw_data/cer/ and
-writes the versions the rest of the pipeline reads to processed_data/cer/,
+Reads the Canada's Energy Future (CEF) open-data files in extracted/gov-can/cer/ and
+writes the versions the rest of the pipeline reads to processed/gov-can/cer/,
 under the same file names (for example end-use-prices-2026.csv):
 
   end-use-prices   Carbon costs removed, 2000-2004 back-cast, and reshaped to
@@ -41,17 +41,17 @@ from CIMS.data_processing.common import paths
 from CIMS.data_processing.utils.extractors.cer import find_cer_file
 
 # ── paths ─────────────────────────────────────────────────────────────────────
-RAW_DIR       = paths.RAW / 'cer'
-OUT_DIR       = paths.PROCESSED / 'cer'
+RAW_DIR       = paths.EXTRACTED / 'gov-can/cer'
+OUT_DIR       = paths.PROCESSED / 'gov-can/cer'
 MAPPINGS      = paths.CONFIG / 'mapping'
 CARBON_FILE   = paths.CONFIG / 'interim-source/cer_carbon-price.csv'
 EF_FILE       = paths.CONFIG / 'interim-source/cer_emission-factor.csv'
 BENCH_HISTORY = paths.CONFIG / 'interim-source/cer_benchmark-price_2000-2005.csv'
-CPI_FILE      = paths.RAW / 'stats_can/cpi/18100005.xlsx'
-POP_FILE      = paths.RAW / 'stats_can/population/1710000901.csv'
-GDP_FILE      = paths.RAW / 'stats_can/gdp/36100222.csv'
-DEFLATOR_FILE = paths.PROCESSED / 'deflator_exchange/currency_deflator.csv'
-EXCHANGE_FILE = paths.PROCESSED / 'deflator_exchange/currency_exchange.csv'
+CPI_FILE      = paths.EXTRACTED / 'gov-can/statcan/cpi/18100005.xlsx'
+POP_FILE      = paths.EXTRACTED / 'gov-can/statcan/population/1710000901.csv'
+GDP_FILE      = paths.EXTRACTED / 'gov-can/statcan/gdp/36100222.csv'
+DEFLATOR_FILE = paths.PROCESSED / 'currency/currency-deflator.csv'
+EXCHANGE_FILE = paths.PROCESSED / 'currency/currency-exchange.csv'
 
 FIRST_YEAR  = 2000          # extend every file back to this year
 CER_START   = 2005          # first year in the CER open data

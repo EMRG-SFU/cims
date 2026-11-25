@@ -29,7 +29,7 @@ There are three distinct file types produced:
 Sources
 -------
 Fixed structural parameters
-    raw_data/fixed_data/natural_gas/natural_gas_{region}.csv
+    extracted/legacy/fixed-data/natural_gas/natural_gas_{region}.csv
     Flattened from wide (2000–2050 year columns) to long format.
     Encodes the full Natural Gas hierarchy (AB, BC, SK):
       Natural Gas (Sector)  [service_request: gross total production]

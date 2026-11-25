@@ -9,7 +9,7 @@ load_feedstock_demand()) exactly and projects future years from ratios held
 flat at their recent average.
 
 Structure written (mirrors Commercial -> Buildings' existing "Fixed Ratio"
-grouping node -- see raw_data/fixed_data/commercial/commercial_ab.csv lines
+grouping node -- see extracted/legacy/fixed-data/commercial/commercial_ab.csv lines
 5-10 -- and Buildings' own fan-out to Lighting/Refrigeration/etc., lines
 7-12: a Fixed-Ratio service requesting each of several targets directly,
 with no technology layer, since there's no real technology choice here --

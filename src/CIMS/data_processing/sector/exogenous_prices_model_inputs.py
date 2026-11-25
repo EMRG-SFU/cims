@@ -7,7 +7,7 @@ CIMS-formatted CSVs (one per region).
 Sources
 -------
 Fixed structural parameters
-    raw_data/fixed_data/exogenous_prices/exogenous prices_{region}.csv
+    extracted/legacy/fixed-data/exogenous_prices/exogenous prices_{region}.csv
     Flattened from wide (2000–2050 year columns) to long format.
 
 Energy prices  (lcc_financial rows)

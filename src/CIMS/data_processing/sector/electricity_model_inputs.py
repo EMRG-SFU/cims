@@ -7,7 +7,7 @@ price multipliers into CIMS-formatted CSVs (one per region).
 Sources
 -------
 Fixed structural parameters
-    raw_data/fixed_data/electricity/electricity_{region}.csv
+    extracted/legacy/fixed-data/electricity/electricity_{region}.csv
     Flattened from wide (2000–2050 year columns) to long format.
     All regions (provinces and territories NT, NU, YT alike) include
     Base Load / Shoulder Load / Peak Load sub-services under Utility
@@ -17,7 +17,7 @@ Fixed structural parameters
     in source/activity/electricity.py (YT ← ON, NT ← SK, NU ← AB).
 
 Electricity activity / load fractions
-    processed_data/activity/electricity.csv
+    processed/activity/electricity.csv
     Variables:
         Electricity.Utility Generation.Base Load    → % MWh → Utility Generation service_request
         Electricity.Utility Generation.Shoulder Load → % MWh → Utility Generation service_request

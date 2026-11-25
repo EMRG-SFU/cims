@@ -13,7 +13,7 @@ except the data root itself.
 Usage
 -----
     from CIMS.data_processing.common import paths
-    paths.RAW / 'stats_can/18100005.xlsx'
+    paths.EXTRACTED / 'gov-can/statcan/cpi/18100005.xlsx'
 
     python -m CIMS.data_processing.common.paths            # print the roots
     python -m CIMS.data_processing.common.paths --strict   # and fail on a mismatch
@@ -51,21 +51,23 @@ DATA_ROOT = _data_root()
 DATA_ROOT_FROM_ENV = bool(os.environ.get(ENV_DATA_ROOT))
 
 # The layers (conventions §2). Phase 3 moves the folders (tools/migrate_data_layout.py).
-RAW = DATA_ROOT / 'raw_data'                                # sources as obtained, and extractions
-FIXED_DATA = RAW / 'fixed_data'                             # the JCIMS model data (phase 13 retires it)
+PRIMARY_SOURCES = DATA_ROOT / 'primary-sources'            # documents as obtained; the build never reads them
+EXTRACTED = DATA_ROOT / 'extracted'                         # as-published values, by publisher (gov-can/statcan/, ...)
+LEGACY = EXTRACTED / 'legacy'                               # JCIMS-era inputs
+FIXED_DATA = LEGACY / 'fixed-data'                          # the JCIMS model data (phase 13 retires it)
 CONFIG = DATA_ROOT / 'config'                               # hand-edited records, in git
 ASSUMPTIONS = CONFIG / 'assumption'                         # hand-set growth rates and shares
 DEFAULTS = CONFIG / 'model-default'                         # hand-made model defaults
 CALIBRATION_CONFIG = CONFIG / 'calibration'                 # the FIC proxy map and decline list
 TECHDB_RECORDS = CONFIG / 'technology-database'             # the technology database's hand-edited records
-PROCESSED = DATA_ROOT / 'processed_data'                    # written by the source stages
+PROCESSED = DATA_ROOT / 'processed'                         # written by the source stages
 MODEL_INPUTS = DATA_ROOT / 'model_inputs'
 MODEL = MODEL_INPUTS / 'model'                              # the model files CIMS reads
 POLICIES = MODEL_INPUTS / 'policies'                        # policy files (hand-made for now)
 CALIBRATION_OUTPUTS = MODEL_INPUTS / 'calibration_outputs'  # written by calibration: fitted FICs and lifetimes
 CALIBRATION_TARGETS = DATA_ROOT / 'calibration'             # calibration targets, written by the pipeline
-TECHDB_EXTRACTED = RAW / 'technology_database'              # its extractions and manifest
-TECHDB_OUTPUT = PROCESSED / 'technology_database'           # its build output
+TECHDB_EXTRACTED = EXTRACTED / 'technology-database'        # its extractions and manifest
+TECHDB_OUTPUT = PROCESSED / 'technology-database'           # its build output
 RESULTS = REPO_ROOT / 'results'                             # model results and logs (gitignored)
 
 

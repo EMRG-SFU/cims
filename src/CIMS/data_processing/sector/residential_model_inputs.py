@@ -7,7 +7,7 @@ CIMS-formatted CSVs (one per region).
 Sources
 -------
 Fixed structural parameters
-    raw_data/fixed_data/residential/residential_{region}.csv
+    extracted/legacy/fixed-data/residential/residential_{region}.csv
     Flattened from wide (2000–2050 year columns) to long format.
     One file per region — no template substitution required.
 

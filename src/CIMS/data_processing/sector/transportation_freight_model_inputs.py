@@ -7,7 +7,7 @@ CIMS-formatted CSVs (one per region).
 Sources
 -------
 Fixed structural parameters
-    raw_data/fixed_data/transportation_freight/transportation_freight_{region}.csv
+    extracted/legacy/fixed-data/transportation_freight/transportation_freight_{region}.csv
     Flattened from wide (2000–2050 year columns) to long format.
 
 Total k*tkm  (service_request rows, Region level)
@@ -15,7 +15,7 @@ Total k*tkm  (service_request rows, Region level)
     Placed before the Transportation Freight sector block.
 
 Energy price multipliers  (multiplier_price rows)
-    processed_data/energy_prices/energy_price_multipliers.csv
+    processed/energy-prices/energy-price-multipliers.csv
     Inserted after the sector header (service_provide / competition).
 
 Off-Road service_request  (%)

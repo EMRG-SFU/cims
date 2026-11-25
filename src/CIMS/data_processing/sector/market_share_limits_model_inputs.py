@@ -4,7 +4,7 @@ Flatten market share limit fixed data to CIMS-formatted CSV.
 Sources
 -------
 Fixed structural parameters
-    raw_data/fixed_data/market_share_limits/*.csv
+    extracted/legacy/fixed-data/market_share_limits/*.csv
     Flattened from wide (2000–2050 year columns) to long format via
     utils/flatten_fixed_data.
 

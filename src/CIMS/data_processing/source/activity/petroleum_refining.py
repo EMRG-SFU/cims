@@ -82,8 +82,8 @@ CAGR_OVERRIDES: dict[str, tuple[float, ...]] = {
 
 import pandas as _pd   # used only in the suppression-imputation step
 
-OLD_REFINERY_FILE = paths.RAW / 'stats_can/activity/25100014.csv'
-NEW_REFINERY_FILE = paths.RAW / 'stats_can/activity/25100063.csv'
+OLD_REFINERY_FILE = paths.EXTRACTED / 'gov-can/statcan/activity/25100014.csv'
+NEW_REFINERY_FILE = paths.EXTRACTED / 'gov-can/statcan/activity/25100063.csv'
 
 _NL_FRAC = 0.2439          # NL share of old-file "Atlantic provinces" total
 _NB_FRAC = 1.0 - _NL_FRAC
@@ -336,7 +336,7 @@ def main() -> pl.DataFrame:
     print(f'   Regions:             {sorted(refinery_output["Region"].unique().to_list())}')
     print(f'   Years covered:       {refinery_output["Year"].min()} – {refinery_output["Year"].max()}')
 
-    refinery_path = OUTPUT_DIR / 'petroleum_refining.csv'
+    refinery_path = OUTPUT_DIR / 'petroleum-refining.csv'
     refinery_path.parent.mkdir(parents=True, exist_ok=True)
     refinery_output.write_csv(refinery_path)
     print(f'   Saved to:            {refinery_path}')

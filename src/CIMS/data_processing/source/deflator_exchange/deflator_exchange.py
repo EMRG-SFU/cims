@@ -2,11 +2,11 @@
 Currency deflator and exchange rate table builder.
 
 Converts the raw GDP deflator and exchange rate downloads in
-``data/raw_data/deflator_exchange/`` into the two reference tables that back
+``data/extracted/currency/`` into the two reference tables that back
 ``CIMS.unit_conversion.CurrencyConverter``:
 
-    data/processed_data/deflator_exchange/currency_deflator.csv   Context = ISO currency code
-    data/processed_data/deflator_exchange/currency_exchange.csv   Context = <TARGET>_per_<SOURCE>
+    data/processed/currency/currency-deflator.csv   Context = ISO currency code
+    data/processed/currency/currency-exchange.csv   Context = <TARGET>_per_<SOURCE>
 
 Both use the ``Context, Year, Value`` contract that ``unit_conversion._load_table``
 expects, plus a ``Source`` column the loader ignores.
@@ -116,8 +116,8 @@ from CIMS.data_processing.common import paths
 # Configuration
 # ---------------------------------------------------------------------------
 
-RAW_DIR = paths.RAW / 'deflator_exchange'
-OUT_DIR = paths.PROCESSED / 'deflator_exchange'
+RAW_DIR = paths.EXTRACTED / 'currency'
+OUT_DIR = paths.PROCESSED / 'currency'
 
 WORLD_BANK_FILE = RAW_DIR / 'world-bank_2026_gdp-deflator.csv'
 ECB_FILE = RAW_DIR / 'ecb_2026_gdp-deflator.csv'
@@ -127,8 +127,8 @@ FX_CURRENT_FILE = RAW_DIR / 'can-statcan_2026_fx-rates-post-2017.csv'
 
 OECD_FORECAST_FILE = RAW_DIR / 'oecd_2026_gdp-deflator-forecast.csv'
 
-DEFLATOR_OUT = OUT_DIR / 'currency_deflator.csv'
-EXCHANGE_OUT = OUT_DIR / 'currency_exchange.csv'
+DEFLATOR_OUT = OUT_DIR / 'currency-deflator.csv'
+EXCHANGE_OUT = OUT_DIR / 'currency-exchange.csv'
 
 START_YEAR = None   # None: every year the raw files carry (2026-10-02; was 2000)
 
@@ -373,7 +373,7 @@ def build_deflator_table(start_year: int | None = START_YEAR,
     """Assemble the full deflator table, one row per (currency, year).
 
     raw_dir: read the raw files from there instead of RAW_DIR (the technology
-    database keeps them in its own deposit, data/raw_data/technology_database/currency/).
+    database keeps them in its own deposit, data/extracted/technology-database/currency/).
     forecast: extend past the last historical year with the OECD deflator path.
     True requires the OECD file, False skips it, None (default) extends only if
     the file is present, so a deposit without it still builds history alone.

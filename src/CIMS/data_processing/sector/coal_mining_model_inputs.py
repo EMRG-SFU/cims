@@ -7,7 +7,7 @@ CIMS-formatted CSVs (one per region).
 Sources
 -------
 Fixed structural parameters
-    raw_data/fixed_data/coal_mining/coal_mining_{region}.csv
+    extracted/legacy/fixed-data/coal_mining/coal_mining_{region}.csv
     Flattened from wide (2000–2050 year columns) to long format.
     Encodes the full Coal Mining hierarchy:
       Coal Mining (Sector)

@@ -7,12 +7,12 @@ CIMS-formatted CSVs (one per region).
 Sources
 -------
 Fixed structural parameters
-    raw_data/fixed_data/biodiesel/biodiesel_{region}.csv
+    extracted/legacy/fixed-data/biodiesel/biodiesel_{region}.csv
     Flattened from wide (2000–2050 year columns) to long format.
     AT is used as template for NL/PE/NS/NB; BC is used for YT/NT/NU.
 
 Energy price multipliers  (multiplier_price rows)
-    processed_data/energy_prices/energy_price_multipliers.csv
+    processed/energy-prices/energy-price-multipliers.csv
     Inserted after the Commercial sector header (service_provide / competition).
 
 Output columns

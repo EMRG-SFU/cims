@@ -10,7 +10,7 @@ target year's rate.
 The factor is not symmetric and must not be chained or reversed: convert once,
 from the currency the estimate was published in. The two tables are built at each build with CIMS's own builder
 (CIMS.data_processing.source.deflator_exchange; a copy in pipeline/deflator_exchange.py
-outside CIMS) from the raw downloads in data/raw_data/technology_database/currency/, and
+outside CIMS) from the raw downloads in data/extracted/technology-database/currency/, and
 written to output/currency/. To refresh them, replace the raw downloads. Deflators cover 1976-2025 (EUR 1995-2025) and
 exchange rates 1999-2025 (all years the raw files carry, 2026-10-02) for CAD, USD,
 GBP, EUR, JPY, INR, CNY and DKK; AUD, SEK, CHF and the pre-euro NLG and DEM (through
@@ -20,7 +20,7 @@ Bank of Canada series: its CAD rate is the Bank of Canada EUR rate divided by th
 ECB's annual-average DKK per EUR (added 2026-10-02).
 
 The series behind the two tables are registered in the reference manifest
-(data/raw_data/technology_database/source-details_reference.csv), with the conversion factors' sources:
+(data/extracted/technology-database/source-details_reference.csv), with the conversion factors' sources:
 the World Bank GDP deflator (the ECB's for EUR), and exchange rates from the Bank
 of Canada to 2017 and Statistics Canada from 2017. Each row of
 currency-conversion.csv names the ones it rests on.
@@ -32,7 +32,7 @@ import re
 from .common import OUTPUT, RAW, read, write
 
 # The currency tables are built at each build from the raw downloads in the deposit
-# (data/raw_data/technology_database/currency/), with CIMS's deflator_exchange builder:
+# (data/extracted/technology-database/currency/), with CIMS's deflator_exchange builder:
 # CIMS's own module inside CIMS, a copy of it (pipeline/deflator_exchange.py) in the
 # technology-database repo. Nothing comes from outside the repo and the deposit
 # (Brad 2026-11-06).

@@ -36,13 +36,13 @@ from CIMS.data_processing.utils.controls_conversions import load_control_config
 # ═══════════════════════════════════════════════════════════════════════════════
 
 # Update folder with new nir when released each year
-NIR_CSV  = paths.RAW / 'eccc/nir/GHG_Econ_Can_Prov_Terr.csv'
+NIR_CSV  = paths.EXTRACTED / 'gov-can/eccc/nir/GHG_Econ_Can_Prov_Terr.csv'
 # Manual map - should stay the same unless there are changes to nir or cims naming
 MAP_CSV  = paths.CONFIG / 'mapping/nir-to-cims.csv'
 # Script outputs a version of the nir with the suppressed values solved
-OUT_NIR  = paths.PROCESSED / 'eccc/NIR_Suppressed_Solved.csv'
+OUT_NIR  = paths.PROCESSED / 'gov-can/eccc/nir-suppressed-solved.csv'
 # Main output - NIR emissions mapped to cims nodes
-OUT_CIMS = paths.PROCESSED / 'eccc/nir/nir_to_cims.csv'
+OUT_CIMS = paths.PROCESSED / 'gov-can/eccc/nir/nir-to-cims.csv'
 
 _config = load_control_config()
 _archived = _config["archived_data"]

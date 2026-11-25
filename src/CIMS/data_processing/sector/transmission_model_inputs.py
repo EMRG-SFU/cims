@@ -4,7 +4,7 @@ Flatten transmission fixed data to CIMS-formatted CSV.
 Sources
 -------
 Fixed structural parameters
-    raw_data/fixed_data/transmission/transmission_CIMS.csv
+    extracted/legacy/fixed-data/transmission/transmission_CIMS.csv
     Flattened from wide (2000-2050 year columns) to long format via
     utils/flatten_fixed_data.
 

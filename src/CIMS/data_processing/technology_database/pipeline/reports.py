@@ -2,7 +2,7 @@
 
 output/mapping-review.md is the one review of how source material reaches the
 archetypes. It replaces the aggregation, design-crosswalk and CIMS reviews the
-retired pipeline wrote. data/processed_data/technology_database/vocabulary.md is the readable form of the records.
+retired pipeline wrote. data/processed/technology-database/vocabulary.md is the readable form of the records.
 Both are regenerated on every build; edit the records, never these.
 """
 from __future__ import annotations
@@ -206,7 +206,7 @@ def mapping_review(records, hier, loader, stamp, views, ex_result):
 
 
 def vocabulary_md(records, hier, views):
-    """data/processed_data/technology_database/vocabulary.md: the archetypes by family, the naming vocabularies and
+    """data/processed/technology-database/vocabulary.md: the archetypes by family, the naming vocabularies and
     the hierarchy annotations, generated from the records."""
     arows = views["archetype"][1]
     L = []

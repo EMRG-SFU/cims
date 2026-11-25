@@ -4,7 +4,7 @@ Exogenous Demand — Electricity Model Inputs
 Emits two sets of rows per region:
 
 1. Top-level electricity activity  (service_request at Region level)
-   Source: processed_data/activity/electricity.csv
+   Source: processed/activity/electricity.csv
    Variable: Electricity.Utility Generation  (MWh)
    Branch CIMS.CAN.{region} → Target CIMS.CAN.{region}.Electricity.Utility Generation
    (below the zero link in set 2, so the demand reaches generation)

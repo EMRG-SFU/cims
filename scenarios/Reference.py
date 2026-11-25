@@ -40,8 +40,8 @@ def reset_model_files():
     ### Default values and parameter list files
     default_path = str(paths.DEFAULTS / 'default-parameter.csv')
     list_path = str(paths.DEFAULTS / 'default-list.csv')
-    deflator_path = str(paths.PROCESSED / 'deflator_exchange' / 'currency_deflator.csv')
-    exchange_path = str(paths.PROCESSED / 'deflator_exchange' / 'currency_exchange.csv')
+    deflator_path = str(paths.PROCESSED / 'currency/currency-deflator.csv')
+    exchange_path = str(paths.PROCESSED / 'currency/currency-exchange.csv')
 
     update_files = {}
 

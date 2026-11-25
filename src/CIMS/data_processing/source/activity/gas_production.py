@@ -54,9 +54,9 @@ from CIMS.data_processing.utils.extractors.stats_can import load_resd
 from CIMS.data_processing.utils.extractors.cer import find_cer_file
 
 # Configuration
-CER_DIR   = paths.RAW / 'cer'
+CER_DIR   = paths.EXTRACTED / 'gov-can/cer'
 NATURAL_GAS_PRODUCTION_FILE = find_cer_file(CER_DIR, 'natural-gas-production')
-RESD_FILE                   = paths.RAW / 'stats_can/resd/25100029.csv'
+RESD_FILE                   = paths.EXTRACTED / 'gov-can/statcan/resd/25100029.csv'
 LNG_EXPORT_FILE             = find_cer_file(CER_DIR, 'lng-export-assumptions')
 OUTPUT_DIR                  = paths.PROCESSED / 'activity'
 _config                     = load_control_config()
@@ -827,7 +827,7 @@ def main() -> pl.DataFrame:
     print(f"   Years covered:       {output['Year'].min()} – {output['Year'].max()}")
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    output_path = OUTPUT_DIR / 'gas_production.csv'
+    output_path = OUTPUT_DIR / 'gas-production.csv'
     output.write_csv(output_path)
     print(f"   Saved to:            {output_path}")
 

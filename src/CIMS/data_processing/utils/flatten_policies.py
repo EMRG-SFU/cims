@@ -1,7 +1,7 @@
 """
 Build the long, annual policy files the model reads from policy source files.
 
-Input:  paths.RAW / policies/<source folder>/*.csv
+Input:  paths.EXTRACTED / policy/<source folder>/*.csv
         Wide files with 5-year columns (2000, 2005, ... 2050), or files already
         in long format (Year and Value columns). Source folders keep the names
         they were authored with (for example Off_OBPS_Fed), or already use the
@@ -42,7 +42,7 @@ from CIMS.data_processing.utils.currency import finalise_currency_csv
 from CIMS.data_processing.utils.flatten_fixed_data import BLANK_LITERAL_SENTINELS
 
 # ── configuration ──────────────────────────────────────────────────────────────
-INPUT_DIR  = paths.RAW / 'policies'
+INPUT_DIR  = paths.EXTRACTED / 'policy'
 OUTPUT_DIR = paths.POLICIES
 
 AT_PROVINCES = ['NB', 'NS', 'PE', 'NL']

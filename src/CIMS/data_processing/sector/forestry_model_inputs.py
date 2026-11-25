@@ -4,7 +4,7 @@ Extract Forestry model input data and save to CIMS-formatted CSV.
 Sources
 -------
 Fixed structural parameters
-    raw_data/fixed_data/forestry/*.csv
+    extracted/legacy/fixed-data/forestry/*.csv
     Flattened from wide (2000–2050 year columns) to long format via
     utils/flatten_fixed_data.
     Includes: service_provide, competition, technology, market_share_total,

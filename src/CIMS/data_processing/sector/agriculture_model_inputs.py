@@ -4,12 +4,12 @@ Extract Agriculture model input data and save to CIMS-formatted CSV.
 Sources
 -------
 Fixed structural parameters
-    raw_data/fixed_data/agriculture/*.csv
+    extracted/legacy/fixed-data/agriculture/*.csv
     Flattened from wide (2000–2050 year columns) to long format via
     utils/flatten_fixed_data.
 
 Activity demand  (service_provide levels)
-    processed_data/activity/emissions_drivers.csv
+    processed/activity/emissions-drivers.csv
     Produced by pipeline/source/activity/emissions_drivers.py.
     Variables used:
       'Agriculture'                                          → total tCO2e
@@ -23,7 +23,7 @@ Activity demand  (service_provide levels)
     service_request.
 
 Energy price multipliers  (price_mult rows)
-    processed_data/energy_prices/energy_price_multipliers.csv
+    processed/energy-prices/energy-price-multipliers.csv
     Produced by pipeline/source/energy_prices/energy_price_multipliers.py.
     Energies applied: Diesel, Natural Gas, Electricity, Hydrogen.
 

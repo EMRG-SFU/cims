@@ -16,10 +16,10 @@ archetype restructure: records/source-example.csv maps them to archetypes, and
 the database build (src/CIMS/data_processing/technology_database/build.py) checks the archetype keys. Here
 they only have to follow the shape rule (lowercase hyphenated components joined
 by '_'). The controlled equipment/carrier/variant vocabulary in
-data/raw_data/technology_database/extraction-vocabulary.csv still applies to the CIMS YAML layer
+data/extracted/technology-database/extraction-vocabulary.csv still applies to the CIMS YAML layer
 under general-services.
 
-Folders under data/raw_data/technology_database whose name starts with '_' (_high, _medium, _low and
+Folders under data/extracted/technology-database whose name starts with '_' (_high, _medium, _low and
 their _work, _duplicates, triage and scratch contents) are intake working space,
 not tracked in git; they are skipped and counted, never silently ignored.
 """

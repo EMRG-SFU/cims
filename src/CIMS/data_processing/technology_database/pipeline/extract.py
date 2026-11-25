@@ -775,7 +775,7 @@ class Loader:
                          "via-locator": (row.get("reference") or "").strip(),
                          "source-file": "ukerc_2013_usable-energy-database.xlsx",
                          "source-locator": (row.get("reference") or "").strip(),
-                         "extraction-file": f"data/raw_data/technology_database/{stem}.csv",
+                         "extraction-file": f"data/extracted/technology-database/{stem}.csv",
                          "confidence": "", "status": "draft",
                          "note": note + (f"  Cited by UKERC alongside: {', '.join(orig[1:])}."
                                          if len(orig) > 1 else "")})
@@ -863,7 +863,7 @@ class Loader:
                          "source-id": sid, "via-source-id": "", "via-locator": "",
                          "source-file": "bataille_2017_heavy-industry-database.xlsx",
                          "source-locator": (row.get("reference") or "").strip(),
-                         "extraction-file": f"data/raw_data/technology_database/{stem}.csv",
+                         "extraction-file": f"data/extracted/technology-database/{stem}.csv",
                          "confidence": "", "status": "review" if "REVIEW:" in note else "draft",
                          "note": note})
 
@@ -902,7 +902,7 @@ class Loader:
                          "via-locator": (row.get("reference") or "").strip() if orig else "",
                          "source-file": f"{stem.split('/')[-1]}.pdf",
                          "source-locator": (row.get("reference") or "").strip(),
-                         "extraction-file": f"data/raw_data/technology_database/{stem}.csv",
+                         "extraction-file": f"data/extracted/technology-database/{stem}.csv",
                          "confidence": "medium",
                          "status": "draft" if quantified else "unquantified",
                          "note": (row.get("note") or "").strip()
@@ -962,7 +962,7 @@ class Loader:
                          "source-id": sid, "via-source-id": "",
                          "source-file": src_file,
                          "source-locator": (row.get("reference") or "").strip(),
-                         "extraction-file": f"data/raw_data/technology_database/{stem}.csv",
+                         "extraction-file": f"data/extracted/technology-database/{stem}.csv",
                          "confidence": "", "status": "draft", "note": note})
         fpath = RAW / f"{stem}_flows.csv"
         for row in read(fpath):

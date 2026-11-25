@@ -94,15 +94,11 @@ from CIMS.data_processing.utils.controls_conversions import load_energy_conversi
 # CONFIGURATION
 # ==============================================================================
 MAPPINGS_PATH    = paths.CONFIG / "mapping"
-RAW_PATH         = paths.RAW
-
-NIR_XLSX         = RAW_PATH / "eccc" / "nir" / "EN_Annex6_Emission_Factors_Tables.xlsx"
-NIR_PDF          = RAW_PATH / "eccc" / "nir" / "EN_Annex6_Emission_Factors.pdf"
-COAL_XLSX        = RAW_PATH / "CEEDC" / "CEEDC_coal_electricity_energy_emission_factors_260313.xlsx"
-IPCC_PDF         = RAW_PATH / "IPCC" / "V2_2_Ch2_Stationary_Combustion.pdf"
+NIR_XLSX         = paths.EXTRACTED / "gov-can" / "eccc" / "nir" / "EN_Annex6_Emission_Factors_Tables.xlsx"
+COAL_XLSX        = paths.EXTRACTED / "ceedc" / "CEEDC_coal_electricity_energy_emission_factors_260313.xlsx"
 CONVERSIONS_FILE = paths.CONFIG / "conversion/energy-conversion.csv"
 ENERGY_MAP_FILE  = MAPPINGS_PATH / "energy.csv"
-OUTPUT_DIR       = paths.PROCESSED / "emission_factors"
+OUTPUT_DIR       = paths.PROCESSED / "emission-factors"
 
 YEAR_START = 2000
 YEAR_END   = 2100
@@ -1220,7 +1216,7 @@ def main() -> None:
     _excluded = {f["fuel_name"] for f in FUELS if f.get("exclude_from_output")}
     df_out = df.filter(~pl.col("fuel").is_in(list(_excluded)))
 
-    output_path = OUTPUT_DIR / "emission_factors.csv"
+    output_path = OUTPUT_DIR / "emission-factors.csv"
     df_out.write_csv(output_path)
     print(f"\n✅ Emission factors complete")
     print(f"   Total rows:          {len(df_out):,}")
@@ -1229,7 +1225,7 @@ def main() -> None:
     print(f"   Excluded (zero-EF):  {sorted(EXPECTED_ZERO_FUELS)}")
     print(f"   Saved to:            {output_path}")
 
-    cims_path = OUTPUT_DIR / "emission_factors_cims.csv"
+    cims_path = OUTPUT_DIR / "emission-factors-cims.csv"
     cims_df = build_cims_table(df_out)
     cims_df.write_csv(cims_path)
     print(f"\n✅ CIMS parameter table complete")

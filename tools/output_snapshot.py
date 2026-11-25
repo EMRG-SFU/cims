@@ -1,6 +1,6 @@
 """Snapshot the pipeline's outputs, and compare snapshots (plan §6).
 
-A snapshot records every file under data/processed_data, data/model_inputs, and
+A snapshot records every file under data/processed, data/model_inputs, and
 data/calibration: its row count, its columns, and a hash of its rows sorted. It also
 keeps a compressed copy of each file, so a comparison can show what changed.
 
@@ -51,7 +51,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 DATA = Path(os.environ.get("CIMS_DATA_ROOT", ROOT / "data"))
 SNAPSHOTS = Path(os.environ.get("CIMS_SNAPSHOT_ROOT", ROOT.parent / "snapshots"))
-FOLDERS = ("processed_data", "model_inputs", "calibration")
+FOLDERS = ("processed", "model_inputs", "calibration")
 SKIP = {".gitkeep"}
 KEY_COLUMNS = {"year"}  # numeric, but they identify a row rather than measure something
 REL = 1e-9

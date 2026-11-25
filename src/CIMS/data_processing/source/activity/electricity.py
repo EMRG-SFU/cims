@@ -51,8 +51,8 @@ from CIMS.data_processing.common import paths
 from CIMS.data_processing.utils.controls_conversions import DATA_START, PROJECTION_END, LAST_DATA_YEAR
 
 # -- File paths ----------------------------------------------------------------
-PATH_SC15  = paths.RAW / 'stats_can/activity/25100015.csv'
-PATH_JCIMS = paths.RAW / 'clean_fuel_production/electricity_activity_jcims.csv'
+PATH_SC15  = paths.EXTRACTED / 'gov-can/statcan/activity/25100015.csv'
+PATH_JCIMS = paths.LEGACY / 'clean-fuel-production/electricity_activity_jcims.csv'
 REGION_MAP = paths.CONFIG / 'mapping/region.csv'
 OUTPUT     = paths.PROCESSED / 'activity/electricity.csv'
 

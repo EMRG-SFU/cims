@@ -10,7 +10,7 @@ Canada total is fitted to CEEDC industrial generation within those caps.
 
 Inputs
 ------
-raw_data/stats_can/electricity_generation/
+extracted/gov-can/statcan/electricity-generation/
     25100028.csv  Electricity generated from fossil fuels, annual, 1995-2021
                   (archived). Industry = 'Total industry and utilities' -
                   'Utilities'. Wood and spent pulping liquor are combined.
@@ -18,7 +18,7 @@ raw_data/stats_can/electricity_generation/
     25100084.csv  Electric power generation by thermal plants, 2020-2025.
                   'Electricity producers, industries'; wood and spent pulping
                   liquor separate. Used from 2020.
-raw_data/ceedc/elec_gen.csv
+extracted/ceedc/elec_gen.csv
     CEEDC industrial generation by NAICS and fuel, Canada only, 2000-2024.
 config/assumption/third-party-industrial-cogeneration.csv
     Cogeneration plants at industrial sites owned by a third party and so
@@ -26,12 +26,12 @@ config/assumption/third-party-industrial-cogeneration.csv
     host-attributable generation is added to the host sector. Grandview (NB
     Petroleum Refining) was checked against TC Energy and Power Engineering;
     Cardinal and Iroquois Falls are listed but excluded (not verified).
-raw_data/eia/mecs/emrg_2026_mecs-footprint-metrics.csv (techdb_steam.MECS_FILE)
+extracted/gov-usa/eia/mecs/emrg_2026_mecs-footprint-metrics.csv (techdb_steam.MECS_FILE)
     MECS cogeneration share of boiler + CHP fuel by sector and fuel, surveys
     2002-2022 (most recent survey at or before the year; 2002 before that).
     Light Industrial biomass uses the forest-products share
     (MECS_SECTOR_FOR), since sawmill wood waste is its main user.
-processed_data/steam/steam_fuel_targets.csv (source/steam/steam_fuel_targets.py)
+processed/steam/steam-fuel-targets.csv (source/steam/steam_fuel_targets.py)
     .Steam calibration_quantity_requested by fuel, every year: the fuel each
     sector's claim is built from. Built from source data before any
     calibration script runs, so no sector reads another's calibration file.
@@ -91,7 +91,7 @@ smoothed fuel mix), it returns the nearest year's share.
 Fuel groups: gas (natural gas), oil (heavy fuel oil; light fuel oil has no
 CHP technology), coal, wood (solid biomass).
 
-Output (diagnostics, every column of the working): processed_data/steam_chp/chp_shares.csv
+Output (diagnostics, every column of the working): processed/steam-chp/chp-shares.csv
 """
 
 from __future__ import annotations
@@ -104,13 +104,13 @@ from CIMS.data_processing.common import paths
 from CIMS.data_processing.source.eia.mecs_steam_shares import CIMS_TO_MECS
 from CIMS.data_processing.utils import techdb_steam as T
 
-GEN_DIR      = paths.RAW / 'stats_can/electricity_generation'
+GEN_DIR      = paths.EXTRACTED / 'gov-can/statcan/electricity-generation'
 THIRD_PARTY  = paths.ASSUMPTIONS / 'third-party-industrial-cogeneration.csv'
-OUTPUT_FILE  = paths.PROCESSED / 'steam_chp/chp_shares.csv'
+OUTPUT_FILE  = paths.PROCESSED / 'steam-chp/chp-shares.csv'
 YEARS        = range(2000, 2025)
 FIRST_0084   = 2020           # use 25-10-0084 from this year (no suppression, wood vs SPL)
 K_SMOOTH_YEARS = 3            # rolling-median window for k (years)
-CEEDC_FILE   = paths.RAW / 'ceedc/elec_gen.csv'
+CEEDC_FILE   = paths.EXTRACTED / 'ceedc/elec_gen.csv'
 CEEDC_SCALING = True          # scale each sector's Canada total to CEEDC
 MAX_CHP_SHARE = 0.95          # most of a fuel's steam fuel that can go to CHP
 CHP_SHARE_SMOOTH_YEARS = 5    # centred rolling-median window for the final CHP share (years)

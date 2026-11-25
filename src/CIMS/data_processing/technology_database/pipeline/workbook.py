@@ -72,7 +72,7 @@ README = [
     ("p", "The _low, _high, and _n columns are grouped beside each central column: use the + above "
           "a column to show them. _n is the number of examples pooled (0 for a filled value)."),
     ("p", "Hover over a column heading for its definition."),
-    ("p", "The same tables without any fill are in data/processed_data/technology_database/unfilled/."),
+    ("p", "The same tables without any fill are in data/processed/technology-database/unfilled/."),
     ("h2", "Bands"),
     ("p", "The banded sheets run by family, then by end use in process order. Within an end use: "
           "conventional technologies, efficient variants, capture variants, then low-carbon "
@@ -82,12 +82,12 @@ README = [
           "hydrogen per t, liquid fuels per m3, flaring per 1000 m3 of gas. The filled column names "
           "the factor. The long tables and the CSVs stay on the archetype's own unit."),
     ("p", "The bands break sorting and filtering, so the sheets are for reading. The CSVs in "
-          "data/processed_data/technology_database/ are the working tables; the next section lists what they hold."),
+          "data/processed/technology-database/ are the working tables; the next section lists what they hold."),
     ("h2", "Shading: how certain a value is, most certain first"),
     ("legend", None),
     ("h2", "Sheets"),
     ("sheets", None),
-    ("h2", "More detail in the CSV files (data/processed_data/technology_database/)"),
+    ("h2", "More detail in the CSV files (data/processed/technology-database/)"),
     ("p", "The workbook shows each archetype's pooled values. The CSV files behind it hold the detail: "
           "how each value was reached, and every source figure it rests on. Each is a flat table you "
           "can sort and filter."),

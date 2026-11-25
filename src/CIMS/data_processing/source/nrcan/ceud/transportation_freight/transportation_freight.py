@@ -52,16 +52,16 @@ CONTROLS = load_control_config()
 # CONFIGURATION
 # ==============================================================================
 
-SOURCE_DIR        = paths.RAW / 'nrcan/ceud/transportation'
+SOURCE_DIR        = paths.EXTRACTED / 'gov-can/nrcan/ceud/transportation'
 CAN_FILE         = SOURCE_DIR / 'tran_ca_e.xls'
 ASSUMPTIONS_CSV  = paths.ASSUMPTIONS / 'transport-freight-assumptions.csv'
-STATSCAN_POP_PATH = paths.RAW / 'stats_can/population/1710000901.csv'
-OUTPUT_DIR       = paths.PROCESSED / 'nrcan/ceud'
+STATSCAN_POP_PATH = paths.EXTRACTED / 'gov-can/statcan/population/1710000901.csv'
+OUTPUT_DIR       = paths.PROCESSED / 'gov-can/nrcan/ceud'
 LAST_HIST_YEAR   = CONTROLS["last_data_year"]["ceud"]
 
 FUEL_SCALE = 1000.0  # CEUD reports energy in PJ; × 1000 → TJ
 
-IPCC_FILE               = paths.RAW / 'eccc/nir/GHG_IPCC_Can_Prov_Terr.csv'
+IPCC_FILE               = paths.EXTRACTED / 'gov-can/eccc/nir/GHG_IPCC_Can_Prov_Terr.csv'
 OFFROAD_MJ_PER_TKM      = 7.82     # TJ per M·tkm (TJ→MJ and M·tkm cancel); same for all regions
 GASOLINE_EF_KT_CO2EQ_TJ = 0.064   # kt CO2eq per TJ for motor gasoline
 HFO_EF_KT_CO2EQ_TJ      = 0.074737 # kt CO2eq per TJ for heavy fuel oil (marine)
@@ -209,7 +209,7 @@ T19_MARINE_HFO_PJ_ROW    = 8    # Energy Use by Source: Heavy Fuel Oil (PJ)
 LM_BLEND_FUEL_MAP = {'Ethanol': 'Gasoline', 'Biodiesel': 'Diesel'}
 
 # Light Medium Diesel/Gasoline vintage service_request values (GJ), from
-# raw_data/fixed_data/transportation_freight — identical across regions and
+# extracted/legacy/fixed-data/transportation_freight — identical across regions and
 # fuels. Used to solve the historical Existing -> Standard vintage split
 # from the CEUD intensity trend (see _lm_intensity_index).
 LM_VINTAGE_GJ_EXISTING = 8.018489459
@@ -1558,7 +1558,7 @@ def main(
         )
         combined = combined.sort(['province', 'variable', 'category', 'year'])
 
-        output_file = output_dir / 'transportation_freight.csv'
+        output_file = output_dir / 'transportation-freight.csv'
         output_file.parent.mkdir(parents=True, exist_ok=True)
         print(f'\nTransportation freight extraction complete')
         print(f'   Total rows:          {combined.height:,}')

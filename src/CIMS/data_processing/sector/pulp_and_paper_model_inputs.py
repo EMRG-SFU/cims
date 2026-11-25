@@ -7,7 +7,7 @@ CIMS-formatted CSVs (one per region).
 Sources
 -------
 Fixed structural parameters
-    raw_data/fixed_data/pulp_and_paper/pulp_and_paper_{region}.csv
+    extracted/legacy/fixed-data/pulp_and_paper/pulp_and_paper_{region}.csv
     Flattened from wide (2000–2050 year columns) to long format.
     Encodes the full Pulp and Paper hierarchy. The service_request rows
     at the Paper service level (splits into Newsprint, Linerboard,

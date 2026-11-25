@@ -183,11 +183,11 @@ from CIMS.data_processing.utils.controls_conversions import load_control_config,
 # ── File paths ───────────────────────────────────────────────────────────────────
 MAPPINGS_PATH    = paths.CONFIG / 'mapping'
 REGION_MAP_FILE  = MAPPINGS_PATH / 'region.csv'
-PATH_48          = paths.RAW / 'stats_can/activity/coal_production/25100048.csv'
-PATH_46          = paths.RAW / 'stats_can/activity/coal_production/25100046.csv'
-PATH_BC          = paths.RAW / 'bc_gov/bcannualcoalproduction.csv'
-PATH_AER         = paths.RAW / 'ab_gov/st98-2025-coal-production-demand-data.xlsx'
-OUTPUT           = paths.PROCESSED / 'activity/coal_mining.csv'
+PATH_48          = paths.EXTRACTED / 'gov-can/statcan/activity/coal-production/25100048.csv'
+PATH_46          = paths.EXTRACTED / 'gov-can/statcan/activity/coal-production/25100046.csv'
+PATH_BC          = paths.EXTRACTED / 'gov-bc/bcannualcoalproduction.csv'
+PATH_AER         = paths.EXTRACTED / 'gov-ab/st98-2025-coal-production-demand-data.xlsx'
+OUTPUT           = paths.PROCESSED / 'activity/coal-mining.csv'
 
 _config        = load_control_config()
 LAST_DATA_YEAR = _config["last_data_year"]

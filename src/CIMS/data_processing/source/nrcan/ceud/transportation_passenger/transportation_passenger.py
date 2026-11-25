@@ -68,11 +68,11 @@ CONTROLS = load_control_config()
 # CONFIGURATION
 # ==============================================================================
 
-SOURCE_DIR       = paths.RAW / 'nrcan/ceud/transportation'
+SOURCE_DIR       = paths.EXTRACTED / 'gov-can/nrcan/ceud/transportation'
 CAN_FILE        = SOURCE_DIR / 'tran_ca_e.xls'
 ASSUMPTIONS_CSV = paths.ASSUMPTIONS / 'transport-passenger-assumptions.csv'
-STATSCAN_POP_PATH = paths.RAW / 'stats_can/population/1710000901.csv'
-OUTPUT_DIR      = paths.PROCESSED / 'nrcan/ceud'
+STATSCAN_POP_PATH = paths.EXTRACTED / 'gov-can/statcan/population/1710000901.csv'
+OUTPUT_DIR      = paths.PROCESSED / 'gov-can/nrcan/ceud'
 LAST_HIST_YEAR  = CONTROLS["last_data_year"]["ceud"]
 
 # National CEUD table numbers (tran_ca_e.xls -- different numbering from provincial)
@@ -1973,7 +1973,7 @@ def main(
         )
         combined = combined.sort(['province', 'variable', 'category', 'year'])
 
-        output_file = output_dir / "transportation_passenger.csv"
+        output_file = output_dir / "transportation-passenger.csv"
         output_file.parent.mkdir(parents=True, exist_ok=True)
         print(f"\nTransportation passenger extraction complete")
         print(f"   Total rows:          {combined.height:,}")

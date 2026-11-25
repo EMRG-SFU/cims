@@ -2,12 +2,12 @@
 Statistics Canada population and GDP by province and territory.
 
 Inputs:
-    raw_data/stats_can/population/1710000901.csv  (table 17-10-0009-01)
-    raw_data/stats_can/gdp/36100222.csv           (table 36-10-0222-01)
-    raw_data/cer/macro-indicators-2026.csv
+    extracted/gov-can/statcan/population/1710000901.csv  (table 17-10-0009-01)
+    extracted/gov-can/statcan/gdp/36100222.csv           (table 36-10-0222-01)
+    extracted/gov-can/cer/macro-indicators-2026.csv
 
 Output:
-    processed_data/stats_can/pop_gdp.csv
+    processed/gov-can/statcan/pop-gdp.csv
     Columns: region, variable, source, unit, year, value
 
 Historical Stats Can data is extended to 2050 using CER Canada-wide
@@ -30,12 +30,12 @@ from CIMS.data_processing.utils.output_builder import log_output
 from CIMS.data_processing.utils.extractors.cer import find_cer_file
 
 # --- Paths ---
-POP_FILE    = paths.RAW / "stats_can/population/1710000901.csv"
-GDP_FILE    = paths.RAW / "stats_can/gdp/36100222.csv"
+POP_FILE    = paths.EXTRACTED / "gov-can/statcan/population/1710000901.csv"
+GDP_FILE    = paths.EXTRACTED / "gov-can/statcan/gdp/36100222.csv"
 # Processed CER macro indicators (history back to 2000; see source/cer/README.md)
-MACRO_FILE  = find_cer_file(paths.PROCESSED / "cer", "macro-indicators")
-OUTPUT_DIR  = paths.PROCESSED / "stats_can"
-OUTPUT_FILE = OUTPUT_DIR / "pop_gdp.csv"
+MACRO_FILE  = find_cer_file(paths.PROCESSED / "gov-can/cer", "macro-indicators")
+OUTPUT_DIR  = paths.PROCESSED / "gov-can/statcan"
+OUTPUT_FILE = OUTPUT_DIR / "pop-gdp.csv"
 
 CONTROLS  = load_control_config()
 SCENARIO  = CONTROLS["cer_ef_reference_scenario"]

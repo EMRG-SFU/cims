@@ -31,7 +31,7 @@ from CIMS.data_processing.common import paths
 from CIMS.data_processing.utils.controls_conversions import DATA_START, PROJECTION_END
 
 # Configuration
-CER_DIR   = paths.RAW / 'cer'
+CER_DIR   = paths.EXTRACTED / 'gov-can/cer'
 CRUDE_OIL_PRODUCTION_FILE   = find_cer_file(CER_DIR, 'crude-oil-production')
 REGION_MAP_FILE             = paths.CONFIG / 'mapping/region.csv'
 OUTPUT_DIR                  = paths.PROCESSED / 'activity'
@@ -489,7 +489,7 @@ def main() -> pl.DataFrame:
     print(f"   Years covered:       {oil_output['Year'].min()} – {oil_output['Year'].max()}")
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    output_path = OUTPUT_DIR / 'oil_production.csv'
+    output_path = OUTPUT_DIR / 'oil-production.csv'
     oil_output.write_csv(output_path)
     print(f"   Saved to:            {output_path}")
 

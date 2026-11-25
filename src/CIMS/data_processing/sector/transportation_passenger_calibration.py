@@ -84,7 +84,7 @@ STATCAN_MARKET_SHARE_SOURCE = 'StatCan/EPA'
 # are aligned to it (see _align_share_techs_to_fixed).
 FIXED_INPUT_DIR = paths.FIXED_DATA / 'transportation_passenger'
 
-EPA_FILE = paths.RAW / 'epa/table_export.csv'
+EPA_FILE = paths.EXTRACTED / 'gov-usa/epa/table_export.csv'
 
 
 # EPA engine-package mapping used to split gasoline into efficiency classes.

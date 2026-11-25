@@ -8,8 +8,8 @@ pipeline) to each provincial/territorial file.
 CIMS, CAN, and RoW files are flattened only — no attribute rows added.
 
 Inputs:
-    raw_data/fixed_data/cims_base/CIMS_base_{suffix}.csv
-    processed_data/stats_can/pop_gdp.csv  (via pop_gdp.main())
+    extracted/legacy/fixed-data/cims_base/CIMS_base_{suffix}.csv
+    processed/gov-can/statcan/pop-gdp.csv  (via pop_gdp.main())
 
 Output:
     model_inputs/model/cims_base/CIMS_base_{suffix}.csv

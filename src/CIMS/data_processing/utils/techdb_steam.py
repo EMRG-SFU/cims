@@ -18,20 +18,20 @@ gas, heavy fuel oil, petroleum coke, LPG, electricity).
 
 Inputs
 ------
-processed_data/technology_database/
+processed/technology-database/
     archetype-parameter.csv         capex, opex, lifetime, annual output,
                                     specific energy consumption, efficiency,
                                     emissions captured
     archetype-alternative-carrier.csv  fuel use on alternative fuels
     archetype-flow.csv              fuel use by commodity (fallback)
-processed_data/steam/steam_fuel_targets.csv (source/steam/steam_fuel_targets.py)
+processed/steam/steam-fuel-targets.csv (source/steam/steam_fuel_targets.py)
     .Steam calibration_quantity_requested by fuel, 2000-2024: the same rows
     the sector calibration scripts write (EIA MECS steam
     share x CER sector demand, fuel split from the provincial RESD mix; see
     mecs_steam_calibration.py). Pulp and Paper has black liquor removed (the
     Recovery Furnace supplies that steam) and wood waste filled first; Light
     Industrial also fills wood waste first.
-processed_data/steam_chp/chp_shares.csv (through steam_chp_shares.chp_share)
+processed/steam-chp/chp-shares.csv (through steam_chp_shares.chp_share)
     CHP share of each fuel's steam fuel. MECS_FILE is defined here but read
     by steam_chp_shares.
 
@@ -139,7 +139,7 @@ import polars as pl
 from CIMS.data_processing.common import paths
 
 TECHDB_DIR      = paths.TECHDB_OUTPUT
-MECS_FILE       = paths.RAW / 'eia/mecs/emrg_2026_mecs-footprint-metrics.csv'
+MECS_FILE       = paths.EXTRACTED / 'gov-usa/eia/mecs/emrg_2026_mecs-footprint-metrics.csv'
 
 SECTORS = {     # CIMS sector name -> calibration folder
     'Pulp and Paper':    'pulp_and_paper',
@@ -440,7 +440,7 @@ def smooth_fuel_mix(by_year: dict[int, dict[str, float]],
 @lru_cache(maxsize=None)
 def _calibration_steam_by_year(sector: str, region: str) -> dict[int, dict[str, float]]:
     """{year: {fuel key: GJ}} .Steam fuel targets for one region, from the
-    steam fuel targets stage (processed_data/steam/steam_fuel_targets.csv)."""
+    steam fuel targets stage (processed/steam/steam-fuel-targets.csv)."""
     from CIMS.data_processing.source.steam import steam_fuel_targets as _targets
     return steam_fuel_targets(_targets.load(), sector, region)
 

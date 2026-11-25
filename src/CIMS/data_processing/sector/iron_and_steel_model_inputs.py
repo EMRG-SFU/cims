@@ -7,7 +7,7 @@ CIMS-formatted CSVs (one per region).
 Sources
 -------
 Fixed structural parameters
-    raw_data/fixed_data/iron_and_steel/iron_and_steel_{region}.csv
+    extracted/legacy/fixed-data/iron_and_steel/iron_and_steel_{region}.csv
     Flattened from wide (2000–2050 year columns) to long format.
     Encodes the full Iron and Steel hierarchy:
       Iron and Steel (Sector)

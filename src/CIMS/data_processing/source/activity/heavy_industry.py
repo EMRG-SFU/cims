@@ -19,14 +19,14 @@ HOW TO RUN:
     python heavy_industry.py
 
 INPUTS:
-    raw_data/stats_can/activity/36100488.csv         <- StatsCan GO (nominal, incl. mining)
-    raw_data/stats_can/activity/18100267.csv         <- StatsCan IPPI (incl. primary metals)
-    raw_data/stats_can/activity/18100268.csv         <- StatsCan RMPI (raw materials)
-    raw_data/ceedc/Production.xlsx                   <- CEEDC annual physical output
+    extracted/gov-can/statcan/activity/36100488.csv         <- StatsCan GO (nominal, incl. mining)
+    extracted/gov-can/statcan/activity/18100267.csv         <- StatsCan IPPI (incl. primary metals)
+    extracted/gov-can/statcan/activity/18100268.csv         <- StatsCan RMPI (raw materials)
+    extracted/ceedc/Production.xlsx                   <- CEEDC annual physical output
     config/assumption/activity-cagr-projections.csv  <- CAGR projection assumptions
 
 OUTPUTS:
-    processed_data/activity/heavy_industry.csv
+    processed/activity/heavy-industry.csv
         Columns: Region | Variable | Unit | Source | Year | Value
         Variables: parent sectors in tonnes; child sub-products as fraction of parent (%)
         Source: "CEEDC/Stats Can" up to last_data_year["ceedc"], "Assumptions" thereafter
@@ -60,10 +60,10 @@ from CIMS.data_processing.utils.controls_conversions import load_control_config,
 # =============================================================================
 # Configuration
 # =============================================================================
-GO_FILE               = paths.RAW / 'stats_can/activity/36100488.csv'
-IPPI_FILE             = paths.RAW / 'stats_can/activity/18100267.csv'
-RMPI_FILE             = paths.RAW / 'stats_can/activity/18100268.csv'
-PRODUCTION_FILE       = paths.RAW / 'ceedc/Production.xlsx'
+GO_FILE               = paths.EXTRACTED / 'gov-can/statcan/activity/36100488.csv'
+IPPI_FILE             = paths.EXTRACTED / 'gov-can/statcan/activity/18100267.csv'
+RMPI_FILE             = paths.EXTRACTED / 'gov-can/statcan/activity/18100268.csv'
+PRODUCTION_FILE       = paths.EXTRACTED / 'ceedc/Production.xlsx'
 CAGR_ASSUMPTIONS_FILE = paths.ASSUMPTIONS / 'activity-cagr-projections.csv'
 REGION_MAP_FILE       = paths.CONFIG / 'mapping/region.csv'
 
@@ -1429,7 +1429,7 @@ def main() -> pl.DataFrame:
     print(f"   Regions processed:   {output_df['Region'].n_unique()}")
     print(f"   Variables:           {sorted(output_df['Variable'].unique().to_list())}")
     print(f"   Years covered:       {output_df['Year'].min()} – {output_df['Year'].max()}")
-    _heavy_industry_path = paths.PROCESSED / 'activity/heavy_industry.csv'
+    _heavy_industry_path = paths.PROCESSED / 'activity/heavy-industry.csv'
     _heavy_industry_path.parent.mkdir(parents=True, exist_ok=True)
     output_df.to_pandas().to_csv(
         _heavy_industry_path,

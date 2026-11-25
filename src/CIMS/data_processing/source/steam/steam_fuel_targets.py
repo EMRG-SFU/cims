@@ -34,7 +34,7 @@ the calibration scripts must be made here too.
 
 Reads
 -----
-processed_data/cer/, processed_data/eia/ and the StatCan biomass and refinery
+processed/gov-can/cer/, processed/gov-usa/eia/ and the StatCan biomass and refinery
 fuel tables, through mecs_steam_calibration (run process_source_data first).
 This stage doesn't need the technology database, but the steam code that reads
 its output (techdb_steam, steam_chp_shares) does: process_source_data runs the
@@ -42,7 +42,7 @@ technology database build just before this stage.
 
 Writes
 ------
-processed_data/steam/steam_fuel_targets.csv
+processed/steam/steam-fuel-targets.csv
     Calibration output columns (calibration_helpers.OUTPUT_COLS), one row per
     sector, region, year, and fuel target.
 
@@ -63,7 +63,7 @@ from CIMS.data_processing.utils.calibration_helpers import OUTPUT_COLS, build_ce
 from CIMS.data_processing.utils.mecs_steam_calibration import build_mecs_steam_rows
 
 OUTPUT_DIR  = paths.PROCESSED / 'steam'
-OUTPUT_FILE = OUTPUT_DIR / 'steam_fuel_targets.csv'
+OUTPUT_FILE = OUTPUT_DIR / 'steam-fuel-targets.csv'
 
 
 def _sectors() -> list[str]:

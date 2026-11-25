@@ -16,11 +16,11 @@ sector calibration scripts decide which CIMS node each amount goes to.
 
 Inputs
 ------
-raw_data/stats_can/resd/2510003101-eng.csv                 [S1]
-raw_data/stats_can/resd/CEEDC_national energy_2000-2024.xlsx [S2]
-raw_data/stats_can/activity/36100488.csv                   [S3]
+extracted/gov-can/statcan/resd/2510003101-eng.csv                 [S1]
+extracted/gov-can/statcan/resd/CEEDC_national energy_2000-2024.xlsx [S2]
+extracted/gov-can/statcan/activity/36100488.csv                   [S3]
 
-Output: processed_data/stats_can/biomass_demand.csv
+Output: processed/gov-can/statcan/biomass-demand.csv
     Columns: region, year, statcan_fuel, cims_fuel, cims_sector, tj, method
 
 Pipeline use:
@@ -576,10 +576,10 @@ def replace_cer_biomass(cer_df):
 # --------------------------------------------------------------------------
 def _paths():
     from CIMS.data_processing.common import paths
-    return (paths.RAW / "stats_can/resd/2510003101-eng.csv",
-            paths.RAW / "stats_can/resd/CEEDC_national energy_2000-2024.xlsx",
-            paths.RAW / "stats_can/activity/36100488.csv",
-            paths.PROCESSED / "stats_can/biomass_demand.csv")
+    return (paths.EXTRACTED / "gov-can/statcan/resd/2510003101-eng.csv",
+            paths.EXTRACTED / "gov-can/statcan/resd/CEEDC_national energy_2000-2024.xlsx",
+            paths.EXTRACTED / "gov-can/statcan/activity/36100488.csv",
+            paths.PROCESSED / "gov-can/statcan/biomass-demand.csv")
 
 
 @lru_cache(maxsize=1)

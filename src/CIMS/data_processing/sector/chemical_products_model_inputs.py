@@ -7,15 +7,15 @@ CIMS-formatted CSVs (one per region).
 Sources
 -------
 Fixed structural parameters
-    raw_data/fixed_data/chemical_products/chemical_products_{region}.csv
+    extracted/legacy/fixed-data/chemical_products/chemical_products_{region}.csv
     Flattened from wide (2000–2050 year columns) to long format.
 
 Total chemical production  (service_request at region level)
-    processed_data/activity/heavy_industry.csv
+    processed/activity/heavy-industry.csv
     Variable: 'Chemical Product'  (tonnes, per province, 2000–2100)
 
 Subproduct shares  (service_request rows at Chemical Product service level)
-    processed_data/activity/heavy_industry.csv
+    processed/activity/heavy-industry.csv
     Variables: 'Chemical Product.{subproduct}'  (%)
     Subproducts: Other Petrochemicals, Chlor Alkali, Hydrogen Peroxide,
                  Sodium Chlorate, Adipic Acid, Ammonia Methanol
@@ -25,7 +25,7 @@ Subproduct shares  (service_request rows at Chemical Product service level)
     with no production of a given subproduct get no service_request for it.
 
 Energy price multipliers  (multiplier_price rows)
-    processed_data/energy_prices/energy_price_multipliers.csv
+    processed/energy-prices/energy-price-multipliers.csv
 
 Output columns
 --------------

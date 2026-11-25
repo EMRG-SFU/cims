@@ -54,12 +54,12 @@ CONTROLS = load_control_config()
 # CONFIGURATION
 # ==============================================================================
 
-SOURCE_DIR      = paths.RAW / 'nrcan/ceud/residential'
+SOURCE_DIR      = paths.EXTRACTED / 'gov-can/nrcan/ceud/residential'
 ASSUMPTIONS_CSV = paths.ASSUMPTIONS / 'residential-assumptions.csv'
-OUTPUT_DIR     = paths.PROCESSED / 'nrcan/ceud'
-RESD_CSV = paths.RAW / 'stats_can/resd/25100029.csv'
-POP_CSV  = paths.RAW / 'stats_can/population/1710000901.csv'
-EFFICIENCY_XLS = paths.RAW / 'nrcan/ceud/residential/res_ca_e_32.xls'
+OUTPUT_DIR     = paths.PROCESSED / 'gov-can/nrcan/ceud'
+RESD_CSV = paths.EXTRACTED / 'gov-can/statcan/resd/25100029.csv'
+POP_CSV  = paths.EXTRACTED / 'gov-can/statcan/population/1710000901.csv'
+EFFICIENCY_XLS = paths.EXTRACTED / 'gov-can/nrcan/ceud/residential/res_ca_e_32.xls'
 ACTIVITY_CAGR_CSV = paths.ASSUMPTIONS / 'activity-cagr-projections.csv'
 LAST_HIST_YEAR = CONTROLS["last_data_year"]["ceud"]
 

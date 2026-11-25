@@ -7,7 +7,7 @@ harmonised MECS / DOE footprint table, and fills it to an annual series.
 
 Input
 -----
-raw_data/eia/mecs/emrg_2026_mecs-footprint-metrics.csv   (or .xlsx, first sheet)
+extracted/gov-usa/eia/mecs/emrg_2026_mecs-footprint-metrics.csv   (or .xlsx, first sheet)
     One row per energy flow; see emrg_2026_mecs-footprint-metrics_metadata.md.
 
 Method
@@ -34,7 +34,7 @@ Year fill (MECS surveys: 2002, 2006, 2010, 2014, 2018, 2022)
     between surveys          → most recent survey at or before the year
     after the last survey    → last survey value
 
-Output: processed_data/eia/mecs_steam_shares.csv
+Output: processed/gov-usa/eia/mecs-steam-shares.csv
     Columns: Node | Variable | Unit | Source | Year | Value
 """
 
@@ -44,10 +44,10 @@ from CIMS.data_processing.common import paths
 from CIMS.data_processing.utils.controls_conversions import ( DATA_START, LAST_DATA_YEAR,
 )
 
-RAW_DIR     = paths.RAW / 'eia/mecs'
+RAW_DIR     = paths.EXTRACTED / 'gov-usa/eia/mecs'
 RAW_STEM    = 'emrg_2026_mecs-footprint-metrics'
-OUTPUT_DIR  = paths.PROCESSED / 'eia'
-OUTPUT_FILE = OUTPUT_DIR / 'mecs_steam_shares.csv'
+OUTPUT_DIR  = paths.PROCESSED / 'gov-usa/eia'
+OUTPUT_FILE = OUTPUT_DIR / 'mecs-steam-shares.csv'
 
 STEAM_END_USES = {'boilers', 'cogeneration'}
 

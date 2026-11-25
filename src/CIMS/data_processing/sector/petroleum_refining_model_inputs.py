@@ -4,17 +4,17 @@ Extract Petroleum Refining model input data and save to CIMS-formatted CSV.
 Sources
 -------
 Fixed structural parameters
-    raw_data/fixed_data/petroleum_refining/*.csv
+    extracted/legacy/fixed-data/petroleum_refining/*.csv
     Flattened from wide (2000–2050 year columns) to long format via
     utils/flatten_fixed_data.
 
 Activity demand  (service_request)
-    processed_data/activity/petroleum_refining.csv
+    processed/activity/petroleum-refining.csv
     Produced by pipeline/source/activity/petroleum_refining.py.
     Variable: 'Petroleum Refining'  (m3 crude input, per province, 2000–2100)
 
 Energy price multipliers  (multiplier_price rows)
-    processed_data/energy_prices/energy_price_multipliers.csv
+    processed/energy-prices/energy-price-multipliers.csv
     Produced by pipeline/source/energy_prices/energy_price_multipliers.py.
 
 Output columns

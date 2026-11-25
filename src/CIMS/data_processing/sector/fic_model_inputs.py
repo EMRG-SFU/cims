@@ -7,7 +7,7 @@ Flattens fixed incremental cost (FIC) data into CIMS-formatted CSVs
 Sources
 -------
 Fixed structural parameters
-    raw_data/fixed_data/fic/fic_{region}.csv
+    extracted/legacy/fixed-data/fic/fic_{region}.csv
     Flattened from wide (2000–2050 year columns) to long format.
     Each region has its own file; FIXED_TEMPLATE maps 1:1.
 

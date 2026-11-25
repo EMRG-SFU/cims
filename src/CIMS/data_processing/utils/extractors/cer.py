@@ -20,7 +20,7 @@ def find_cer_file(cer_dir: Path, stem: str) -> Path:
     Parameters
     ----------
     cer_dir : Path
-        Directory containing CER CSV files (raw_data/cer).
+        Directory containing CER CSV files (extracted/gov-can/cer).
     stem : str
         Base filename without the year or extension
         (e.g. 'crude-oil-production', 'macro-indicators').

@@ -7,7 +7,7 @@ to long format and writes one output CSV per input file.
 Sources
 -------
 Fixed DIC parameters
-    raw_data/fixed_data/dic/DIC_{region}.csv
+    extracted/legacy/fixed-data/dic/DIC_{region}.csv
     One file per Canadian province/territory.
 
 Output columns

@@ -7,8 +7,8 @@ CIMS-formatted CSVs.
 Sources
 -------
 Fixed structural parameters
-    raw_data/fixed_data/fuels/fuels_{region}.csv  (one per region, flattened as-is)
-    raw_data/fixed_data/fuels/fuels_CIMS.csv      (flattened + energy prices + emission factors)
+    extracted/legacy/fixed-data/fuels/fuels_{region}.csv  (one per region, flattened as-is)
+    extracted/legacy/fixed-data/fuels/fuels_CIMS.csv      (flattened + energy prices + emission factors)
 
 Energy prices  (lcc_financial rows)
     source/energy_prices/energy_prices.py — generic production costs, labelled 2025_CAD/GJ.

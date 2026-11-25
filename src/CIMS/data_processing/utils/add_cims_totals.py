@@ -30,9 +30,9 @@ from CIMS.data_processing.common import paths
 # ── Configuration ─────────────────────────────────────────────────────────────
 
 # Pipeline writes leaves here — add_totals reads from this, never writes to it
-INPUT_CSV  = paths.PROCESSED / 'eccc/nir/nir_walkthrough_cims_leaves.csv'
+INPUT_CSV  = paths.PROCESSED / 'gov-can/eccc/nir/nir-walkthrough-cims-leaves.csv'
 # add_totals writes the full output (leaves + ancestors) here
-OUTPUT_CSV = paths.PROCESSED / 'eccc/nir/nir_walkthrough_cims.csv'
+OUTPUT_CSV = paths.PROCESSED / 'gov-can/eccc/nir/nir-walkthrough-cims.csv'
 
 COL_BRANCH = "CIMS_Branch"
 COL_REGION = "Region"

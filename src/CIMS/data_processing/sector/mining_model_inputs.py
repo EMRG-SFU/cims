@@ -7,7 +7,7 @@ CIMS-formatted CSVs (one per region).
 Sources
 -------
 Fixed structural parameters
-    raw_data/fixed_data/mining/mining_{region}.csv
+    extracted/legacy/fixed-data/mining/mining_{region}.csv
     Flattened from wide (2000–2050 year columns) to long format.
     Contains the full Mining hierarchy including the structural 1.0
     service_request at the sector level. The iron/non-iron product

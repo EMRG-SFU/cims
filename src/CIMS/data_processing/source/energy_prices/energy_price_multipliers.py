@@ -36,11 +36,11 @@ SECTOR_MAP_FILE  = MAPPINGS_PATH / 'sector.csv'
 SECTOR_REGION_MAP_FILE = MAPPINGS_PATH / 'sector-region.csv'
 # Processed CER files: carbon removed from end-use prices and history back to
 # 2000 (see source/cer/cer_source_files.py and source/cer/README.md).
-CER_DIR             = paths.PROCESSED / 'cer'
+CER_DIR             = paths.PROCESSED / 'gov-can/cer'
 MACRO_FILE          = find_cer_file(CER_DIR, 'macro-indicators')
 END_USE_PRICES_FILE = find_cer_file(CER_DIR, 'end-use-prices')
-CIMS_PRICES_FILE = paths.RAW / 'energy_prices/CIMS Prices and Calcs.xlsx'
-OUTPUT_DIR = paths.PROCESSED / 'energy_prices'
+CIMS_PRICES_FILE = paths.LEGACY / 'energy-prices/CIMS Prices and Calcs.xlsx'
+OUTPUT_DIR = paths.PROCESSED / 'energy-prices'
 
 
 
@@ -896,7 +896,7 @@ def main() -> pd.DataFrame:
     print(f"   Years:       {output_df['Year'].min()} – {output_df['Year'].max()}")
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    output_path = OUTPUT_DIR / 'energy_price_multipliers.csv'
+    output_path = OUTPUT_DIR / 'energy-price-multipliers.csv'
     output_df.to_csv(output_path, index=False)
     print(f"   Saved to:    {output_path}")
 
