@@ -33,9 +33,10 @@ import re
 from collections import defaultdict
 from statistics import median
 
-from .common import REFERENCE, fnum, read, split_list
+from .common import RECORDS, REFERENCE, fnum, read, split_list
 from . import bridge, convert, heating
 from .currency import TARGET
+from .roll_up import _product_targets
 from .whole_plant import NEEDS_HOST
 
 PER_CAPACITY = {"capex", "opex-fixed", "decommissioning-cost"}
@@ -1223,6 +1224,9 @@ def normalise(facts, examples, records, units) -> None:
             r["duplicate-of"] = first[k]["record-id"]
             r["excluded"] = (f"repeat: the source prints the same figure for "
                              f"{first[k]['example-id']} (duplicate-of); pooled once")
+    _cross_source_repeats(facts)
+    _equipment_to_installed(facts)
+    _scale_to_reference_size(facts, records)
     # a carrier row split from a MIDDEN total goes with its total, whatever rules
     # the total out: a ruling, a twin, a repeat (pipeline/midden_carriers.py, 2026-10-24)
     for r in facts:
@@ -1251,6 +1255,20 @@ GAS_DENSITY = {"oxygen": 0.001429, "nitrogen": 0.0012506, "co2": 0.001977, "co2-
 GAS_VOLUME = {"m3": 1.0, "1000 m3": 1000.0, "scf": 0.0283168 * 273.15 / 288.71, "Mscf": 28.3168 * 273.15 / 288.71}
 
 
+def _scale(r, k, note, fid="", cls=""):
+    """Multiply a row's normalised value and range by k, and record why (and,
+    if given, the factor id and the conversion class it brings)."""
+    for c in ("value-norm", "value-min-norm", "value-max-norm"):
+        v = fnum(r.get(c))
+        if v is not None:
+            r[c] = f"{v * k:.6g}"
+    r["conversion"] = "; ".join(x for x in (r.get("conversion", ""), note) if x)
+    if fid:
+        r["conversion-factors"] = "; ".join(x for x in (r.get("conversion-factors", ""), fid) if x)
+    if cls:
+        r["conversion-class"] = convert.weakest([r.get("conversion-class") or "unit", cls])
+
+
 def apply_flow_exclusions(flows, factors) -> dict:
     """records/reference/excluded-flow.csv: a flow row ruled out (action exclude) or
     put on the archetype's basis by a registered factor (divide or multiply), as
@@ -1273,11 +1291,7 @@ def apply_flow_exclusions(flows, factors) -> dict:
             stats["factor not found"] += 1
             continue
         k = 1.0 / f if act == "divide" else f
-        for c in ("value-norm", "value-min-norm", "value-max-norm"):
-            v = fnum(r.get(c))
-            if v is not None:
-                r[c] = f"{v * k:.6g}"
-        r["conversion"] = "; ".join(y for y in [r.get("conversion", ""), f"{act} by {x['factor-id']}"] if y)
+        _scale(r, k, f"{act} by {x['factor-id']}")
         stats[act] += 1
     unknown = set(T) - {r.get("record-id", "") for r in flows}
     if unknown:
@@ -1308,11 +1322,7 @@ def _flow_hhv(r, a, pu, per, tnum, units) -> None:
     if h is None:
         r["conversion"] = "; ".join(x for x in [r.get("conversion", ""), f"{label}? no stream, not converted"] if x)
         return
-    for c in ("value-norm", "value-min-norm", "value-max-norm"):
-        x = fnum(r.get(c))
-        if x is not None:
-            r[c] = f"{x * h[0]:.6g}"
-    r["conversion"] = "; ".join(x for x in [r.get("conversion", ""), f"{label} -> HHV x {h[0]:.4g} ({', '.join(h[1])})"] if x)
+    _scale(r, h[0], f"{label} -> HHV x {h[0]:.4g} ({', '.join(h[1])})")
 
 
 def normalise_flows(flows, records, units, examples=None) -> None:
@@ -1360,12 +1370,27 @@ def normalise_flows(flows, records, units, examples=None) -> None:
             elif pu == "GJ" and ec and per == "t" and ecu == "GJ/t" and r.get("example-id") in per_t_product:
                 scale = 1.0 / ec
                 r["conversion"] = f"per {per} of {a.get('product')} -> per GJ ({ec:g} {ecu})"
+            elif (pu == "GJ" and ec and ecu == "GJ/t" and per
+                  and per == service_unit((examples or {}).get(r.get("example-id", "")), "")
+                  and _per_product_t(per, pr, units)):
+                # S186 (Brad 2026-11-20): the example states its product per this unit
+                # (its service unit), so the flow is per unit of the product; put per GJ
+                # with the product's mass (or volume, by its density) energy content
+                t_per = _per_product_t(per, pr, units)
+                scale = 1.0 / (t_per * ec)
+                r["conversion"] = (f"per {per} of {a.get('product')} -> per GJ ({t_per:g} t per {per}, "
+                                   f"{ec:g} {ecu}; S186)")
             else:
                 r["excluded"] = f"per {per}, but the archetype's product is measured in {pu}"
                 continue
         num = (r.get("unit") or "").split("/", 1)[0].replace("Nm3", "m3")
         cls = records.commodities.get(r["commodity"], {}).get("unit-default", "")
         tnum = "GJ" if num in ("GJ", "MJ", "kJ", "TJ", "kWh", "MWh") else "t" if num in ("kg", "t", "g") else num
+        mass_atom = convert.atom(num)
+        if tnum == num and mass_atom and mass_atom[0] == "mass" and num != "t":
+            # a mass in another unit (lb, short ton): by its mass atom, in t (S186)
+            tnum = "t"
+            units.table[(num, "t")] = (mass_atom[1], 0.0)
         # a gas measured by volume on a commodity measured in t: by its density at
         # normal conditions (0 degC, 1 atm; scf at 60 degF), so the rows pool on one
         # basis (general rule 5, 2026-11-05)
@@ -1393,3 +1418,248 @@ def normalise_flows(flows, records, units, examples=None) -> None:
             "" if x is None else f"{x:.6g}" for x in (conv(v), conv(lo), conv(hi)))
         r["unit-norm"] = f"{tnum}/{pu}"
         _flow_hhv(r, a, pu, per, tnum, units)
+
+# Parameters whose values are often round by convention (a 25-year life, a 90%
+# capacity factor, a 100 degC outlet): a match on these counts only with pair
+# evidence, never on the value alone.
+_CONVENTIONAL = {"lifetime", "capacity-factor", "availability", "trl", "construction-time",
+                 "discount-rate", "capital-recovery", "emissions-reduction-potential",
+                 "share-to-capture", "capture-rate", "load-range-min", "pressure-output",
+                 "heat-output-temp", "heat-output-temp-min", "heat-output-temp-max",
+                 "heat-process-temp", "heat-process-temp-min", "heat-process-temp-max",
+                 "heat-waste-temp", "heat-waste-temp-min", "heat-waste-temp-max"}
+
+
+def _sig_digits(v) -> int:
+    """Significant digits of a printed value, trailing zeros not counted (598.39 -> 5,
+    120 -> 2, 0.0350 -> 2, 90 -> 1)."""
+    t = str(v or "").strip().lower()
+    if not t or "e" in t:
+        return 0
+    t = t.lstrip("+-").replace(",", "")
+    if "." in t:
+        t = t.rstrip("0").rstrip(".")
+    d = t.replace(".", "").lstrip("0").rstrip("0")
+    return len(d)
+
+
+def _src_year(sid) -> int:
+    m = re.search(r"_(\d{4})_", str(sid or ""))
+    return int(m.group(1)) if m else 9999
+
+
+def _cross_source_repeats(facts) -> None:
+    """S178 (Brad 2026-11-20): a figure two sources give identically for the same
+    archetype and parameter is usually one number reprinted (UK TIMES through
+    Bataille and UKERC; IEA HPT 2023 through Ager 2023), and is pooled once.
+
+    Guards against excluding a coincidence:
+      * the normalised values must match to 6 significant figures and be non-zero;
+      * the printed value must carry 4 or more significant digits, or 3 when both
+        sources print the same figure in the same unit (598.39 and 25.7, not 90, 25,
+        or 55.5 kWh/kg against 0.1998 GJ/kg), and the parameter must not be one with
+        conventional round values (lives, capacity factors, temperatures), OR
+        the same two examples match on 3 or more parameters (pair evidence: one
+        source copied the other's data sheet);
+      * a pair ruled independent in records/reference/cross-source-distinct.csv is
+        never merged.
+    The row kept is the earlier source (the original a later one reprints), then the
+    higher-ranked one; the other points to it in duplicate-of."""
+    rank = {r["source-id"]: fnum(r.get("rank")) or 9 for r in read(REFERENCE / "source-priority.csv")}
+    distinct = {frozenset((r["example-id-a"], r["example-id-b"]))
+                for r in read(REFERENCE / "cross-source-distinct.csv")}
+    live = [r for r in facts if not r.get("excluded") and r.get("archetype") not in ("", "(none)", None)
+            and fnum(r.get("value-norm"))]
+    groups = defaultdict(list)
+    for r in live:
+        v = fnum(r["value-norm"])
+        k = (r["archetype"], r["parameter"], r.get("target-norm", ""), r.get("unit-norm"), f"{v:.6g}")
+        groups[k].append(r)
+    # pair evidence: how many parameters two examples of different sources share exactly
+    pair_n = defaultdict(int)
+    multi = {k: g for k, g in groups.items() if len({x.get("source-id") for x in g}) > 1}
+    for k, g in multi.items():
+        exs = sorted({(x["example-id"], x.get("source-id")) for x in g})
+        for i, (ea, sa) in enumerate(exs):
+            for eb, sb in exs[i + 1:]:
+                if sa != sb:
+                    pair_n[frozenset((ea, eb))] += 1
+    for k, g in multi.items():
+        g = sorted(g, key=lambda x: (_src_year(x.get("source-id")), rank.get(x.get("source-id"), 9),
+                                     x["record-id"]))
+        keep = g[0]
+        for r in g[1:]:
+            if r.get("source-id") == keep.get("source-id") or r.get("excluded"):
+                continue
+            pair = frozenset((keep["example-id"], r["example-id"]))
+            if pair in distinct:
+                continue
+            n = pair_n.get(pair, 0)
+            digits = min(_sig_digits(r.get("value")), _sig_digits(keep.get("value")))
+            same_print = (fnum(r.get("value")) == fnum(keep.get("value"))
+                          and (r.get("unit") or "") == (keep.get("unit") or ""))
+            specific = k[1] not in _CONVENTIONAL and (digits >= 4 or (digits >= 3 and same_print))
+            if not (specific or n >= 3):
+                continue
+            why = (f"{_sig_digits(r.get('value'))}-digit printed value" if specific else "")
+            if n >= 3:
+                why = (why + "; " if why else "") + f"the two examples match on {n} parameters"
+            r["duplicate-of"] = keep["record-id"]
+            r["excluded"] = (f"cross-source repeat: {keep.get('source-id')} gives the same figure "
+                             f"({why}), so it is one number reprinted; pooled once (S178, Brad 2026-11-20)")
+
+def _per_product_t(per, pr, units):
+    """t of product in one `per` (kg, lb, t; or l, gal, m3 by the product's density)."""
+    at = convert.atom(per)
+    if not at:
+        return None
+    if at[0] == "mass":
+        return at[1]                     # the mass atoms are in t
+    den = fnum(pr.get("product-density"))
+    if at[0] == "volume" and den and pr.get("product-density-unit") == "t/m3":
+        return at[1] * den               # the volume atoms are in m3
+    return None
+
+INSTALLED = ("installed", "total-plant", "overnight")
+
+
+def installation_factors():
+    """archetype equipment -> (factor-id, factor, row) from
+    records/reference/installation-factor.csv by the equipment's lifetime class
+    (records/fill/equipment-class.csv); classes with no pair take `default`."""
+    fac = {r["class"]: r for r in read(REFERENCE / "installation-factor.csv")}
+    cls = {r["equipment"]: r["lifetime-class"] for r in read(RECORDS / "fill" / "equipment-class.csv")}
+    # equipment whose installation factor is not its lifetime class's (S179, Brad 2026-11-20)
+    cls.update({r["equipment"]: r["class"] for r in read(REFERENCE / "installation-class.csv")})
+
+    def of(archetype):
+        c = cls.get((archetype or "").split("_")[0], "")
+        r = fac.get(c) or fac["default"]
+        k = c if c in fac else "default"
+        return f"cf-installation-{k}", fnum(r["factor"]), r
+    return of
+
+
+def _equipment_to_installed(facts) -> None:
+    """S179 (Brad 2026-11-20): an equipment-only capex is put on the installed basis
+    before pooling. Where the same example also prints an installed (or total-plant,
+    overnight) capex, the equipment row is not pooled: the example counts once, on
+    the installed figure. Otherwise its value is multiplied by the class
+    installation factor (records/reference/installation-factor.csv, registered in
+    conversion-factor.csv), so it counts as converted (external) and is shaded so."""
+    of = installation_factors()
+    inst = defaultdict(list)
+    for r in facts:
+        if (r["parameter"] == "capex" and not r.get("excluded") and r.get("cost-basis") in INSTALLED
+                and r.get("value-norm")):
+            inst[(r["example-id"], r.get("target-norm", ""))].append(r)
+    for r in facts:
+        if (r["parameter"] != "capex" or r.get("excluded") or r.get("set-aside")
+                or r.get("cost-basis") != "equipment" or not r.get("value-norm")):
+            continue
+        twins = inst.get((r["example-id"], r.get("target-norm", "")))
+        if twins:
+            r["duplicate-of"] = twins[0]["record-id"]
+            r["excluded"] = ("equipment-only capex of an example that also prints an installed capex "
+                             "(duplicate-of); pooled once, on the installed figure (S179, Brad 2026-11-20)")
+            continue
+        fid, f, row = of(r.get("archetype"))
+        if f is None or f <= 0:
+            raise SystemExit(f"installation-factor.csv: {fid} has no usable factor")
+        if f == 1.0:                     # bought ready to run (mobile equipment): no change
+            continue
+        _scale(r, f, f"equipment-only -> installed x {f:g} ({fid}; S179)", fid,
+               "ratio" if row.get("grade") == "sourced" else "assumption")
+
+SCALE_CLAMP = 10.0   # an example more than 10x from the reference size is scaled as if at 10x
+
+
+def _scale_to_reference_size(facts, records=None) -> None:
+    """S173 (Brad 2026-11-20): on the archetypes in records/reference/scale-exponent.csv,
+    each example's capex (per unit of capacity) is put at the archetype's reference
+    size before pooling: x (reference / example capacity)^(exponent - 1). The
+    reference size is the median of the archetype's pooled capacity rows (the facility
+    size where facility statistics set it), or the size in records/reference/
+    reference-size.csv where a ruling sets it. The ratio is clamped to 1/10-10x so a
+    far-off example is not extrapolated.
+
+    An example's own size, in order (Brad 2026-11-20: every example scales):
+      1. the median of its capacity rows, pooled or not, counting rows on the
+         archetype's own product (target heat on a boiler, rolled up later) and,
+         where a row gives only a range, the range's midpoint;
+      2. else a size its source states outside a capacity row, or a judged size,
+         from records/reference/example-size.csv;
+      3. else the median own size of the archetype's sized examples (an assumed
+         size: the source describes a typical unit of its pool)."""
+    exps = {r["archetype"]: fnum(r["exponent"]) for r in read(REFERENCE / "scale-exponent.csv")}
+    if not exps:
+        return
+    arch = {a["archetype"]: a for a in (records.archetypes if records else [])}
+    prod = {a: _product_targets(arch.get(a, {"archetype": a})) for a in exps}
+
+    def size(r):
+        v = fnum(r.get("value-norm"))
+        if v is None:
+            lo, hi = fnum(r.get("value-min-norm")), fnum(r.get("value-max-norm"))
+            v = (lo + hi) / 2 if lo is not None and hi is not None else None
+        return v if v and v > 0 else None
+    ref, own = defaultdict(list), defaultdict(list)
+    for r in facts:
+        a = r.get("archetype")
+        if r["parameter"] != "capacity" or a not in exps:
+            continue
+        t = r.get("target-norm") or ""
+        if t and t not in prod[a]:
+            continue
+        v = size(r)
+        if v is None:
+            continue
+        own[(r["example-id"], r.get("unit-norm"))].append(v)
+        if not r.get("excluded") and not r.get("duplicate-of") and fnum(r.get("value-norm")):
+            ref[(a, r.get("unit-norm"))].append(v)
+    refsize = {}
+    for (a, u), vs in ref.items():
+        if len(vs) >= max(len(x) for (aa, uu), x in ref.items() if aa == a):
+            refsize[a] = (median(vs), u)
+    # a reference size set by ruling (records/reference/reference-size.csv) replaces
+    # the pooled median (Brad 2026-11-20: boilers at the heavy-industry size)
+    for r in read(REFERENCE / "reference-size.csv"):
+        if r["archetype"] in exps:
+            refsize[r["archetype"]] = (fnum(r["capacity"]), r["unit"])
+    stated = {x["example-id"]: x for x in read(REFERENCE / "example-size.csv")}
+    capex = [r for r in facts if r["parameter"] == "capex" and r.get("archetype") in refsize
+             and not r.get("excluded") and not r.get("set-aside") and not r.get("target-norm")
+             and r.get("value-norm")]
+    # the typical size of each archetype's sized examples (step 3)
+    typical = defaultdict(list)
+    for r in capex:
+        u = refsize[r["archetype"]][1]
+        cs = own.get((r["example-id"], u))
+        x = stated.get(r["example-id"])
+        if cs:
+            typical[r["archetype"]].append(median(cs))
+        elif x and x["unit"] == u:
+            typical[r["archetype"]].append(fnum(x["capacity"]))
+    typical = {a: median(v) for a, v in typical.items() if v}
+    for r in capex:
+        a = r["archetype"]
+        cref, u = refsize[a]
+        cs = own.get((r["example-id"], u))
+        x = stated.get(r["example-id"])
+        if cs:
+            cex, how, cls = median(cs), "", "ratio"
+        elif x and x["unit"] == u:
+            cex = fnum(x["capacity"])
+            how = f" (size {x['basis']}: records/reference/example-size.csv)"
+            cls = "ratio" if x["basis"] == "stated by the source" else "assumption"
+        elif a in typical:
+            cex, how, cls = typical[a], " (no size stated: assumed at the median of the sized examples)", "assumption"
+        else:
+            continue
+        ratio = min(max(cref / cex, 1 / SCALE_CLAMP), SCALE_CLAMP)
+        if abs(ratio - 1) < 1e-9:
+            continue
+        k = ratio ** (exps[a] - 1)
+        fid = f"cf-scale-{a}"
+        _scale(r, k, f"scaled from {cex:g}{how} to the reference {cref:g} {u} at exponent {exps[a]:g}: "
+                     f"x {k:.4g} ({fid}; S173)", fid, cls)

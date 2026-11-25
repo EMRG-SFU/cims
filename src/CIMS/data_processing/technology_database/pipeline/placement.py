@@ -8,6 +8,7 @@
               capacity, component and stack lifetimes, efficiency by stream,
               operating ranges, load-range-min, degradation-rate)
   removed     archetype-parameter.csv only; dropped from every wide view
+              (the sourced levelized cost among them, S176: see levelized-check.csv)
 """
 from __future__ import annotations
 
@@ -18,7 +19,11 @@ MAIN_TARGETS = {("efficiency", "electricity"), ("efficiency", "heat"),
 MAIN_ANY_TARGET = {"capture-rate", "share-to-capture"}
 REMOVED = {(p, t) for p in ("heat-output-temp", "heat-process-temp")
            for t in ("exhaust", "flue-gas", "heat", "steam")} | {
-    ("capex", "brownfield"), ("capex", "first-of-a-kind")}
+    ("capex", "brownfield"), ("capex", "first-of-a-kind"),
+    # S176 (Brad 2026-11-20): the levelized cost a source prints is a check on the
+    # calculated one, not a model value: archetype-parameter.csv and the
+    # levelized-check.csv report only
+    ("cost-levelized", "")}
 REMOVED_ANY_TARGET = {"pressure-output", "abatement-cost"}
 EMISSIONS = {"emissions-combustion", "emissions-process", "emissions-total", "emissions-captured",
              "emissions-biomass"}

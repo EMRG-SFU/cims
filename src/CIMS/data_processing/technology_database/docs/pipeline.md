@@ -2,16 +2,15 @@
 
 > **Short paths.** `records/` stands for `data/technology_database/`, `output/` for
 > `data/processed_data/technology_database/`, and `pipeline/` for the package's
-> `pipeline/` folder (`src/technology_database/pipeline/`, or
-> `src/CIMS/data_processing/technology_database/pipeline/` in CIMS). The extractions are in
+> `pipeline/` folder (`src/CIMS/data_processing/technology_database/pipeline/`). The extractions are in
 > `data/raw_data/technology_database/` and the documents in `primary-sources/`.
 
 One entry point, run from the repo root:
 
 ```
-python -m technology_database.build              # everything
-python -m technology_database.build --check      # stop after the checks
-python -m technology_database.build --quantified-only   # the wide view lists only archetypes with pooled numbers
+python -m CIMS.data_processing.technology_database.build              # everything
+python -m CIMS.data_processing.technology_database.build --check      # stop after the checks
+python -m CIMS.data_processing.technology_database.build --quantified-only   # the wide view lists only archetypes with pooled numbers
 ```
 
 It reads `data/raw_data/technology_database/` and `data/technology_database/`. It writes
@@ -101,20 +100,23 @@ gate a commit.
 
 ## How to
 
-**Add a source.** Pick it from `source-intake/to-get.csv` where it is listed there,
+**Add a source.** Steps 1, 2, and 8 happen in the technology-database repository, where the
+primary sources and the extractions' authoring copy live; copy the extractions into the CIMS
+worktree (`data/raw_data/technology_database/`) before step 3, and make steps 3 to 7 there,
+on a CIMS branch. Pick the source from `source-intake/to-get.csv` where it is listed there,
 and remove it from that list once it is held. If it cannot be obtained, move its row to
 `source-intake/unavailable.csv` with the reason and any substitute. If the
 document turns out to hold nothing usable, put it in `primary-sources/background-no-data-extracted/`
 and add a row to `data/raw_data/technology_database/background-register.csv` instead of registering it.
 1. Put the document in its publisher folder under `primary-sources/` (new downloads arrive in
    `primary-sources/to-process/`), named `author_year_slug[_source]`.
-2. Extract it to a long CSV in the template format (`src/technology_database/extraction/input_template.py`),
+2. Extract it to a long CSV in the template format (`src/CIMS/data_processing/technology_database/extraction/input_template.py`),
    in the same publisher folder under `data/raw_data/technology_database/`. A multi-context source also
    gets a `_nodes.csv`, and every extraction a `_meta.csv` (licence, citation and extraction notes). A
    source that needs code (a workbook, a bulk download, a PDF table) gets a script
    beside its CSVs in the raw data (so it goes to FRDR with them), which reads the document
    from the same folder under `primary-sources/`.
-3. Register it with `src/technology_database/extraction/register_source.py` (the manifest,
+3. Register it with `src/CIMS/data_processing/technology_database/extraction/register_source.py` (the manifest,
    `source-details_sources.csv` with its `licence_type`, and `source-details_files.csv`; the citation
    and priority records; the loader line), or by hand.
 4. Add its loader to `pipeline/extract.py` if `register_source.py` did not: a file in the template format needs one line in `TEMPLATE_FILES`. A file in the ETSAP-brief shape (process/technology rows with `_nodes` and optional `_flows`) needs one line in `ETSAP_BRIEFS`, or in `BRIEF_SHAPE` with the region of its data for a non-ETSAP source.
@@ -145,5 +147,5 @@ deflator_exchange builder (`src/CIMS/data_processing/source/deflator_exchange/`)
 
 ## Other checks
 
-- `python src/technology_database/extraction/check_manifest.py`: the source manifest against the disk and against the build's outputs.
-- `python src/technology_database/extraction/check_names.py`: names in the extraction layer and the YAML tree.
+- `python src/CIMS/data_processing/technology_database/extraction/check_manifest.py`: the source manifest against the disk and against the build's outputs.
+- `python src/CIMS/data_processing/technology_database/extraction/check_names.py`: names in the extraction layer and the YAML tree.

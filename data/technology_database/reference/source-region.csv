@@ -1,4 +1,4 @@
-source-id,publisher-region,default-basis,how
+﻿source-id,publisher-region,default-basis,how
 abbas-wan-daud_2010_001,global,LHV,dominant region of the source's data rows
 abella_2012_001,Canada,HHV,publisher or author institution
 abella_2022_001,Canada,HHV,publisher or author institution
@@ -565,3 +565,18 @@ aer_2026_003,Canada,HHV,publisher or author institution
 aer_2026_005,Canada,HHV,publisher or author institution
 aer_2025_001,Canada,HHV,publisher or author institution
 bcer_2026_001,Canada,HHV,publisher or author institution
+gem_2026_001,global,HHV,publisher or author institution
+gem_2026_002,global,HHV,publisher or author institution
+gem_2026_003,global,HHV,publisher or author institution
+gem_2026_004,global,HHV,publisher or author institution
+gem_2025_001,global,HHV,publisher or author institution
+gem_2026_005,global,HHV,publisher or author institution
+gem_2026_006,global,HHV,publisher or author institution
+gem_2026_007,global,HHV,publisher or author institution
+gem_2026_008,global,HHV,publisher or author institution
+gem_2025_002,global,HHV,publisher or author institution
+xu_2022_001,US,LHV,GREET model convention (LHV); survey of US plants
+sievert_2024_001,global,LHV,author institution (Switzerland); no energy values loaded
+scott_2025_001,US,HHV,dominant region of the source's data rows
+wu_2025_001,US,HHV,dominant region of the source's data rows
+mi_2022_001,global,LHV,states MJ LHV

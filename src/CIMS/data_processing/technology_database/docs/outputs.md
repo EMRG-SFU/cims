@@ -1,6 +1,6 @@
 # Build outputs
 
-Everything in `data/processed_data/technology_database/` is written by `python -m CIMS.data_processing.technology_database.build` and is overwritten on the next build. Do not edit these files: change the records (`data/technology_database/`) or the source extractions (`data/raw_data/technology_database/`) and rebuild. [`src/technology_database/docs/pipeline.md`](pipeline.md) describes the build stages, and [`src/technology_database/docs/design.md`](design.md) the rules behind the values.
+Everything in `data/processed_data/technology_database/` is written by `python -m CIMS.data_processing.technology_database.build` and is overwritten on the next build. Do not edit these files: change the records (`data/technology_database/`) or the source extractions (`data/raw_data/technology_database/`) and rebuild. [`src/CIMS/data_processing/technology_database/docs/pipeline.md`](pipeline.md) describes the build stages, and [`src/CIMS/data_processing/technology_database/docs/design.md`](design.md) the rules behind the values.
 
 All energy is on a higher heating value (HHV) basis, all costs are in 2025 Canadian dollars, and every value is per unit of the archetype's product (`product-unit` in `archetype.csv`) unless a column says otherwise.
 

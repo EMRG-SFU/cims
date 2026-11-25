@@ -2,7 +2,7 @@
 tables, and add its loader line. Idempotent: existing rows for the source-id are
 replaced.
 
-    python src/technology_database/extraction/register_source.py spec.json      (run from anywhere)
+    python src/CIMS/data_processing/technology_database/extraction/register_source.py spec.json      (run from anywhere)
 
 spec.json: {"source_id", "folder" (the publisher folder, the same under data/raw_data/technology_database/ and primary-sources/), "stem", "doc_ext",
             "original_name", "author", "institution", "title", "description",
@@ -16,8 +16,7 @@ import re
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
-from paths import RAW, RECORDS  # noqa: E402
+from CIMS.data_processing.technology_database.extraction.paths import RAW, RECORDS
 
 REF = RECORDS / "reference"
 EXTRACT = Path(__file__).resolve().parents[1] / "pipeline" / "extract.py"

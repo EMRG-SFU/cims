@@ -1,15 +1,15 @@
 """Build the harmonized technology database. The one entry point.
 
-    python -m technology_database.build            everything
-    python -m technology_database.build --check    stop after the checks (no outputs)
-    python -m technology_database.build --record-keys
+    python -m CIMS.data_processing.technology_database.build            everything
+    python -m CIMS.data_processing.technology_database.build --check    stop after the checks (no outputs)
+    python -m CIMS.data_processing.technology_database.build --record-keys
                                                first add the key of every newly keyed record
                                                to records/reference/record-key.csv
-    python -m technology_database.build --quantified-only
+    python -m CIMS.data_processing.technology_database.build --quantified-only
                                                the wide view lists only archetypes with
                                                pooled numbers (default: every archetype)
 
-Stages (src/technology_database/docs/pipeline.md):
+Stages (src/CIMS/data_processing/technology_database/docs/pipeline.md):
   1. hierarchy   stamp records/cims-hierarchy.csv, report what changed, and hold
                  every path in the records to it
   2. records     load the archetypes and vocabularies and hold them to the rules
@@ -33,18 +33,12 @@ from __future__ import annotations
 
 import sys
 from collections import Counter
-from pathlib import Path
 
-if __package__ in (None, ""):
-    # run as a script (python src/technology_database/build.py): import the package it sits in
-    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-    __package__ = "technology_database"
-    import technology_database  # noqa: F401,E402
-
-from .pipeline import (assembly, net_sec, feedstock, supplied_heat, capital_share, service_request, chain_validation, gwp, capture_energy, capture_share, carriers, checks, correction, ukerc_saving, currency, examples, extract,  # noqa: E402
+from .pipeline import (assembly, net_sec, feedstock, supplied_heat, capital_share, service_request, chain_validation, gwp, capture_energy, capture_share, carriers, checks, correction, ukerc_saving, currency, examples, extract,
                       bands, factor_use, facts, fill, hierarchy, normalise, placement, records, reports, roll_in, roll_up, sources,
-                      summarise, views, whole_plant, workbook)
-from .pipeline.common import OUTPUT, write  # noqa: E402
+                      summarise, views, whole_plant, workbook,
+                      carbon_balance, fuel_choice, levelized_check, midden_carriers, sector_size)
+from .pipeline.common import OUTPUT, REFERENCE, read, split_list, write
 
 FACT_COLS = ["record-id", "example-id", "archetype", "source-technology", "parameter", "target",
              "value", "value-min", "value-max", "unit", "value-norm", "value-min-norm",
@@ -65,7 +59,7 @@ EX_COLS = ["example-id", "archetype", "mapping", "source-id", "source-technology
            "detail", "sector-reported", "end-use-reported", "step-reported",
            "service-unit-reported", "description", "trl", "trl-as-reported", "trl-scale",
            "state-of-development", "year-available", "extraction-file", "note"]
-SUM_COLS = ["central", "low", "high", "n", "n-external", "n-corrected", "central-from", "external-factors",
+SUM_COLS = ["central", "low", "high", "p25", "p75", "n", "n-external", "n-corrected", "central-from", "external-factors",
             "sources", "examples"]
 FILL_COLS = ["grade", "method", "rule-id", "inputs", "rationale"]
 
@@ -114,7 +108,6 @@ def main(argv) -> int:
               "(records/reference/source-correction.csv)")
     # a record whose parameter the extraction got wrong (biogenic CO2 entered as
     # combustion or process CO2): records/reference/parameter-remap.csv (2026-10-14)
-    from .pipeline.common import REFERENCE, read, split_list
     remap = {r["record-id"]: r for r in read(REFERENCE / "parameter-remap.csv")}
     unknown = set(remap) - {r["record-id"] for r in L.facts}
     if unknown:
@@ -128,7 +121,6 @@ def main(argv) -> int:
             r["parameter"] = x["parameter"]
     if remap:
         print(f"  parameters re-mapped: {len(remap)} rows (records/reference/parameter-remap.csv)")
-    from .pipeline import midden_carriers
     mc = midden_carriers.apply(L.facts)
     print("  " + ", ".join(f"{k} {v}" for k, v in mc.items()))
     if "--record-keys" in argv:
@@ -243,8 +235,7 @@ def main(argv) -> int:
     have = {(r["archetype"], r.get("target", "")) for r in psum
             if r["parameter"] == "specific-energy-consumption" and r.get("central") not in ("", None)}
     # carriers moved to the alternatives table on purpose (fuel_choice, 2026-11-07)
-    from .pipeline import fuel_choice as _fc
-    moved = {(r["archetype"], r.get("target", "")) for r in _fc.alternatives}
+    moved = {(r["archetype"], r.get("target", "")) for r in fuel_choice.alternatives}
     gaps = {}
     for r in L.facts:
         a = rec.by_key.get(r.get("archetype", ""))
@@ -322,6 +313,7 @@ def main(argv) -> int:
     write(OUTPUT / "example-constraint.csv", CONS_COLS, L.cons)
     order = {a["archetype"]: i for i, a in enumerate(rec.archetypes)}
     psum.sort(key=lambda r: (order.get(r["archetype"], 9999), r["parameter"], r["target"]))
+    print(f"  carbon-balance fixes (S184): {carbon_balance.apply_fixes(psum, rec)} rows")
     post = checks.summaries(psum)
     if post:
         for k, v in post.items():
@@ -330,13 +322,20 @@ def main(argv) -> int:
     fsum.sort(key=lambda r: (order.get(r["archetype"], 9999), r["direction"], r["commodity"]))
     # secondary parameters (values by stream or part) have their own file
     # (modeller 2026-10-09); views still see every summary
+    # the interquartile range describes the pooled median only (S172): blank it where
+    # the central value came from elsewhere (a central choice, a fill, a host)
+    for r in psum:
+        if not str(r.get("central-from", "")).startswith(("median of", "weighted median")):
+            r["p25"] = r["p75"] = ""
     sec = [r for r in psum if placement.placement(r["parameter"], r["target"]) == "secondary"]
     main = [r for r in psum if placement.placement(r["parameter"], r["target"]) != "secondary"]
     write(OUTPUT / "archetype-parameter.csv",
           ["archetype", "parameter", "target", "unit"] + SUM_COLS + FILL_COLS, main)
+    levelized_check.write_check(psum, L.facts)
+    print(f"  sector sizes for the export to CIMS: {sector_size.write_sizes(psum, OUTPUT)} rows")
+    print("  carbon balance (S184): " + ", ".join(f"{k} {v}" for k, v in sorted(carbon_balance.check(psum, rec).items())))
     # the carriers left out of the wide view: other fuels, purchased steam against
     # on-site firing, other estimates (Brad 2026-11-07); CSV only, not in the workbook
-    from .pipeline import fuel_choice
     alt = fuel_choice.alt_rows(psum, rec)
     alt.sort(key=lambda r: (order.get(r["archetype"], 9999), r["rank"] == "", r["rank"] or 0, r["carrier"]))
     write(OUTPUT / "archetype-alternative-carrier.csv", fuel_choice.ALT_COLS, alt)
@@ -426,6 +425,19 @@ def main(argv) -> int:
         "the heat it rejects that waste-heat recovery could use, for the same rows as the archetypes sheet. "
         "Each has a tier on every archetype and a temperature where the sources give one; a tier from a "
         "sourced temperature is shaded as sourced, a judgement as a guess.")
+    # S183 (Brad 2026-11-20): how archetypes stack, banded by the requesting archetype's family
+    a_fam = {a["archetype"]: a.get("family", "") for a in rec.archetypes}
+    a_lab = {a["archetype"]: a.get("label", "") for a in rec.archetypes}
+    sr_band = []
+    for f in fam_order:
+        for r in sorted((x for x in sr if a_fam.get(x["archetype"]) == f), key=lambda x: (x["archetype"], x["request"])):
+            sr_band.append(dict(r, label=a_lab.get(r["archetype"], ""), _band=f))
+    # the finding and decided columns stay in the CSV only (Brad 2026-11-20)
+    sr_cols = ["archetype", "label"] + [c for c in service_request.COLS if c not in ("archetype", "finding", "decided")]
+    banded["service-requests"] = (sr_cols, sr_band, {}, {}, "_band", "",
+                                  "What each archetype requests from other CIMS nodes per unit of its product: "
+                                  "the intermediate it buys (clinker, hydrogen), the steam or heat it draws, the "
+                                  "CO2 it sends to capture. Quantities with low and high, grade, basis, and source.")
     banded["source-list"] = (sources.COLS, src_band, {}, {}, "_band", "", "The sources, by the family they inform.")
     sheet_of = {"archetypes": "wide-archetype", **{n: "wide-carriers-species" for n in SPLIT},
                 "heat": "wide-heat"}

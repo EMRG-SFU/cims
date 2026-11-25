@@ -10,6 +10,9 @@ archetype rather than keeping every source's number side by side. The rule:
   * low/high the smallest and largest value any example gives, including the
              ranges sources report themselves; written only where the values
              actually spread;
+  * p25/p75  the 25th and 75th percentiles of the examples' values, where four or
+             more examples carry one (S172): the wide view shows them as _low/_high,
+             and low/high keep the full range;
   * n        the number of examples behind the numbers, always shown, so thin
              evidence is visible;
   * n-external  how many of those examples reached the archetype's basis only
@@ -98,6 +101,16 @@ def _wquantile(pairs, q):
     return pairs[-1][0]
 
 
+def _quantile(xs, q):
+    """Linear-interpolation quantile of sorted values (numpy's default). Kept rather than
+    statistics.quantiles(method="inclusive"): the same quantile, but its different order
+    of operations moves some values in the sixth significant digit."""
+    pos = (len(xs) - 1) * q
+    lo = int(pos)
+    hi = min(lo + 1, len(xs) - 1)
+    return xs[lo] + (xs[hi] - xs[lo]) * (pos - lo)
+
+
 def summarise(rows, records, keys, examples_by_id):
     """Rows (already normalised, excluded ones skipped) -> one summary per
     (archetype, *keys, unit-norm)."""
@@ -174,7 +187,19 @@ def summarise(rows, records, keys, examples_by_id):
         row = dict(zip(("archetype",) + tuple(keys) + ("unit",), k))
         if wrange is not None:
             vals = {round(x, 9) for p in per for x in p["all"]}
+        # interquartile range of the examples' values (S172, Brad 2026-11-20): what the
+        # wide view shows as _low/_high where four or more examples carry a value; the
+        # full range stays in low and high here
+        q25 = q75 = ""
+        if len(with_c) >= 4:
+            if wrange is None:
+                cs = sorted(p["central"] for p in with_c)
+                lo, hi = _quantile(cs, 0.25), _quantile(cs, 0.75)
+            else:
+                lo, hi = _wquantile(pairs, 0.25), _wquantile(pairs, 0.75)
+            q25, q75 = f"{lo:.6g}", f"{hi:.6g}"
         row.update({"central": "" if central is None else f"{central:.6g}",
+                    "p25": q25, "p75": q75,
                     "low": (f"{wrange[0]:.6g}" if wrange is not None
                             else f"{min(vals):.6g}" if len(vals) > 1 else one_lo),
                     "high": (f"{wrange[1]:.6g}" if wrange is not None

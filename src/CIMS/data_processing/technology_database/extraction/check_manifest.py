@@ -1,6 +1,6 @@
 """Check the source manifest against the disk and against the database.
 
-Run from anywhere:   python src/technology_database/extraction/check_manifest.py
+Run from anywhere:   python src/CIMS/data_processing/technology_database/extraction/check_manifest.py
 
 The manifest is two hand-maintained CSVs -- source-details_sources.csv (one row
 per source) and source-details_files.csv (one row per file held for a source).
@@ -27,8 +27,7 @@ import csv
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
-from paths import OUTPUT, PRIMARY, RAW, RECORDS, ROOT  # noqa: E402
+from CIMS.data_processing.technology_database.extraction.paths import OUTPUT, PRIMARY, RAW, RECORDS, ROOT
 
 SOURCES = RAW / "source-details_sources.csv"
 FILES = RAW / "source-details_files.csv"

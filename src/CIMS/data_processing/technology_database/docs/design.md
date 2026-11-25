@@ -2,8 +2,7 @@
 
 > **Short paths.** `records/` stands for `data/technology_database/`, `output/` for
 > `data/processed_data/technology_database/`, and `pipeline/` for the package's
-> `pipeline/` folder (`src/technology_database/pipeline/`, or
-> `src/CIMS/data_processing/technology_database/pipeline/` in CIMS). The extractions are in
+> `pipeline/` folder (`src/CIMS/data_processing/technology_database/pipeline/`). The extractions are in
 > `data/raw_data/technology_database/` and the documents in `primary-sources/`.
 
 The rules the database follows. The reasoning behind each rule is in the dated

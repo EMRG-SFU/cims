@@ -1,8 +1,8 @@
 """Check the names in the extraction layer and the CIMS YAML tree.
 
-Run from the repo root:   python src/technology_database/extraction/check_names.py
+Run from the repo root:   python src/CIMS/data_processing/technology_database/extraction/check_names.py
 
-The convention (src/technology_database/docs/design.md, Naming):
+The convention (src/CIMS/data_processing/technology_database/docs/design.md, Naming):
     '-' joins words within a component.  '_' separates components.
 
 Source data files are author_year_slug[_source]. A sidecar of a source
@@ -13,7 +13,7 @@ format, .docx and .mhtml included, or its main extraction .csv).
 
 Extraction technology names are each source's own labels since the 2026-09-23
 archetype restructure: records/source-example.csv maps them to archetypes, and
-the database build (src/technology_database/build.py) checks the archetype keys. Here
+the database build (src/CIMS/data_processing/technology_database/build.py) checks the archetype keys. Here
 they only have to follow the shape rule (lowercase hyphenated components joined
 by '_'). The controlled equipment/carrier/variant vocabulary in
 data/raw_data/technology_database/extraction-vocabulary.csv still applies to the CIMS YAML layer
@@ -30,8 +30,7 @@ import re
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
-from paths import PRIMARY, RAW, RECORDS, ROOT  # noqa: E402
+from CIMS.data_processing.technology_database.extraction.paths import PRIMARY, RAW, RECORDS, ROOT
 
 VOCAB_CSV = RAW / "extraction-vocabulary.csv"
 STM = ROOT / "cims" / "service-technology-map"   # the CIMS YAML layer; tech_data only, skipped when absent
@@ -325,7 +324,7 @@ def main() -> int:
         for p in problems:
             print("  " + p)
         return 1
-    print("\nall names conform to the naming convention (src/technology_database/docs/design.md, section 3).")
+    print("\nall names conform to the naming convention (src/CIMS/data_processing/technology_database/docs/design.md, section 3).")
     return 0
 
 
