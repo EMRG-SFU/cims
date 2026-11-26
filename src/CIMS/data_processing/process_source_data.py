@@ -47,7 +47,7 @@ MODULES = [
     # Emission factors
     f"{PACKAGE}.emission_factors.emission_factors",
     # Energy prices — multipliers imports prices directly, so run prices
-    # first to also produce the intermediate processed_data output.
+    # first to also produce the intermediate processed output.
     f"{PACKAGE}.energy_prices.energy_prices",
     f"{PACKAGE}.energy_prices.energy_price_multipliers",
     # NRCan CEUD

@@ -1,19 +1,19 @@
 # Currency deflator and exchange rate tables
 
-`currency_deflator.csv` and `currency_exchange.csv` back `CIMS.Model`'s optional
+`processed/currency/currency-deflator.csv` and `processed/currency/currency-exchange.csv` back `CIMS.Model`'s optional
 currency conversion (`target_units` / `deflator_path` / `exchange_path`).
 
 [`deflator_exchange.py`](deflator_exchange.py) in this directory builds them into
-**`data/processed_data/deflator_exchange/`**, alongside every other generated
+**`data/processed/currency/`**, alongside every other generated
 output. They are therefore **not committed** — `data/.gitignore` excludes
-`processed_data/**/*.csv` — and neither are the raw downloads they derive from.
+`processed/**/*.csv` — and neither are the raw downloads they derive from.
 A fresh clone has neither, so anything that reads these tables (see
 `scenarios/Reference.py`) needs the raw files staged and this script rerun first.
 
 Both files use the same three-column contract, plus a `Source` column that the
 loader ignores:
 
-| Column | `currency_deflator.csv` | `currency_exchange.csv` |
+| Column | `processed/currency/currency-deflator.csv` | `processed/currency/currency-exchange.csv` |
 | --- | --- | --- |
 | `Context` | ISO currency code (e.g. `CAD`, `USD`) | rate name, `<TARGET>_per_<SOURCE>` (e.g. `CAD_per_USD`) |
 | `Year` | dollar-year | year the rate applies to |
@@ -26,7 +26,7 @@ The data pipeline converts currency with the same tables and the same
 converted in the pipeline and one converted by `CIMS.Model` at read time agree
 exactly. Every model input the pipeline writes carries a `YYYY_CCC` unit
 (`2020_CAD`, `2025_CAD/GJ`), which is what CIMS needs to convert a row. The
-`currency_*` settings in `data/mappings_conversions/control.py` choose the year and
+`currency_*` settings in `data/config/control.py` choose the year and
 currency assumed for bare `$` template units, and whether the pipeline writes
 values as tagged (CIMS converts) or converts them itself to a set output year and
 currency. Run this builder before the rest of the pipeline.
@@ -85,7 +85,7 @@ the pre-euro **NLG** and **DEM**. Deflators after 2025 are forecasts (see below)
 | Exchange | Monthly average rates, 2017 onward | Statistics Canada / Bank of Canada |
 | Exchange | Legacy monthly average noon rates, through 2016 | Bank of Canada (discontinued 2017-04-28) |
 
-Both tables are built from the raw downloads in `data/raw_data/deflator_exchange/`.
+Both tables are built from the raw downloads in `data/extracted/currency/`.
 Rerun the script to refresh or extend them; the year range follows whatever the raw
 files support, so a longer export needs no code change. Per-row provenance is
 recorded in the `Source` column.

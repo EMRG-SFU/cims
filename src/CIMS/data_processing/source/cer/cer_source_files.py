@@ -22,10 +22,10 @@ cost of carbon). CIMS adds its own carbon prices through policy files, so the
 input prices must exclude carbon or it is counted twice.
 
 The method and every assumption are documented in README.md in this folder.
-The assumptions themselves sit in data/mappings_conversions/:
-  config/interim-source/cer_carbon-price.csv                carbon price by component, region, year
-  config/interim-source/cer_emission-factor.csv             tCO2e per GJ by fuel and sector
-  config/interim-source/cer_benchmark-price_2000-2005.csv   EIA nominal spot prices
+The assumptions themselves sit in data/config/interim-source/:
+  cer_carbon-price.csv                carbon price by component, region, year
+  cer_emission-factor.csv             tCO2e per GJ by fuel and sector
+  cer_benchmark-price_2000-2005.csv   EIA nominal spot prices
 
 Run after deflator_exchange (it reads the deflator and exchange tables).
 

@@ -150,3 +150,6 @@ results/Reference/model.pkl
 # Claude Code / Claude settings (any directory)
 .claude/
 uv.lock
+
+# Run and optimizer logs (data layout move, phase 3)
+results/logs/

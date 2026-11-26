@@ -39,7 +39,7 @@ dynamic = ["version"]
 # Install with e.g. `uv sync --extra notebooks --extra calibration`, or `uv sync --all-extras` for everything.
 notebooks = ['marimo>=0.24.0']
 # Needed only by CIMS.data_processing: reading the raw Excel sources, plus marimo because the
-# pipeline settings live in a marimo notebook (data/mappings_conversions/control.py)
+# pipeline settings live in a marimo notebook (data/config/control.py)
 data-processing = [
     'CIMS[notebooks]',
     'openpyxl',

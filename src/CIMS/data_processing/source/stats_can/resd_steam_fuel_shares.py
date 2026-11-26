@@ -238,7 +238,7 @@ def _paths():
 def load_steam_fuel_shares():
     """Steam fuel shares as pandas, with CIMS region codes and CIMS sector nodes
     ('.Chemical Products', ...). Rebuilt from the RESD file on every new session
-    and saved to processed_data for reference."""
+    and saved to processed/ for reference."""
     src, dst = _paths()
     out = build(str(src))
     dst.parent.mkdir(parents=True, exist_ok=True)

@@ -5,7 +5,7 @@ group down to a single row with a blank Year.
 This mirrors the constant-value collapsing that flatten_fixed_data.py applies
 to the fixed-data CSVs, but operates on an already-assembled long-format
 polars DataFrame (Branch/.../Year/Value), so it can be applied to rows
-sourced from processed_data / pipeline-derived data as well, at the point
+sourced from processed/ or pipeline-derived data as well, at the point
 where each sector's model.py builds its final output frame.
 
 Groups with varying values (numeric or non-numeric literal) collapse to one

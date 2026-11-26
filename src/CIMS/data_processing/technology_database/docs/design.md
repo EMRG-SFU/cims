@@ -1,9 +1,9 @@
 # Design
 
-> **Short paths.** `records/` stands for `data/technology_database/`, `output/` for
-> `data/processed_data/technology_database/`, and `pipeline/` for the package's
+> **Short paths.** `records/` stands for `data/config/technology-database/`, `output/` for
+> `data/processed/technology-database/`, and `pipeline/` for the package's
 > `pipeline/` folder (`src/CIMS/data_processing/technology_database/pipeline/`). The extractions are in
-> `data/raw_data/technology_database/` and the documents in `primary-sources/`.
+> `data/extracted/technology-database/` and the documents in `data/primary-sources/technology-database/`.
 
 The rules the database follows. The reasoning behind each rule is in the dated
 records in `archive/decisions/`, indexed in [decisions.md](decisions.md). This page
@@ -199,7 +199,7 @@ parallel, neither a variant of the other, all carry a discriminator
 
 **Extraction names** keep the form the extractor gave them,
 `equipment_carrier_variant`, using the terms in
-`data/raw_data/technology_database/extraction-vocabulary.csv`. They are the example's name
+`data/extracted/technology-database/extraction-vocabulary.csv`. They are the example's name
 (`source-technology`) and are never renamed to fit the database.
 
 **Source files** are named `author_year_slug[_source]`. A `_meta` sidecar marker is
@@ -469,7 +469,7 @@ separation and CO2 purification units are on the oxygen and capture nodes).
   purple (italics until 2026-09-30). `output/conversion-factor-use.csv` says how many pooled rows each
   factor carries.
 - **Reference sources are registered apart** from the technology sources, in
-  `data/raw_data/technology_database/source-details_reference.csv`: the constants, densities and
+  `data/extracted/technology-database/source-details_reference.csv`: the constants, densities and
   ratios behind the factors, and the deflator and exchange-rate series behind the
   currency conversion (`used_for` says which), are not evidence about a technology.
   `currency-conversion.csv` names the series each currency factor rests on. Each factor's
@@ -820,7 +820,7 @@ corrected before this rule are marked the same way. Where the evidence does not
 settle what was meant (two readings both plausible), the figure stays out and the
 reason stays in the extraction's notes.
 
-**Registration.** Every source is registered in `data/raw_data/technology_database/source-details_sources.csv`
+**Registration.** Every source is registered in `data/extracted/technology-database/source-details_sources.csv`
 and `source-details_files.csv`; a reference source (a constant, a conversion
 factor's source, a currency series) in `source-details_reference.csv` instead. The build takes source ids from there. The
 manifest records what the database draws on: sources that provide data, the
@@ -834,7 +834,7 @@ registered. Documents that turn out to be unobtainable move to `source-intake/un
 
 **Background documents.** A downloaded document that yields nothing for the
 database goes to `source-intake/background-no-data-extracted/ (its `_meta.csv`; the document in `primary-sources/background-no-data-extracted/`)` and is recorded
-in `data/raw_data/technology_database/background-register.csv` (why it has no data, what little it
+in `data/extracted/technology-database/background-register.csv` (why it has no data, what little it
 has), not in `source-details_files.csv`. Its source row stays only if a
 compilation cites it as an original.
 

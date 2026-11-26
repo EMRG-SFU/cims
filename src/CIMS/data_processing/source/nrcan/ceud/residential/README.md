@@ -29,8 +29,8 @@ stock tier mix.
 ## Space-heating intensity (`residential_heating_intensity.py`)
 
 Replaces the REM699 workbook (`AB_CIMS_Input_Res` rows 363-378) behind the Vintage
-`Reference` → `Heating` `service_request` values in `raw_data/fixed_data/residential`.
-Output: `processed_data/nrcan/ceud/residential_heating_intensity.csv` (GJ/m2).
+`Reference` → `Heating` `service_request` values in `extracted/legacy/fixed-data/residential`.
+Output: `processed/gov-can/nrcan/ceud/residential-heating-intensity.csv` (GJ/m2).
 
 1. Space-heating fuel by building type x system: stock (Tables 22-25) x provincial energy
    per unit (Table 8), balanced by IPF to Table 6 (type) and Table 8 (system) totals.

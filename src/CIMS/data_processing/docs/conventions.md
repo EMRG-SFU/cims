@@ -87,19 +87,22 @@ process, and nothing reads a layer upstream of its own place in the flow.
   instead, and writes to `processed/`.
 - **Policies are data, not records.** They will be built from sources like any other
   input: extracted, processed, and written to `model/` by the policy stage. Until
-  then, they're made by hand directly in today's `model_inputs/policies/`.
+  then, they're made by hand directly in `model/policy/`.
 - **Generated files are never committed.** They always come from the build (Q2).
 - **The data folder follows the code.** The pipeline reads and writes the `data/`
   folder beside the code it imports, unless `CIMS_DATA_ROOT` is set. Run it with
-  `uv run` from the worktree. Phase 2 puts every layer's root in one module,
+  `uv run` from the worktree. Every layer's root is in one module,
   `common/paths.py`.
-- **Today's folders** map to the layers this way (phase 3 moves them, and phase 13
-  retires `fixed_data`):
+- **The folders before phase 3** map to the layers this way (phase 13 retires
+  `fixed_data`, now `extracted/legacy/fixed-data/`):
   - `raw_data/` to `extracted/`, and its documents to `primary-sources/`
   - `mappings_conversions/`, `technology_database/`, and the hand-made parts of
     `model_inputs/` to `config/`
   - `processed_data/` to `processed/`
   - the generated parts of `model_inputs/`, and `calibration/`, to `model/`
+
+  `tools/data-layout_renames.csv` lists every file's move, and
+  `tools/migrate_data_layout.py --apply` moves a data folder from the old layout.
 
 ## 3. Schema
 
@@ -143,7 +146,7 @@ columns, in this order:
 - **No index column.** With pandas, write with `index=False`.
 - **Rows in a stable order**, so two runs of the same code give the same bytes. Sort
   by the key columns where order carries no meaning.
-- **Phase 2 adds `common/io.py`** to read and write CSVs this way, and every stage
+- **Phase 5 adds `common/io.py`** to read and write CSVs this way, and every stage
   uses it.
 
 ## 5. Precedence between files

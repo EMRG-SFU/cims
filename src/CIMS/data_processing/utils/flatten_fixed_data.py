@@ -16,7 +16,7 @@ from CIMS.data_processing.utils.data_fill import interpolate_5year_to_annual, ba
 # 2. Run the script with the input folder and output folder paths.
 #    Example:
 #      python -m CIMS.data_processing.utils.flatten_fixed_data \
-#        "<repo>/data/raw_data/fixed_data/Agriculture" \
+#        "<repo>/data/extracted/legacy/fixed-data/agriculture" \
 #        "/path/to/output" \
 #        --year-min 2000 --year-max 2050 --target-start 2000 --target-end 2100 --target-step 1
 #    (macOS/Linux output folder shown; on Windows use e.g. "C:/path/to/output")
@@ -24,7 +24,7 @@ from CIMS.data_processing.utils.data_fill import interpolate_5year_to_annual, ba
 # 3. Or call main() directly from Python if you prefer programmatic use:
 #      from CIMS.data_processing.utils.flatten_fixed_data import main
 #      main(
-#          input_folder=r"<repo>/data/raw_data/fixed_data/Agriculture",
+#          input_folder=r"<repo>/data/extracted/legacy/fixed-data/agriculture",
 #          output_folder="/path/to/output",  # Windows: "C:/path/to/output"
 #          year_min=2000,
 #          year_max=2050,

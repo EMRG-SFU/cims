@@ -586,7 +586,7 @@ def _paths():
 def load_biomass_demand():
     """Biomass table as pandas. Region codes already match CIMS (NL, NS, ...).
     Rebuilt from the raw files on every new session and saved to
-    processed_data for reference."""
+    processed/ for reference."""
     *src, dst = _paths()
     out = build(*map(str, src))
     dst.parent.mkdir(parents=True, exist_ok=True)
