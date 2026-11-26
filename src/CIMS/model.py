@@ -144,7 +144,10 @@ class Model:
         self.region_list = list(region_list)
         self.sector_list = [s for s in sector_list if s is not None]
         self.step = self._infer_year_step(year_list)
-        self.years = self._model_reader.get_years()
+        # Years from the base and scenario files together: the base can be the root node
+        # alone, with no yearly rows (data/model/root/), and the regions' and sectors'
+        # yearly rows then arrive as scenario files.
+        self.years = sorted(set(self._model_reader.get_years()) | set(self._scenario_reader.get_years()))
         self.base_year = int(self.years[0])
 
         # These will be populated during construct_graph()

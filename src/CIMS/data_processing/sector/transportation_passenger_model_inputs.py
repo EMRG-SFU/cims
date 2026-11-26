@@ -866,7 +866,7 @@ def main() -> dict[str, pl.DataFrame]:
                 fixed, tp, multipliers, feedstock_demand, feedstock_last_hist_year, region,
             )
 
-            out_path = OUTPUT_DIR / f'transportation-passenger_{region.lower()}.csv'
+            out_path = OUTPUT_DIR / f'transportation-passenger_{paths.region_file_code(region)}.csv'
             output = collapse_constant_years(output)
             write_model_csv(output, str(out_path))
             print(f'  Wrote {len(output):,} rows → {out_path.name}')

@@ -32,10 +32,10 @@ def _():
 def reset_model_files():
     ### Base model and standard files below are required for the model to run
     model_path = str(paths.MODEL)
-    # Model files are in data/model/ (base/, sector/, cost/, exogenous/; conventions §2)
+    # Model files are in data/model/: root/ is the base; region/, sector/, cost/, and exogenous/ load as scenario files (conventions §2)
 
     ### Base model to start initialisation
-    base_model = 'base'
+    base_model = 'root'   # model/root/: the root node and model-wide settings. The regions load as scenario files (below).
 
     ### Default values and parameter list files
     default_path = str(paths.DEFAULTS / 'default-parameter.csv')
@@ -84,10 +84,11 @@ def reset_model_files():
         ]
 
     # Each entry below is (folder, [file/subfolder names]); merging just means
-    # appending the list onto update_files[folder], creating it if needed.
+    # appending the list onto update_files[folder], creating it if needed. Files load
+    # in list order, and a later file wins: the regions first (model/region/), then
+    # the sectors, then the cost and exogenous files.
     for _path, _files in [
-        (str(paths.MODEL_SECTOR), sector_req),
-        (model_path, model_req),
+        (model_path, ['region'] + [f'sector/{_s}' for _s in sector_req] + model_req),
     ]:
         if _files:
             update_files.setdefault(_path, []).extend(_files)

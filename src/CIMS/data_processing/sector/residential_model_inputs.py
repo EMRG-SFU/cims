@@ -1494,7 +1494,7 @@ def main() -> dict[str, pl.DataFrame]:
             output = _assemble_region(fixed, residential, multipliers, heating, region)
             output = collapse_constant_years(output)
 
-            out_path = OUTPUT_DIR / f'residential_{region.lower()}.csv'
+            out_path = OUTPUT_DIR / f'residential_{paths.region_file_code(region)}.csv'
             write_model_csv(output, str(out_path))
             print(f'  Wrote {len(output):,} rows → {out_path.name}')
             results[region] = output

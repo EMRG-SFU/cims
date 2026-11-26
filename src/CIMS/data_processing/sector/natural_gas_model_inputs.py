@@ -650,11 +650,11 @@ def main() -> pl.DataFrame:
 
     # The CAN market now lives in its own folder; remove the old file so the
     # natural_gas folder can't load the market twice.
-    (OUTPUT_DIR / f'natural-gas_{MARKET_REGION.lower()}.csv').unlink(missing_ok=True)
+    (OUTPUT_DIR / f'natural-gas_{paths.region_file_code(MARKET_REGION)}.csv').unlink(missing_ok=True)
 
     for region in PROVINCIAL_REGIONS:
         region_df = provincial_output.filter(pl.col('Region') == region)
-        out_path = OUTPUT_DIR / f'natural-gas_{region.lower()}.csv'
+        out_path = OUTPUT_DIR / f'natural-gas_{paths.region_file_code(region)}.csv'
         region_df = collapse_constant_years(region_df)
         write_model_csv(region_df, out_path)
         print(f'  Wrote {len(region_df):,} rows → {out_path.name}')
@@ -662,14 +662,14 @@ def main() -> pl.DataFrame:
 
     for region in passthrough_output['Region'].drop_nulls().unique().sort().to_list():
         region_df = passthrough_output.filter(pl.col('Region') == region)
-        out_path = OUTPUT_DIR / f'natural-gas_{region.lower()}.csv'
+        out_path = OUTPUT_DIR / f'natural-gas_{paths.region_file_code(region)}.csv'
         region_df = collapse_constant_years(region_df)
         write_model_csv(region_df, out_path)
         print(f'  Wrote {len(region_df):,} rows → {out_path.name}')
         all_outputs.append(region_df)
 
     MARKET_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    market_path = MARKET_OUTPUT_DIR / f'natural-gas-market_{MARKET_REGION.lower()}.csv'
+    market_path = MARKET_OUTPUT_DIR / f'natural-gas-market_{paths.region_file_code(MARKET_REGION)}.csv'
     market_output = collapse_constant_years(market_output)
     write_model_csv(market_output, market_path)
     print(f'  Wrote {len(market_output):,} rows → natural_gas_market/{market_path.name}')

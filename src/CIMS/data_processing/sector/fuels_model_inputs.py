@@ -309,7 +309,7 @@ def main() -> dict[str, pl.DataFrame]:
             output = _apply_base_year_blend_shares(
                 output, base_shares.filter(pl.col('Region') == region))
 
-            out_path = OUTPUT_DIR / f'fuels_{region.lower()}.csv'
+            out_path = OUTPUT_DIR / f'fuels_{paths.region_file_code(region)}.csv'
             output = collapse_constant_years(output)
             write_model_csv(output, str(out_path))
             print(f'  Wrote {len(output):,} rows → {out_path.name}')

@@ -4,6 +4,7 @@ import pandas as pd
 import polars as pl
 from pathlib import Path
 
+from CIMS.data_processing.common import paths
 from CIMS.data_processing.utils.collapse_constant_years import collapse_constant_years
 
 YEARS = list(range(2000, 2101))
@@ -138,7 +139,7 @@ def write_per_region_csvs(
             continue
         if collapse_years:
             region_df = collapse_constant_years(region_df)
-        out_path = output_dir / f'{prefix}_{region.lower()}.csv'
+        out_path = output_dir / f'{prefix}_{paths.region_file_code(region)}.csv'
         if finalise_currency:
             write_model_csv(region_df, out_path)
         else:

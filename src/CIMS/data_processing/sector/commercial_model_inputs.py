@@ -859,7 +859,7 @@ def main() -> dict[str, pl.DataFrame]:
                 feedstock_last_hist_year, region, template,
             )
 
-            out_path = OUTPUT_DIR / f'commercial_{region.lower()}.csv'
+            out_path = OUTPUT_DIR / f'commercial_{paths.region_file_code(region)}.csv'
             output = collapse_constant_years(output)
             write_model_csv(output, str(out_path))
             print(f'  Wrote {len(output):,} rows → {out_path.name}')

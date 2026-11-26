@@ -68,7 +68,9 @@ Every path comes from one module, `src/CIMS/data_processing/common/paths.py`. To
 │   └── technology-database/    # The technology database's build outputs, incl. the workbook
 │
 └── model/                      # Everything CIMS reads. Written by the build, not committed (except its README).
-    ├── base/                   # cims-base_<region>.csv
+    ├── root/                   # root_cims.csv: the root node and model-wide settings (currency year, GWPs, ...). The model's base.
+    ├── region/                 # region_<region>.csv: the region nodes (CAN, rest-of-world, provinces and territories), with GDP
+    │                           #   and population. Loaded as scenario files, before the sectors.
     ├── sector/<sector>/        # <sector>_<region>.csv, for example iron-and-steel/iron-and-steel_ab.csv
     ├── cost/                   # declining-capital-cost/, declining-intangible-cost/, fixed-intangible-cost/
     ├── exogenous/              # exogenous-price/, exogenous-demand/, market-share-limit/

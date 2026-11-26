@@ -62,7 +62,8 @@ CALIBRATION_CONFIG = CONFIG / 'calibration'                 # the FIC proxy map 
 TECHDB_RECORDS = CONFIG / 'technology-database'             # the technology database's hand-edited records
 PROCESSED = DATA_ROOT / 'processed'                         # written by the source stages
 MODEL = DATA_ROOT / 'model'                                 # everything CIMS reads; written by the build
-MODEL_BASE = MODEL / 'base'                                 # cims-base_<region>.csv
+MODEL_ROOT = MODEL / 'root'                                 # root_cims.csv: the root node and model-wide settings
+MODEL_REGION = MODEL / 'region'                             # region_<region>.csv: the region nodes, with GDP and population
 MODEL_SECTOR = MODEL / 'sector'                             # <sector>/<sector>_<region>.csv
 MODEL_COST = MODEL / 'cost'                                 # declining-capital-cost/, declining-intangible-cost/, fixed-intangible-cost/
 MODEL_EXOGENOUS = MODEL / 'exogenous'                       # exogenous-price/, exogenous-demand/, market-share-limit/
@@ -73,6 +74,19 @@ TECHDB_EXTRACTED = EXTRACTED / 'technology-database'        # its extractions an
 TECHDB_OUTPUT = PROCESSED / 'technology-database'           # its build output
 RESULTS = REPO_ROOT / 'results'                             # model results and logs (gitignored)
 LOGS = RESULTS / 'logs'                                     # run and optimizer logs
+
+
+def region_file_code(region: str) -> str:
+    """The region's part of a data file name: the code in lowercase, with RoW as rest-of-world.
+
+    Only file names use this (conventions §1); the values inside the files keep their
+    spellings (RoW, BC) until phase 14.
+
+    >>> region_file_code('BC'), region_file_code('RoW')
+    ('bc', 'rest-of-world')
+    """
+    code = region.lower()
+    return 'rest-of-world' if code == 'row' else code
 
 
 def _inside(path: Path, folder: Path) -> bool:

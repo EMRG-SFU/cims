@@ -403,7 +403,7 @@ def main() -> pl.DataFrame:
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     for region in regions:
         region_df = output.filter(pl.col('Region') == region)
-        out_path = OUTPUT_DIR / f'petroleum-crude_{region.lower()}.csv'
+        out_path = OUTPUT_DIR / f'petroleum-crude_{paths.region_file_code(region)}.csv'
         region_df = collapse_constant_years(region_df)
         write_model_csv(region_df, out_path)
         print(f'  Wrote {len(region_df):,} rows → {out_path.name}')

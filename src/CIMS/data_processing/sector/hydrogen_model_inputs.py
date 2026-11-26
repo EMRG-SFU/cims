@@ -158,7 +158,7 @@ def main() -> dict[str, pl.DataFrame]:
             print('  Assembling...')
             output = _assemble_region(fixed, multipliers, region)
 
-            out_path = OUTPUT_DIR / f'hydrogen_{region.lower()}.csv'
+            out_path = OUTPUT_DIR / f'hydrogen_{paths.region_file_code(region)}.csv'
             output = collapse_constant_years(output)
             write_model_csv(output, str(out_path))
             print(f'  Wrote {len(output):,} rows → {out_path.name}')

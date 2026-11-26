@@ -20,7 +20,7 @@ the words within a part; an underscore `_` separates the parts.
 
 | What | Today | After the reorganization |
 | - | - | - |
-| Folders and data files | `iron_and_steel_ab.csv`, `CIMS_base_AB.csv`, `FIC_AB.csv` | `iron-and-steel_ab.csv`, `cims-base_ab.csv`, `fixed-intangible-cost_ab.csv` |
+| Folders and data files | `iron_and_steel_ab.csv`, `CIMS_base_AB.csv`, `FIC_AB.csv` | `iron-and-steel_ab.csv`, `region_ab.csv`, `fixed-intangible-cost_ab.csv` |
 | Extracted files | as named | `author_year_slug[_suffix].csv`, as in the technology database: `cer_2026_benchmark-price.csv` |
 | Column headers | `Branch`, `Sub_Context` | `branch`, `sub-context` |
 | Branch paths | `CIMS.CAN.BC.Iron and Steel` | `cims.can.bc.iron-and-steel` |
@@ -36,6 +36,8 @@ the words within a part; an underscore `_` separates the parts.
   `uv.lock`, `pyproject.toml`) and the `CIMS` import name.
 - **Display spellings** ("Iron and Steel", "BC") come from `config/display-name.csv`
   and are used only when results are shown or reported.
+- **RoW in file names** is already `rest-of-world` (`region_rest-of-world.csv`, from
+  `common/paths.region_file_code`); the value `RoW` inside the files changes in phase 14.
 - **When each part changes.** Folders and data file names change in phase 3, the
   pipeline's own code in phases 4 to 8, and the Python file names in phase 11. The
   values the model reads (headers, branch paths, regions, parameters, and units)

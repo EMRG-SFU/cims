@@ -60,7 +60,7 @@ def main() -> None:
         output_files = sorted(tmp_path.rglob('*.csv'))
         total_rows = 0
         for f in output_files:
-            dest = OUTPUT_DIR / f.name.replace('dcc_', 'declining-capital-cost_', 1)   # the model file name (conventions §1)
+            dest = OUTPUT_DIR / f"declining-capital-cost_{paths.region_file_code(f.stem.split('_', 1)[1])}.csv"   # the model file name (conventions §1)
             df = drop_replaced_steam_rows(pl.read_csv(f, infer_schema_length=0))
             total_rows += len(df)
             write_model_csv(df, dest)

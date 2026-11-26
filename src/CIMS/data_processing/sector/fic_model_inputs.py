@@ -66,7 +66,7 @@ def main() -> dict[str, pl.DataFrame]:
             print('  Flattening fixed data...')
             output = drop_replaced_steam_rows(read_fixed_data_file(fixed_path).select(OUTPUT_COLS))
 
-            out_path = OUTPUT_DIR / f'fixed-intangible-cost_{region.lower()}.csv'
+            out_path = OUTPUT_DIR / f'fixed-intangible-cost_{paths.region_file_code(region)}.csv'
             output = collapse_constant_years(output)
             write_model_csv(output, str(out_path))
             print(f'  Wrote {len(output):,} rows → {out_path.name}')
