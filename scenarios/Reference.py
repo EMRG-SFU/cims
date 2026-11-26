@@ -253,7 +253,7 @@ def _():
 
 
 @app.cell
-def _(calibration_data, calibration_path, model_path, update_files):
+def _(model_path, update_files):
     ### Optional model folder files (in data/model/)
     model_optional = [
         'exogenous/exogenous-price',   # needed for correct calibration of historical years
@@ -324,8 +324,9 @@ def _(calibration_data, calibration_path, model_path, update_files):
         ]
 
     ### Calibration Counterfactual Files
-    # calibration_path = str(paths.CALIBRATION_TARGETS)
-    # calibration_data = [
+    # To load calibration targets as scenario files, uncomment sectors below.
+    calibration_path = str(paths.CALIBRATION_TARGETS)
+    calibration_data = [
     #     'agriculture',
     #     'biodiesel',
     #     'chemical-products',
@@ -350,7 +351,7 @@ def _(calibration_data, calibration_path, model_path, update_files):
     #     'transportation-freight',
     #     'transportation-passenger',
     #     'waste'
-    # ]
+    ]
 
     ### Calibration Outputs (fitted FICs / lifetimes from a prior calibration pass)
     # One subfolder per sector, each with its own fitted_fics/ and fitted_lifetimes/
