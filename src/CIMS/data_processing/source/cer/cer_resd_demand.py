@@ -1,17 +1,17 @@
 """
 CER Demand by CIMS Node
 
-Maps CER energy demand data to CIMS nodes using cer_to_cims_map.csv and
+Maps CER energy demand data to CIMS nodes using config/mapping/cer-to-cims.csv and
 aggregates fuel demand (PJ) by region, cims_node, fuel, and year.
 
-Input files (raw_data/cer/cer_demand_data_update/):
+Input files (extracted/gov-can/cer/demand-data-update/):
     vDmd-CIMS.csv      — general energy demand        (Sector + Enduse)
     vDmd_OG-CIMS.csv   — oil & gas energy demand      (Sector + Enduse)
     vTrDmd-CIMS.csv    — transport energy demand      (Sector + Technology)
     vFsDmd-CIMS.csv    — feedstock demand             (Sector only)
     vTrFsDmd-CIMS.csv  — transport feedstock demand   (Sector + Technology)
 
-Output: processed_data/cer/cer_resd_demand.csv
+Output: processed/gov-can/cer/cer-resd-demand.csv
     Columns: Region | Node | Variable | Unit | Source | Year | Value
 
 Biomass for Pulp and Paper and Light Industrial is replaced with StatCan
@@ -30,12 +30,12 @@ from CIMS.data_processing.utils.controls_conversions import MAPPINGS_PATH
 from CIMS.data_processing.source.stats_can.biomass_demand import replace_cer_biomass
 from CIMS.data_processing.source.stats_can.refinery_fuel import replace_cer_refinery_fuel
 
-CER_DIR         = paths.RAW / "cer/cer_demand_data_update"
-MAP_FILE        = MAPPINGS_PATH / "cer_to_cims_map.csv"
-ENERGY_MAP_FILE = MAPPINGS_PATH / "energy_map.csv"
-REGION_MAP_FILE = MAPPINGS_PATH / "region_map.csv"
-OUTPUT_DIR      = paths.PROCESSED / "cer"
-OUTPUT_FILE     = OUTPUT_DIR / "cer_resd_demand.csv"
+CER_DIR         = paths.EXTRACTED / "gov-can/cer/demand-data-update"
+MAP_FILE        = paths.CONFIG / "mapping/cer-to-cims.csv"
+ENERGY_MAP_FILE = paths.CONFIG / "mapping/energy.csv"
+REGION_MAP_FILE = paths.CONFIG / "mapping/region.csv"
+OUTPUT_DIR      = paths.PROCESSED / "gov-can/cer"
+OUTPUT_FILE     = OUTPUT_DIR / "cer-resd-demand.csv"
 
 # CER Area values that don't match the region_map CER column exactly
 _AREA_NORMALIZE = {
@@ -262,7 +262,7 @@ def _map_to_cims(cer: pd.DataFrame, mapping: pd.DataFrame, energy_map: pd.DataFr
         if len(unmatched_areas):
             print(f"  Warning: unmapped areas: {sorted(unmatched_areas)}")
 
-    # cer_to_cims_map.csv maps each Space Heating activity to both a "(Marine)"
+    # config/mapping/cer-to-cims.csv maps each Space Heating activity to both a "(Marine)"
     # and a "(Cold)" node with no region qualifier. Marine is BC's coastal
     # climate zone only — drop Marine rows for every other region.
     is_marine = merged["cims_node"].str.contains(r"\(Marine\)", regex=True)

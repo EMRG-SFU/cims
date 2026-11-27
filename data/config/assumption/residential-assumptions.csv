@@ -1,0 +1,9 @@
+﻿Variable,Method,Variable,1st period rate,1st period start,1st period end,2nd period rate,2nd period start,2nd period end,3rd period rate,3rd period start,3rd period end
+Housing by type,trend decline,Detached,trend,first ,2030,-5%,2031,2050,-10%,2051,2100
+Housing by type,trend decline,Attached,trend,first ,2030,-5%,2031,2050,-10%,2051,2100
+Housing by type,trend decline,Mobile,trend,first ,2030,-5%,2031,2050,-10%,2051,2100
+Housing by type,trend decline,Appartment,trend,first ,2030,remainder,2031,2050,remainder,2051,2100
+Floorspace,trend decline,All,trend,first ,2030,-5%,2031,2050,-10%,2051,2100
+Cooling,constant,All,,,,,,,,,
+Water Heating,constant,All,,,,,,,,,
+Appliances,constant,All,,,,,,,,,

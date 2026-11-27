@@ -1,6 +1,6 @@
 # CER source files
 
-`cer_source_files.py` turns the Canada's Energy Future (CEF) open-data files in `data/raw_data/cer/` into the versions the pipeline reads, in `data/processed_data/cer/`. It keeps CER's file names, so `find_cer_file()` finds them the same way. Run it after `deflator_exchange` and before `energy_prices`; `process_source_data.py` does this.
+`cer_source_files.py` turns the Canada's Energy Future (CEF) open-data files in `data/extracted/gov-can/cer/` into the versions the pipeline reads, in `data/processed/gov-can/cer/`. It keeps CER's file names, so `find_cer_file()` finds them the same way. Run it after `deflator_exchange` and before `energy_prices`; `process_source_data.py` does this.
 
 | File | What changes |
 |---|---|
@@ -25,7 +25,7 @@ Electricity prices are left alone. Their carbon costs sit inside generation cost
 
 ## Carbon price components
 
-The prices are in `data/mappings_conversions/cer_carbon-prices.csv`, one row per component, region, sector, and year.
+The prices are in `data/config/interim-source/cer_carbon-price.csv`, one row per component, region, sector, and year.
 
 | Component | Applies to | Years | Price | Source |
 |---|---|---|---|---|
@@ -51,7 +51,7 @@ Each assumption was checked against the CER data before use:
 
 ## Emission factors
 
-`data/mappings_conversions/cer_emission-factors.csv` holds CER's implied emission factors, backed out of its own data rather than taken from a published table:
+`data/config/interim-source/cer_emission-factor.csv` holds CER's implied emission factors, backed out of its own data rather than taken from a published table:
 
 | Fuel | Sectors | tCO2e/GJ | Derived from |
 |---|---|---|---|
@@ -81,10 +81,10 @@ CER's open data starts in 2005. Each series is extended back to 2000 by holding 
 
 | File | Series | Movement used for 2000 to 2004 | Source |
 |---|---|---|---|
-| End-use prices | Every fuel, region, and sector | Matching CPI component (natural gas; fuel oil and other fuels for oil and diesel; gasoline; electricity), deflated by the all-items CPI. Falls back to Canada where a province lacks the component; Yukon and the Northwest Territories use Whitehorse and Yellowknife | Statistics Canada 18-10-0005 (`raw_data/stats_can/cpi/18100005.xlsx`) |
-| Benchmark prices | Brent, WTI, Henry Hub | EIA annual spot price, restated in 2025 US$ with the US GDP deflator | `cer_benchmark-prices_2000-2005.csv` (FRED: ACOILBRENTEU, ACOILWTICO, AHHNGSP) |
+| End-use prices | Every fuel, region, and sector | Matching CPI component (natural gas; fuel oil and other fuels for oil and diesel; gasoline; electricity), deflated by the all-items CPI. Falls back to Canada where a province lacks the component; Yukon and the Northwest Territories use Whitehorse and Yellowknife | Statistics Canada 18-10-0005 (`extracted/gov-can/statcan/cpi/18100005.xlsx`) |
+| Benchmark prices | Brent, WTI, Henry Hub | EIA annual spot price, restated in 2025 US$ with the US GDP deflator | `config/interim-source/cer_benchmark-price_2000-2005.csv` (FRED: ACOILBRENTEU, ACOILWTICO, AHHNGSP) |
 | Benchmark prices | WCS, CLS, NIT | Held at their 2005 ratio to WTI (WCS, CLS) or Henry Hub (NIT) | No public annual series in the repository |
-| Macro indicators | Exchange rate; GDP deflator | `currency_exchange.csv` and `currency_deflator.csv` (CAD) | `processed_data/deflator_exchange/` |
+| Macro indicators | Exchange rate; GDP deflator | `processed/currency/currency-exchange.csv` and `processed/currency/currency-deflator.csv` (CAD) | `processed/currency/` |
 | Macro indicators | CPI | All-items CPI, Canada | Statistics Canada 18-10-0005 |
 | Macro indicators | Population; real GDP | July 1 population (sum of provinces and territories); GDP at market prices, chained 2017 dollars | Statistics Canada 17-10-0009 and 36-10-0222 |
 | End-use demand | Every series | Held at 2005 values | The pipeline uses demand only to weight prices across provinces |
@@ -100,6 +100,6 @@ No carbon price applied before 2008, so the back-cast years need no removal.
 
 ## Updating for a new CEF edition
 
-1. Put the new files in `raw_data/cer/`. Check that the end-use price columns are still `Scenario, Region, Variable, Year, Value, Sector`.
+1. Put the new files in `extracted/gov-can/cer/`. Check that the end-use price columns are still `Scenario, Region, Variable, Year, Value, Sector`.
 2. Recheck the components against CEF Appendix 1, and the implied emission factors and aggregate cost of carbon path against the data (the checks above).
-3. Update `cer_carbon-prices.csv` and `cer_emission-factors.csv`, rerun, and review the audit table.
+3. Update `config/interim-source/cer_carbon-price.csv` and `config/interim-source/cer_emission-factor.csv`, rerun, and review the audit table.

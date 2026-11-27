@@ -7,15 +7,15 @@ CIMS-formatted CSVs (one per region).
 Sources
 -------
 Fixed structural parameters
-    raw_data/fixed_data/chemical_products/chemical_products_{region}.csv
+    extracted/legacy/fixed-data/chemical_products/chemical_products_{region}.csv
     Flattened from wide (2000–2050 year columns) to long format.
 
 Total chemical production  (service_request at region level)
-    processed_data/activity/heavy_industry.csv
+    processed/activity/heavy-industry.csv
     Variable: 'Chemical Product'  (tonnes, per province, 2000–2100)
 
 Subproduct shares  (service_request rows at Chemical Product service level)
-    processed_data/activity/heavy_industry.csv
+    processed/activity/heavy-industry.csv
     Variables: 'Chemical Product.{subproduct}'  (%)
     Subproducts: Other Petrochemicals, Chlor Alkali, Hydrogen Peroxide,
                  Sodium Chlorate, Adipic Acid, Ammonia Methanol
@@ -25,7 +25,7 @@ Subproduct shares  (service_request rows at Chemical Product service level)
     with no production of a given subproduct get no service_request for it.
 
 Energy price multipliers  (multiplier_price rows)
-    processed_data/energy_prices/energy_price_multipliers.csv
+    processed/energy-prices/energy-price-multipliers.csv
 
 Output columns
 --------------
@@ -64,7 +64,7 @@ from CIMS.data_processing.utils.feedstock_demand import build_feedstock_rows_all
 
 # ── configuration ──────────────────────────────────────────────────────────────
 FIXED_INPUT_DIR = paths.FIXED_DATA / 'chemical_products'
-OUTPUT_DIR      = paths.MODEL / 'chemical_products'
+OUTPUT_DIR      = paths.MODEL_SECTOR / 'chemical-products'
 
 OUTPUT_COLS = [
     'Branch', 'Type', 'Region', 'Sector', 'Service', 'Technology',
@@ -269,7 +269,7 @@ def main() -> pl.DataFrame:
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     for region in regions:
         region_df = output.filter(pl.col('Region') == region)
-        out_path = OUTPUT_DIR / f'chemical_products_{region.lower()}.csv'
+        out_path = OUTPUT_DIR / f'chemical-products_{paths.region_file_code(region)}.csv'
         region_df = collapse_constant_years(region_df)
         write_model_csv(region_df, out_path)
         print(f'  Wrote {len(region_df):,} rows → {out_path.name}')

@@ -45,7 +45,7 @@ def branch_meta(branch: str) -> dict:
 
 
 def fuel_target(region: str, fuel: str) -> str:
-    """Build CIMS branch for a fuel (mirrors model_inputs.py price_mult logic)."""
+    """Build CIMS branch for a fuel (mirrors model.py price_mult logic)."""
     if fuel in REGIONAL_FUELS:
         return f'CIMS.CAN.{region}.{fuel}'
     return f'CIMS.Generic Fuels.{fuel}'

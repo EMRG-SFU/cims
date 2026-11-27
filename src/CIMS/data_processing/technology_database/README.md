@@ -15,14 +15,14 @@ python -m CIMS.data_processing.technology_database.build            # everything
 python -m CIMS.data_processing.technology_database.build --check    # the checks only
 ```
 
-It finds its data by walking up to the folder that holds `data/technology_database/`, so the
-working directory does not matter.
+Its data folders come from `common/paths.py`, like every other stage, so the working directory
+does not matter.
 
 | Folder (from the repo root) | Edited by | Contents |
 | - | - | - |
-| `data/raw_data/technology_database/` | extraction | Layer 1: the source manifest (`source-details_*.csv`) and every extraction CSV, in publisher folders. Copied from the technology-database repository's authoring copy until the FRDR deposit, then downloaded from FRDR; not committed in CIMS. |
-| `data/technology_database/` | hand | The records: `archetype.csv`, `archetype-service.csv`, `source-example.csv`, `family.csv`, `hierarchy-annotation.csv`, the CIMS hierarchy snapshot, `fill/`, `reference/` and `vocabulary/`. |
-| `data/processed_data/technology_database/` | the build | The example and archetype tables, the reviews, `unfilled/`, `vocabulary.md` and the workbook. Never edit these: the build rewrites them. [docs/outputs.md](docs/outputs.md) says what each file is for. |
+| `data/extracted/technology-database/` | extraction | Layer 1: the source manifest (`source-details_*.csv`) and every extraction CSV, in publisher folders. Copied from the technology-database repository's authoring copy until the FRDR deposit, then downloaded from FRDR; not committed in CIMS. |
+| `data/config/technology-database/` | hand | The records: `archetype.csv`, `archetype-service.csv`, `source-example.csv`, `family.csv`, `hierarchy-annotation.csv`, the CIMS hierarchy snapshot, `fill/`, `reference/` and `vocabulary/`. |
+| `data/processed/technology-database/` | the build | The example and archetype tables, the reviews, `unfilled/`, `vocabulary.md` and the workbook. Never edit these: the build rewrites them. [docs/outputs.md](docs/outputs.md) says what each file is for. |
 | `primary-sources/` | hand | The source documents, in the same publisher folders as the extractions. Local only; the build and the checks work without it. |
 
 | Code | What it is |
@@ -35,9 +35,9 @@ working directory does not matter.
 | `extraction/paths.py` | Where the extractions, documents, records, and outputs are, for the scripts above. |
 
 The scripts written for single sources (workbooks, bulk downloads, PDF tables) are not in the
-package: each sits beside its CSVs in `data/raw_data/technology_database/<publisher>/`, so it
+package: each sits beside its CSVs in `data/extracted/technology-database/<publisher>/`, so it
 goes to FRDR with them, and reads its document from the same folder under `primary-sources/`.
 
 To change what an example is an example of, edit its row in
-`data/technology_database/source-example.csv`. For everything else, see the *How to*
+`data/config/technology-database/source-example.csv`. For everything else, see the *How to*
 section of the pipeline doc.

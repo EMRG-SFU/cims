@@ -23,11 +23,11 @@ Stages (src/CIMS/data_processing/technology_database/docs/pipeline.md):
                  and not-applicable markers (records/fill/); the summaries before
                  the fill are also written, to output/unfilled/
   9. views       archetype, application, and the wide views (for the workbook only)
- 10. reports     source list, citation review, mapping review, data/processed_data/technology_database/vocabulary.md
+ 10. reports     source list, citation review, mapping review, data/processed/technology-database/vocabulary.md
  11. workbook    the Excel workbook, last, from the outputs
 
-Reads data/raw_data/technology_database/ and data/technology_database/. Writes data/processed_data/technology_database/
-and data/processed_data/technology_database/vocabulary.md, and appends new examples to records/source-example.csv.
+Reads data/extracted/technology-database/ and data/config/technology-database/. Writes data/processed/technology-database/
+and data/processed/technology-database/vocabulary.md, and appends new examples to records/source-example.csv.
 """
 from __future__ import annotations
 
@@ -365,7 +365,7 @@ def main(argv) -> int:
     reports.mapping_review(rec, hier, L, {"rows": len(hier.nodes), "sha": hier.digest, **stamp},
                            v, ex)
     reports.vocabulary_md(rec, hier, v)
-    print("  mapping-review.md, citation-review.md, data/processed_data/technology_database/vocabulary.md")
+    print("  mapping-review.md, citation-review.md, data/processed/technology-database/vocabulary.md")
     print("workbook")
     fam = {f: r["label"] for f, r in rec.families.items()}
     W = v["wide"]

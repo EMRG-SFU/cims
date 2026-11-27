@@ -16,7 +16,7 @@ Two kinds, both recorded on the row they were used for (column `conversion`):
 
 Design rule (design.md s5, amended 2026-09-26): a factor from another source is
 used only through conversion-factor.csv, never inline. Each factor has a `class`
-(CLASSES below) and a `source-id` registered in data/raw_data/technology_database/
+(CLASSES below) and a `source-id` registered in data/extracted/technology-database/
 source-details_reference.csv (or, for a factor a technology source prints about
 its own product, in the main manifest). A conversion may chain at most two
 factors (hydrogen in kW -> GJ/yr -> t/yr needs one; a mole of hydrogen -> GJ one).

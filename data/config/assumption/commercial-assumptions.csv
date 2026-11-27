@@ -1,0 +1,13 @@
+﻿Variable,Method,Variable,1st period rate,1st period start,1st period end,2nd period rate,2nd period start,2nd period end,3rd period rate,3rd period start,3rd period end
+Building Shell,trend decline,Wholesale,trend,first,2030,-10%,2031,2050,-10%,2051,2100
+Building Shell,trend decline,Retail,trend,first,2030,-10%,2031,2050,-10%,2051,2100
+Building Shell,trend decline,Transportation and Warehousing,trend,first,2030,-10%,2031,2050,-10%,2051,2100
+Building Shell,trend decline,Information and Cultural,trend,first,2030,-10%,2031,2050,-10%,2051,2100
+Building Shell,trend decline,Offices,trend,first,2030,-10%,2031,2050,-10%,2051,2100
+Building Shell,trend decline,Educational,trend,first,2030,-10%,2031,2050,-10%,2051,2100
+Building Shell,trend decline,Healthcare and Social Assistance,trend,first,2030,-10%,2031,2050,-10%,2051,2100
+Building Shell,trend decline,Arts Entertainment and Recreation,trend,first,2030,-10%,2031,2050,-10%,2051,2100
+Building Shell,trend decline,Accommodation and Food Services,trend,first,2030,-10%,2031,2050,-10%,2051,2100
+Building Shell,trend decline,Other Services,trend,first,2030,-10%,2031,2050,-10%,2051,2100
+Cooling,constant,All,,,,,,,,,
+Water Heating,constant,All,,,,,,,,,

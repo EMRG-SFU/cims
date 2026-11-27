@@ -205,7 +205,7 @@ def main() -> pl.DataFrame:
     regions = output['Region'].drop_nulls().unique().sort().to_list()
     for region in regions:
         region_df = output.filter(pl.col('Region') == region)
-        out_path = OUTPUT_DIR / f'fuels_{region.lower()}.csv'
+        out_path = OUTPUT_DIR / f'fuels_{paths.region_file_code(region)}.csv'
         region_df.write_csv(out_path)
         print(f'  Wrote {len(region_df):,} rows → {out_path.name}')
 

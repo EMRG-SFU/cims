@@ -43,7 +43,7 @@ from CIMS.data_processing.utils.calibration_helpers import (
 from CIMS.data_processing.utils.output_builder import write_per_region_csvs
 
 # ── configuration ─────────────────────────────────────────────────────────────
-OUTPUT_DIR = paths.CALIBRATION_TARGETS / 'petroleum_crude'
+OUTPUT_DIR = paths.CALIBRATION_TARGETS / 'petroleum-crude'
 
 SECTOR_NAME = 'Petroleum Crude'
 
@@ -83,7 +83,7 @@ def main() -> pl.DataFrame:
         .select(OUTPUT_COLS)
     )
 
-    print('Filtering to regions with Petroleum Crude (see sector_region_map.csv)...')
+    print('Filtering to regions with Petroleum Crude (see config/mapping/sector-region.csv)...')
     allowed_regions = load_sector_regions().get(SECTOR_NAME)
     if allowed_regions:
         before_count = len(output)
@@ -94,7 +94,7 @@ def main() -> pl.DataFrame:
 
     output = filter_excluded_branches(output)
 
-    regions = write_per_region_csvs(output, OUTPUT_DIR, 'petroleum_crude', skip_if_all_zero=True)
+    regions = write_per_region_csvs(output, OUTPUT_DIR, 'petroleum-crude', skip_if_all_zero=True)
 
     print(f'\n✅ Petroleum crude calibration complete')
     print(f'   Total rows:  {len(output):,}')

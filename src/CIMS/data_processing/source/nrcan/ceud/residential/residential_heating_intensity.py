@@ -9,7 +9,7 @@ files.
 
 This replaces the hand-built "REM699.CIMSAnalysis" workbook
 (``AB_CIMS_Input_Res`` rows 363-378) that produced the values currently in
-``raw_data/fixed_data/residential/residential_<region>.csv``.
+``extracted/legacy/fixed-data/residential/residential_<region>.csv``.
 
 Method (per region and year)
 ----------------------------
@@ -61,7 +61,7 @@ that carry year-to-year weather variation past CIMS's vintage weighting.
 
 Output
 ------
-processed_data/nrcan/ceud/residential_heating_intensity.csv
+processed/gov-can/nrcan/ceud/residential-heating-intensity.csv
     Region, Variable, Category, Parameter, Unit, Source, Year, Value
     Variable  : heating_intensity_high | heating_intensity_lowmed
     Category  : vintage bin (<1960, 1961-1980, 1981-2000, 2001-2020,
@@ -92,9 +92,9 @@ from CIMS.data_processing.utils.controls_conversions import ( LAST_DATA_YEAR, PR
 # CONFIGURATION
 # ==============================================================================
 
-RAW_DIR = paths.RAW / 'nrcan/ceud/residential'
-OUTPUT_DIR = paths.PROCESSED / 'nrcan/ceud'
-OUTPUT_FILE = 'residential_heating_intensity.csv'
+RAW_DIR = paths.EXTRACTED / 'gov-can/nrcan/ceud/residential'
+OUTPUT_DIR = paths.PROCESSED / 'gov-can/nrcan/ceud'
+OUTPUT_FILE = 'residential-heating-intensity.csv'
 LAST_HIST_YEAR = LAST_DATA_YEAR['ceud']
 
 REGION_FILES = {

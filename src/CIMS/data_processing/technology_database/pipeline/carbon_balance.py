@@ -23,7 +23,7 @@ fuel and feed. The check compares the total with it:
 `apply_fixes` applies the rulings in records/reference/carbon-balance-fix.csv before
 the tables are written (Brad 2026-11-20: obvious errors the check shows are fixed or
 replaced with the calculated value); `check` then writes
-data/processed_data/technology_database/carbon-balance-check.csv on the result.
+data/processed/technology-database/carbon-balance-check.csv on the result.
 """
 from __future__ import annotations
 

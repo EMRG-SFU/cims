@@ -7,7 +7,7 @@ CIMS-formatted CSVs (one per region).
 Sources
 -------
 Fixed structural parameters
-    raw_data/fixed_data/mining/mining_{region}.csv
+    extracted/legacy/fixed-data/mining/mining_{region}.csv
     Flattened from wide (2000–2050 year columns) to long format.
     Contains the full Mining hierarchy including the structural 1.0
     service_request at the sector level. The iron/non-iron product
@@ -91,7 +91,7 @@ from CIMS.data_processing.utils.feedstock_demand import build_feedstock_rows_all
 
 # ── configuration ──────────────────────────────────────────────────────────────
 FIXED_INPUT_DIR = paths.FIXED_DATA / 'mining'
-OUTPUT_DIR      = paths.MODEL / 'mining'
+OUTPUT_DIR      = paths.MODEL_SECTOR / 'mining'
 
 OUTPUT_COLS = [
     'Branch', 'Type', 'Region', 'Sector', 'Service', 'Technology',
@@ -322,7 +322,7 @@ def main() -> pl.DataFrame:
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     for region in regions:
         region_df = output.filter(pl.col('Region') == region)
-        out_path = OUTPUT_DIR / f'mining_{region.lower()}.csv'
+        out_path = OUTPUT_DIR / f'mining_{paths.region_file_code(region)}.csv'
         region_df = collapse_constant_years(region_df)
         write_model_csv(region_df, out_path)
         print(f'  Wrote {len(region_df):,} rows → {out_path.name}')

@@ -4,13 +4,13 @@ Steam fuel targets for the six steam sectors.
 Builds the .Steam calibration_quantity_requested rows (GJ of fuel by region,
 year, and fuel) for every sector in techdb_steam.SECTORS, and writes them to
 one table. The steam code (steam_chp_shares and techdb_steam) reads this table
-instead of reading the sectors' calibration files back from data/calibration/.
+instead of reading the sectors' calibration files back from data/model/calibration/target/.
 
 Why a separate stage
 --------------------
 Each steam sector's calibration script needs the CHP shares, and the CHP
 shares need every steam sector's steam fuel targets. When those targets were
-read from data/calibration/, each script read all six sectors' files from the
+read from data/model/calibration/target/, each script read all six sectors' files from the
 previous run, including its own, before writing its new file. A stale file
 could not be replaced, and the results depended on which files were on disk
 and the order the scripts ran. The targets only need source data (CER demand
@@ -24,7 +24,7 @@ For each sector, the rows come from exactly the steps the sector's
     1. mecs_steam_calibration.build_mecs_steam_rows('.{sector}')
        (what apply_mecs_steam puts in place of the CER steam rows)
     2. calibration_helpers.build_cer_energy (row by row, no aggregation)
-    3. keep regions listed for the sector in sector_region_map.csv
+    3. keep regions listed for the sector in config/mapping/sector-region.csv
     4. controls_conversions.filter_excluded_branches
     5. keep the main .Steam node's calibration_quantity_requested rows
 
@@ -34,7 +34,7 @@ the calibration scripts must be made here too.
 
 Reads
 -----
-processed_data/cer/, processed_data/eia/ and the StatCan biomass and refinery
+processed/gov-can/cer/, processed/gov-usa/eia/ and the StatCan biomass and refinery
 fuel tables, through mecs_steam_calibration (run process_source_data first).
 This stage doesn't need the technology database, but the steam code that reads
 its output (techdb_steam, steam_chp_shares) does: process_source_data runs the
@@ -42,7 +42,7 @@ technology database build just before this stage.
 
 Writes
 ------
-processed_data/steam/steam_fuel_targets.csv
+processed/steam/steam-fuel-targets.csv
     Calibration output columns (calibration_helpers.OUTPUT_COLS), one row per
     sector, region, year, and fuel target.
 
@@ -63,7 +63,7 @@ from CIMS.data_processing.utils.calibration_helpers import OUTPUT_COLS, build_ce
 from CIMS.data_processing.utils.mecs_steam_calibration import build_mecs_steam_rows
 
 OUTPUT_DIR  = paths.PROCESSED / 'steam'
-OUTPUT_FILE = OUTPUT_DIR / 'steam_fuel_targets.csv'
+OUTPUT_FILE = OUTPUT_DIR / 'steam-fuel-targets.csv'
 
 
 def _sectors() -> list[str]:

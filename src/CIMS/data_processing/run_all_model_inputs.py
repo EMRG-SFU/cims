@@ -2,8 +2,8 @@
 Run all sector pipeline scripts in the correct order.
 
 Run process_source_data first: the six steam sectors read
-processed_data/steam/steam_fuel_targets.csv and the technology database
-build output (processed_data/technology_database/), which it writes last.
+processed/steam/steam-fuel-targets.csv and the technology database
+build output (processed/technology-database/), which it writes last.
 
 Usage:
     python -m CIMS.data_processing.run_all_model_inputs

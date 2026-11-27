@@ -7,7 +7,7 @@ CIMS-formatted CSVs (one per region).
 Sources
 -------
 Fixed structural parameters
-    raw_data/fixed_data/residential/residential_{region}.csv
+    extracted/legacy/fixed-data/residential/residential_{region}.csv
     Flattened from wide (2000–2050 year columns) to long format.
     One file per region — no template substitution required.
 
@@ -89,8 +89,8 @@ from CIMS.data_processing.utils.collapse_constant_years import collapse_constant
 
 # ── configuration ──────────────────────────────────────────────────────────────
 FIXED_INPUT_DIR = paths.FIXED_DATA / 'residential'
-OUTPUT_DIR      = paths.MODEL / 'residential'
-LIGHTING_ESTIMATED_MS_DIR = paths.CALIBRATION_TARGETS / 'calibration_estimated/residential'
+OUTPUT_DIR      = paths.MODEL_SECTOR / 'residential'
+LIGHTING_ESTIMATED_MS_DIR = paths.CALIBRATION_TARGETS / 'calibration-estimated/residential'
 
 REGIONS = [
     'AB', 'BC', 'MB', 'NB', 'NL', 'NS', 'NT', 'NU',
@@ -1494,7 +1494,7 @@ def main() -> dict[str, pl.DataFrame]:
             output = _assemble_region(fixed, residential, multipliers, heating, region)
             output = collapse_constant_years(output)
 
-            out_path = OUTPUT_DIR / f'residential_{region.lower()}.csv'
+            out_path = OUTPUT_DIR / f'residential_{paths.region_file_code(region)}.csv'
             write_model_csv(output, str(out_path))
             print(f'  Wrote {len(output):,} rows → {out_path.name}')
             results[region] = output

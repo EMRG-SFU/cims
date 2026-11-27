@@ -7,31 +7,31 @@ CIMS-formatted CSVs (one per region).
 Sources
 -------
 Fixed structural parameters
-    raw_data/fixed_data/commercial/commercial_{region}.csv
+    extracted/legacy/fixed-data/commercial/commercial_{region}.csv
     Flattened from wide (2000–2050 year columns) to long format.
     AT is used as template for NL/PE/NS/NB; BC is used for YT/NT/NU.
 
 Total floorspace  (service_request rows)
-    processed_data/nrcan/ceud/commercial.csv  →  variable = 'total_floorspace'
+    processed/gov-can/nrcan/ceud/commercial.csv  →  variable = 'total_floorspace'
     Placed as Region-level service_request before the Commercial sector block.
 
 Energy price multipliers  (multiplier_price rows)
-    processed_data/energy_prices/energy_price_multipliers.csv
+    processed/energy-prices/energy-price-multipliers.csv
     Inserted after the Commercial sector header (service_provide / competition).
 
 Building shell shares  (market_share_total, year 2000 only)
-    processed_data/nrcan/ceud/commercial.csv  →  variable = 'building_shell_shares'
+    processed/gov-can/nrcan/ceud/commercial.csv  →  variable = 'building_shell_shares'
     Inserted after the Shell service header rows (service_provide, competition,
     intercept_retirement), before the Shell activity sub-service sections.
     BC splits each activity 25 % cold / 75 % marine.
 
 HVAC Cold / Marine and Hot Water market_share_total  (year 2000 only)
-    processed_data/nrcan/ceud/commercial.csv  →  variables hvac_cold / hvac_marine / hot_water_tech
+    processed/gov-can/nrcan/ceud/commercial.csv  →  variables hvac_cold / hvac_marine / hot_water_tech
     Spliced between the 'lifetime' and 'output' parameter blocks for each
     technology within those service sections.
 
 Shell -> HVAC service_request  (see _build_hvac_intensity_rows)
-    processed_data/nrcan/ceud/commercial.csv  ->  variable = 'hvac_intensity'
+    processed/gov-can/nrcan/ceud/commercial.csv  ->  variable = 'hvac_intensity'
     Replaces the fixed-data Buildings.Shell.<Activity> -> HVAC (Cold)/(Marine)
     service_request rows (one per shell technology) with the CEUD space-heating
     intensity, averaged over HVAC_INTENSITY_YEARS.  Each shell tier keeps its
@@ -41,7 +41,7 @@ Shell -> HVAC service_request  (see _build_hvac_intensity_rows)
     fixed data.
 
 Weather nodes  (WEATHER_NODES; service_provide / competition / service_request)
-    processed_data/nrcan/ceud/commercial.csv  ->  variable = 'hdd_index'
+    processed/gov-can/nrcan/ceud/commercial.csv  ->  variable = 'hdd_index'
     A Fixed Ratio "Weather (Cold|Marine)" node is added under each
     Buildings.Shell.<Activity> node, and that activity's technologies request
     it instead of HVAC -- so the only service_request into HVAC comes from the
@@ -80,7 +80,7 @@ from CIMS.data_processing.utils.feedstock_demand import build_feedstock_rows
 
 # ── configuration ──────────────────────────────────────────────────────────────
 FIXED_INPUT_DIR = paths.FIXED_DATA / 'commercial'
-OUTPUT_DIR      = paths.MODEL / 'commercial'
+OUTPUT_DIR      = paths.MODEL_SECTOR / 'commercial'
 
 OUTPUT_COLS = [
     'Branch', 'Type', 'Region', 'Sector', 'Service', 'Technology',
@@ -403,7 +403,7 @@ def _build_tech_mst_rows(
         # share -- e.g. a fuel with zero measured demand across the whole
         # disaggregation group for that year -- and .get()'s default only
         # covers a technology missing entirely. Treat NaN the same as
-        # missing rather than writing a literal "nan" into the model_inputs
+        # missing rather than writing a literal "nan" into the model
         # CSV, which silently drops out of any downstream sum.
         if val is None or val != val:
             val = 0.0
@@ -859,7 +859,7 @@ def main() -> dict[str, pl.DataFrame]:
                 feedstock_last_hist_year, region, template,
             )
 
-            out_path = OUTPUT_DIR / f'commercial_{region.lower()}.csv'
+            out_path = OUTPUT_DIR / f'commercial_{paths.region_file_code(region)}.csv'
             output = collapse_constant_years(output)
             write_model_csv(output, str(out_path))
             print(f'  Wrote {len(output):,} rows → {out_path.name}')

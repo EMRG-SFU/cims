@@ -7,7 +7,7 @@ price multipliers into CIMS-formatted CSVs (one per region).
 Sources
 -------
 Fixed structural parameters
-    raw_data/fixed_data/electricity/electricity_{region}.csv
+    extracted/legacy/fixed-data/electricity/electricity_{region}.csv
     Flattened from wide (2000–2050 year columns) to long format.
     All regions (provinces and territories NT, NU, YT alike) include
     Base Load / Shoulder Load / Peak Load sub-services under Utility
@@ -17,7 +17,7 @@ Fixed structural parameters
     in source/activity/electricity.py (YT ← ON, NT ← SK, NU ← AB).
 
 Electricity activity / load fractions
-    processed_data/activity/electricity.csv
+    processed/activity/electricity.csv
     Variables:
         Electricity.Utility Generation.Base Load    → % MWh → Utility Generation service_request
         Electricity.Utility Generation.Shoulder Load → % MWh → Utility Generation service_request
@@ -67,7 +67,7 @@ from CIMS.data_processing.utils.drop_zero_activity import drop_zero_activity_reg
 
 # ── configuration ──────────────────────────────────────────────────────────────
 FIXED_INPUT_DIR = paths.FIXED_DATA / 'electricity'
-OUTPUT_DIR      = paths.MODEL / 'electricity'
+OUTPUT_DIR      = paths.MODEL_SECTOR / 'electricity'
 
 OUTPUT_COLS = [
     'Branch', 'Type', 'Region', 'Sector', 'Service', 'Technology',
@@ -286,7 +286,7 @@ def main() -> dict[str, pl.DataFrame]:
 
             output = _assemble_region(fixed, activity, multipliers, region)
 
-            out_path = OUTPUT_DIR / f'electricity_{region.lower()}.csv'
+            out_path = OUTPUT_DIR / f'electricity_{paths.region_file_code(region)}.csv'
             output = collapse_constant_years(output)
             write_model_csv(output, str(out_path))
             print(f'  Wrote {len(output):,} rows → {out_path.name}')

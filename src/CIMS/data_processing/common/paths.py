@@ -13,7 +13,7 @@ except the data root itself.
 Usage
 -----
     from CIMS.data_processing.common import paths
-    paths.RAW / 'stats_can/18100005.xlsx'
+    paths.EXTRACTED / 'gov-can/statcan/cpi/18100005.xlsx'
 
     python -m CIMS.data_processing.common.paths            # print the roots
     python -m CIMS.data_processing.common.paths --strict   # and fail on a mismatch
@@ -50,24 +50,43 @@ def _data_root() -> Path:
 DATA_ROOT = _data_root()
 DATA_ROOT_FROM_ENV = bool(os.environ.get(ENV_DATA_ROOT))
 
-# Today's layers. Phase 3 renames them here (primary-sources/, extracted/, config/,
-# processed/, model/) and moves the folders with tools/migrate_data_layout.py.
-RAW = DATA_ROOT / 'raw_data'                                # sources as obtained, and extractions
-FIXED_DATA = RAW / 'fixed_data'                             # the JCIMS model data (phase 13 retires it)
-ASSUMPTIONS = RAW / 'assumptions'                           # hand-set growth rates and shares
-PROCESSED = DATA_ROOT / 'processed_data'                    # written by the source stages
-MAPPINGS = DATA_ROOT / 'mappings_conversions'               # hand-edited maps and settings
-CONFIG = DATA_ROOT / 'config'                               # results settings (results_*.txt)
-MODEL_INPUTS = DATA_ROOT / 'model_inputs'
-MODEL = MODEL_INPUTS / 'model'                              # the model files CIMS reads
-DEFAULTS = MODEL_INPUTS / 'defaults'                        # hand-made model defaults
-POLICIES = MODEL_INPUTS / 'policies'                        # policy files (hand-made for now)
-CALIBRATION_OUTPUTS = MODEL_INPUTS / 'calibration_outputs'  # written by calibration: fitted FICs and lifetimes
-CALIBRATION_TARGETS = DATA_ROOT / 'calibration'             # calibration targets, written by the pipeline
-TECHDB_RECORDS = DATA_ROOT / 'technology_database'          # the technology database's hand-edited records
-TECHDB_EXTRACTED = RAW / 'technology_database'              # its extractions and manifest
-TECHDB_OUTPUT = PROCESSED / 'technology_database'           # its build output
+# The layers (conventions §2). Phase 3 moves the folders (tools/migrate_data_layout.py).
+PRIMARY_SOURCES = DATA_ROOT / 'primary-sources'            # documents as obtained; the build never reads them
+EXTRACTED = DATA_ROOT / 'extracted'                         # as-published values, by publisher (gov-can/statcan/, ...)
+LEGACY = EXTRACTED / 'legacy'                               # JCIMS-era inputs
+FIXED_DATA = LEGACY / 'fixed-data'                          # the JCIMS model data (phase 13 retires it)
+CONFIG = DATA_ROOT / 'config'                               # hand-edited records, in git
+ASSUMPTIONS = CONFIG / 'assumption'                         # hand-set growth rates and shares
+DEFAULTS = CONFIG / 'model-default'                         # hand-made model defaults
+CALIBRATION_CONFIG = CONFIG / 'calibration'                 # the FIC proxy map and decline list
+TECHDB_RECORDS = CONFIG / 'technology-database'             # the technology database's hand-edited records
+PROCESSED = DATA_ROOT / 'processed'                         # written by the source stages
+MODEL = DATA_ROOT / 'model'                                 # everything CIMS reads; written by the build
+MODEL_ROOT = MODEL / 'root'                                 # root_cims.csv: the root node and model-wide settings
+MODEL_REGION = MODEL / 'region'                             # region_<region>.csv: the region nodes, with GDP and population
+MODEL_SECTOR = MODEL / 'sector'                             # <sector>/<sector>_<region>.csv
+MODEL_COST = MODEL / 'cost'                                 # declining-capital-cost/, declining-intangible-cost/, fixed-intangible-cost/
+MODEL_EXOGENOUS = MODEL / 'exogenous'                       # exogenous-price/, exogenous-demand/, market-share-limit/
+POLICIES = MODEL / 'policy'                                 # policy files (hand-made until the policy stage)
+CALIBRATION_TARGETS = MODEL / 'calibration' / 'target'      # calibration targets, written by the pipeline
+CALIBRATION_OUTPUTS = MODEL / 'calibration' / 'fitted'      # written by calibration: fitted FICs and lifetimes
+TECHDB_EXTRACTED = EXTRACTED / 'technology-database'        # its extractions and manifest
+TECHDB_OUTPUT = PROCESSED / 'technology-database'           # its build output
 RESULTS = REPO_ROOT / 'results'                             # model results and logs (gitignored)
+LOGS = RESULTS / 'logs'                                     # run and optimizer logs
+
+
+def region_file_code(region: str) -> str:
+    """The region's part of a data file name: the code in lowercase, with RoW as rest-of-world.
+
+    Only file names use this (conventions §1); the values inside the files keep their
+    spellings (RoW, BC) until phase 14.
+
+    >>> region_file_code('BC'), region_file_code('RoW')
+    ('bc', 'rest-of-world')
+    """
+    code = region.lower()
+    return 'rest-of-world' if code == 'row' else code
 
 
 def _inside(path: Path, folder: Path) -> bool:

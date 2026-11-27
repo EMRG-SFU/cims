@@ -4,7 +4,7 @@ Extract Industrial Minerals model input data and save to CIMS-formatted CSV.
 Sources
 -------
 Fixed structural parameters
-    raw_data/fixed_data/industrial_minerals/*.csv
+    extracted/legacy/fixed-data/industrial_minerals/*.csv
     Flattened from wide (2000–2050 year columns) to long format via
     utils/flatten_fixed_data.
     Encodes the full hierarchy:
@@ -54,7 +54,7 @@ from CIMS.data_processing.utils.drop_zero_activity import drop_zero_activity_reg
 
 # ── configuration ─────────────────────────────────────────────────────────────
 FIXED_INPUT_DIR = paths.FIXED_DATA / 'industrial_minerals'
-OUTPUT_DIR      = paths.MODEL / 'industrial_minerals'
+OUTPUT_DIR      = paths.MODEL_SECTOR / 'industrial-minerals'
 
 OUTPUT_COLS = [
     'Branch', 'Type', 'Region', 'Sector', 'Service', 'Technology',
@@ -231,12 +231,12 @@ def main() -> pl.DataFrame:
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     # Restrict to regions with actual fixed structural data — price_rows carries
     # a multiplier_price row for every CIMS region (Industrial Minerals is
-    # classified as Industrial for all 13 in sector_map.csv), which would
+    # classified as Industrial for all 13 in config/mapping/sector.csv), which would
     # otherwise leak extra region files with no structural data behind them.
     regions = fixed_str['Region'].drop_nulls().unique().sort().to_list()
     for region in regions:
         region_df = output.filter(pl.col('Region') == region)
-        out_path = OUTPUT_DIR / f'industrial_minerals_{region.lower()}.csv'
+        out_path = OUTPUT_DIR / f'industrial-minerals_{paths.region_file_code(region)}.csv'
         region_df = collapse_constant_years(region_df)
         write_model_csv(region_df, out_path)
         print(f'  Wrote {len(region_df):,} rows → {out_path.name}')

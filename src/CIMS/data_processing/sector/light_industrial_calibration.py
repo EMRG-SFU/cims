@@ -47,7 +47,7 @@ from CIMS.data_processing.utils.mecs_steam_calibration import apply_mecs_steam
 from CIMS.data_processing.utils.techdb_steam import add_steam_market_share_targets
 
 # ── configuration ─────────────────────────────────────────────────────────────
-OUTPUT_DIR = paths.CALIBRATION_TARGETS / 'light_industrial'
+OUTPUT_DIR = paths.CALIBRATION_TARGETS / 'light-industrial'
 
 SECTOR_NAME = 'Light Industrial'
 
@@ -90,7 +90,7 @@ def main() -> pl.DataFrame:
         .select(OUTPUT_COLS)
     )
 
-    print('Filtering to regions with Light Industrial (see sector_region_map.csv)...')
+    print('Filtering to regions with Light Industrial (see config/mapping/sector-region.csv)...')
     allowed_regions = load_sector_regions().get(SECTOR_NAME)
     if allowed_regions:
         before_count = len(output)
@@ -102,7 +102,7 @@ def main() -> pl.DataFrame:
     output = filter_excluded_branches(output)
     output = add_steam_market_share_targets(output, SECTOR_NAME)
 
-    regions = write_per_region_csvs(output, OUTPUT_DIR, 'light_industrial', skip_if_all_zero=True)
+    regions = write_per_region_csvs(output, OUTPUT_DIR, 'light-industrial', skip_if_all_zero=True)
 
     print(f'\n✅ Light industrial calibration complete')
     print(f'   Total rows:  {len(output):,}')

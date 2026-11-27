@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.25.0"
+__generated_with = "0.26.0"
 app = marimo.App(width="medium")
 
 with app.setup:
@@ -17,7 +17,6 @@ def _():
     mo.md(r"""
     # Run all cells below to load, validate, and run the CIMS model
     """)
-    return
 
 
 @app.cell(hide_code=True)
@@ -25,69 +24,69 @@ def _():
     mo.md(r"""
     ## Set required file paths, models, and sectors
     """)
-    return
 
 
 @app.function
 def reset_model_files():
     ### Base model and standard files below are required for the model to run
     model_path = str(paths.MODEL)
-    # Model files should be located at: data/model_inputs/
+    # Model files are in data/model/: root/ is the base; region/, sector/, cost/, and exogenous/ load as scenario files (conventions §2)
 
     ### Base model to start initialisation
-    base_model = 'CIMS_base'
+    base_model = 'root'   # model/root/: the root node and model-wide settings. The regions load as scenario files (below).
 
     ### Default values and parameter list files
-    default_path = str(paths.DEFAULTS / 'defaults_Parameters.csv')
-    list_path = str(paths.DEFAULTS / 'defaults_Lists.csv')
-    deflator_path = str(paths.PROCESSED / 'deflator_exchange' / 'currency_deflator.csv')
-    exchange_path = str(paths.PROCESSED / 'deflator_exchange' / 'currency_exchange.csv')
+    default_path = str(paths.DEFAULTS / 'default-parameter.csv')
+    list_path = str(paths.DEFAULTS / 'default-list.csv')
+    deflator_path = str(paths.PROCESSED / 'currency/currency-deflator.csv')
+    exchange_path = str(paths.PROCESSED / 'currency/currency-exchange.csv')
 
     update_files = {}
 
-    ### Required sector files (included in data/model_inputs/model/)
+    ### Required sector files (in data/model/sector/)
     sector_req = [
         'fuels',
         'transmission',
-        'coal_mining',
-        'natural_gas',
-        'natural_gas_market', # must come after natural_gas: it overrides the regional production path
-        'petroleum_crude',
-        'petroleum_refining',
+        'coal-mining',
+        'natural-gas',
+        'natural-gas-market', # must come after natural-gas: it overrides the regional production path
+        'petroleum-crude',
+        'petroleum-refining',
         'electricity',
         'biodiesel',
         'ethanol',
         'hydrogen',
         'mining',
-        'industrial_minerals',
-        'iron_and_steel',
-        'metal_smelting',
-        'chemical_products',
-        'pulp_and_paper',
-        'light_industrial',
+        'industrial-minerals',
+        'iron-and-steel',
+        'metal-smelting',
+        'chemical-products',
+        'pulp-and-paper',
+        'light-industrial',
         'construction',
         'residential',
         'commercial',
-        'transportation_passenger',
-        'transportation_freight',
+        'transportation-passenger',
+        'transportation-freight',
         'waste',
         'agriculture',
         'forestry',
         ]
 
-    ### Required model files (included in data/model_inputs/model/)
+    ### Required model files (in data/model/)
     model_req = [
-        'dcc', # declining capital cost
-        # 'dic', # declining intangible cost (neighbour effect)
-        'fic', # fixed intangible cost; primarily used for calibration
-        'market_share_limits', # use of limits should be minimised
+        'cost/declining-capital-cost',
+        # 'cost/declining-intangible-cost', # neighbour effect
+        'cost/fixed-intangible-cost', # primarily used for calibration
+        'exogenous/market-share-limit', # use of limits should be minimised
         ]
 
     # Each entry below is (folder, [file/subfolder names]); merging just means
-    # appending the list onto update_files[folder], creating it if needed.
+    # appending the list onto update_files[folder], creating it if needed. Files load
+    # in list order, and a later file wins: the regions first (model/region/), then
+    # the sectors, then the cost and exogenous files.
     for _path, _files in [
-        (model_path, sector_req),
-        (model_path, model_req),
+        (model_path, ['region'] + [f'sector/{_s}' for _s in sector_req] + model_req),
     ]:
         if _files:
             update_files.setdefault(_path, []).extend(_files)
@@ -108,7 +107,6 @@ def _():
     mo.md(r"""
     ## Adjust scenario parameters and optional update files
     """)
-    return
 
 
 @app.cell(hide_code=True)
@@ -116,7 +114,6 @@ def _():
     mo.md(r"""
     ### Region, year, and sector selection
     """)
-    return
 
 
 @app.cell
@@ -202,9 +199,10 @@ def _():
     sector_list = [
         'Coal Mining',
         'Natural Gas',
-        # 'Natural Gas Market', # Routes each region's production through the national market; needs 'Natural Gas' and all regions.
-                                # Off: regions supply themselves and any subset of regions can run. Prices come from Generic Fuels either way.
-                                # Design note: docs/design/natural-gas-market.md.
+        # 'Natural Gas Market', # On: routes each region's production through the national market; needs 'Natural Gas' and 
+                                # all regions.
+                                # Off: regions supply themselves and any subset of regions can run. 
+                                # Prices come from Generic Fuels either way.
         'Petroleum Crude', # Must also run 'Natural Gas' sector since shared fuel blending
         'Petroleum Refining',
         'Electricity',
@@ -248,19 +246,18 @@ def _():
     mo.md(r"""
     ### Update file specifications
     """)
-    return
 
 
 @app.cell
-def _(calibration_data, calibration_path, model_path, update_files):
-    ### Optional model folder files (included in data/model_inputs/model/)
+def _(model_path, update_files):
+    ### Optional model folder files (in data/model/)
     model_optional = [
-        'exogenous_prices',  # needed for correct calibration of historical years
-        'exogenous_demand',  # use this file when calibrating endogenous supply sectors
+        'exogenous/exogenous-price',   # needed for correct calibration of historical years
+        'exogenous/exogenous-demand',  # use this file when calibrating endogenous supply sectors
         ]
 
 
-    ### Policy files: one folder per policy under data/model_inputs/policies/
+    ### Policy files: one folder per policy under data/model/policy/
     # (<policy>/<policy>_<region>.csv). Entries are applied in list order, so the
     # reference policies come first, then turn-off files, then scenario files.
     policy_path = str(paths.POLICIES)
@@ -323,12 +320,13 @@ def _(calibration_data, calibration_path, model_path, update_files):
         ]
 
     ### Calibration Counterfactual Files
-    # calibration_path = str(paths.CALIBRATION_TARGETS)
-    # calibration_data = [
+    # To load calibration targets as scenario files, uncomment sectors below.
+    calibration_path = str(paths.CALIBRATION_TARGETS)
+    calibration_data = [
     #     'agriculture',
     #     'biodiesel',
-    #     'chemical_products',
-    #     'coal_mining',
+    #     'chemical-products',
+    #     'coal-mining',
     #     'commercial',
     #     'construction',
     #     'electricity',
@@ -336,24 +334,24 @@ def _(calibration_data, calibration_path, model_path, update_files):
     #     'forestry',
     #     'fuels',
     #     'hydrogen',
-    #     'industrial_minerals',
-    #     'iron_and_steel',
-    #     'light_industrial',
-    #     'metal_smelting',
+    #     'industrial-minerals',
+    #     'iron-and-steel',
+    #     'light-industrial',
+    #     'metal-smelting',
     #     'mining',
-    #     'natural_gas',
-    #     'petroleum_crude',
-    #     'petroleum_refining',
-    #     'pulp_and_paper',
+    #     'natural-gas',
+    #     'petroleum-crude',
+    #     'petroleum-refining',
+    #     'pulp-and-paper',
     #     'residential',
-    #     'transportation_freight',
-    #     'transportation_passenger',
+    #     'transportation-freight',
+    #     'transportation-passenger',
     #     'waste'
-    # ]
+    ]
 
     ### Calibration Outputs (fitted FICs / lifetimes from a prior calibration pass)
-    # One subfolder per sector, each with its own fitted_fics/ and fitted_lifetimes/
-    # (data/model_inputs/calibration_outputs/<sector>/fitted_fics, ...), so several
+    # One subfolder per sector, each with its own fitted_fics/, extended_fics/, and fitted_lifetimes/
+    # (data/model/calibration/fitted/<sector>/fitted_fics, ...), so several
     # sectors' calibration outputs can be loaded together without overwriting each other.
     calibration_outputs_path = str(paths.CALIBRATION_OUTPUTS)
     calibration_output_sectors = [
@@ -371,7 +369,7 @@ def _(calibration_data, calibration_path, model_path, update_files):
     calibration_outputs = [
         f'{_sector}/{_kind}'
         for _sector in calibration_output_sectors
-        for _kind in ('fitted_fics', 'fitted_lifetimes')
+        for _kind in ('fitted_fics', 'extended_fics', 'fitted_lifetimes')  # extended_fics after fitted_fics (extend_fics.py)
     ]
 
     # Each entry below is (folder, [file/subfolder names]); merging just means
@@ -384,7 +382,6 @@ def _(calibration_data, calibration_path, model_path, update_files):
     ]:
         if _files:
             update_files.setdefault(_path, []).extend(_files)
-    return
 
 
 @app.cell(hide_code=True)
@@ -392,7 +389,6 @@ def _():
     mo.md(r"""
     ### Scenario name
     """)
-    return
 
 
 @app.cell
@@ -408,7 +404,6 @@ def _():
     mo.md(r"""
     ## Instantiate the Model
     """)
-    return
 
 
 @app.cell
@@ -448,7 +443,6 @@ def _(
 def _(model):
     #################### Validate Files ####################
     model.validate_files()
-    return
 
 
 @app.cell
@@ -456,21 +450,18 @@ def _(model):
     #################### Show validator warnings ####################
     # change warning type as needed to view indicated nodes/techs
     model.validator.warnings['inconsistent_tech_refs']
-    return
 
 
 @app.cell
 def _(model):
     #################### Construct graph ####################
     model.construct_graph()
-    return
 
 
 @app.cell
 def _(model):
     #################### Validate Graph ####################
     model.validate_graph()
-    return
 
 
 @app.cell(hide_code=True)
@@ -478,7 +469,6 @@ def _():
     mo.md(r"""
     ## Run scenario and output results
     """)
-    return
 
 
 @app.cell
@@ -496,10 +486,9 @@ def _(model, results_path):
     results_df = CIMS.log_model(
        model=model,
        output_file = f"{results_path}/results_general.csv",
-       parameter_file=str(paths.CONFIG / "results_general.txt"),
+       parameter_file=str(paths.CONFIG / "results-general.txt"),
        ensure_dir=True
     )
-    return
 
 
 @app.cell
@@ -508,10 +497,9 @@ def _(model, results_path):
     tech_results_df = CIMS.log_model(
        model=model,
        output_file=f'{results_path}/results_tech.csv',
-       parameter_file=str(paths.CONFIG / "results_tech.txt"),
+       parameter_file=str(paths.CONFIG / "results-tech.txt"),
        ensure_dir=True
     )
-    return
 
 
 @app.cell
@@ -521,7 +509,6 @@ def _(model, results_path):
 
     with gzip.open(f"{results_path}/model.pkl", "wb") as f:
         pickle.dump(model, f)
-    return
 
 
 @app.cell
@@ -539,7 +526,6 @@ def _(model):
     #################### Print service request loops after running model ####################
     import pprint
     pprint.pp(model.loops)
-    return
 
 
 if __name__ == "__main__":

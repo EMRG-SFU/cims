@@ -7,7 +7,7 @@ CIMS-formatted CSVs (one per region).
 Sources
 -------
 Fixed structural parameters
-    raw_data/fixed_data/light_industrial/light_industrial_{region}.csv
+    extracted/legacy/fixed-data/light_industrial/light_industrial_{region}.csv
     Flattened from wide (2000–2050 year columns) to long format.
     Encodes the full Light Industrial hierarchy:
       Light Industrial (Sector)
@@ -51,7 +51,7 @@ Manufacturing sub-service splits  (service_request rows at Manufacturing level)
 
 Energy price multipliers  (multiplier_price rows)
     pipeline/source/energy_prices/energy_price_multipliers.py  (called directly via main())
-    Light Industrial is classified as Industrial in sector_map.csv.
+    Light Industrial is classified as Industrial in config/mapping/sector.csv.
 
 Output columns
 --------------
@@ -90,7 +90,7 @@ from CIMS.data_processing.utils.feedstock_demand import build_feedstock_rows_all
 
 # ── configuration ──────────────────────────────────────────────────────────────
 FIXED_INPUT_DIR = paths.FIXED_DATA / 'light_industrial'
-OUTPUT_DIR      = paths.MODEL / 'light_industrial'
+OUTPUT_DIR      = paths.MODEL_SECTOR / 'light-industrial'
 
 OUTPUT_COLS = [
     'Branch', 'Type', 'Region', 'Sector', 'Service', 'Technology',
@@ -311,7 +311,7 @@ def main() -> pl.DataFrame:
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     for region in regions:
         region_df = output.filter(pl.col('Region') == region)
-        out_path = OUTPUT_DIR / f'light_industrial_{region.lower()}.csv'
+        out_path = OUTPUT_DIR / f'light-industrial_{paths.region_file_code(region)}.csv'
         region_df = collapse_constant_years(region_df)
         write_model_csv(region_df, out_path)
         print(f'  Wrote {len(region_df):,} rows → {out_path.name}')

@@ -7,7 +7,7 @@ CIMS-formatted CSVs (one per region).
 Sources
 -------
 Fixed structural parameters
-    raw_data/fixed_data/iron_and_steel/iron_and_steel_{region}.csv
+    extracted/legacy/fixed-data/iron_and_steel/iron_and_steel_{region}.csv
     Flattened from wide (2000–2050 year columns) to long format.
     Encodes the full Iron and Steel hierarchy:
       Iron and Steel (Sector)
@@ -46,7 +46,7 @@ Total production  (service_request at sector level)
 
 Energy price multipliers  (multiplier_price rows)
     pipeline/source/energy_prices/energy_price_multipliers.py  (called directly via main())
-    Iron and Steel is classified as Industrial in sector_map.csv.
+    Iron and Steel is classified as Industrial in config/mapping/sector.csv.
 
 Output columns
 --------------
@@ -82,7 +82,7 @@ from CIMS.data_processing.utils.feedstock_demand import build_feedstock_rows_all
 
 # ── configuration ──────────────────────────────────────────────────────────────
 FIXED_INPUT_DIR = paths.FIXED_DATA / 'iron_and_steel'
-OUTPUT_DIR      = paths.MODEL / 'iron_and_steel'
+OUTPUT_DIR      = paths.MODEL_SECTOR / 'iron-and-steel'
 
 OUTPUT_COLS = [
     'Branch', 'Type', 'Region', 'Sector', 'Service', 'Technology',
@@ -238,7 +238,7 @@ def main() -> pl.DataFrame:
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     for region in regions:
         region_df = output.filter(pl.col('Region') == region)
-        out_path = OUTPUT_DIR / f'iron_and_steel_{region.lower()}.csv'
+        out_path = OUTPUT_DIR / f'iron-and-steel_{paths.region_file_code(region)}.csv'
         region_df = collapse_constant_years(region_df)
         write_model_csv(region_df, out_path)
         print(f'  Wrote {len(region_df):,} rows → {out_path.name}')

@@ -7,8 +7,8 @@ CIMS-formatted CSVs.
 Sources
 -------
 Fixed structural parameters
-    raw_data/fixed_data/fuels/fuels_{region}.csv  (one per region, flattened as-is)
-    raw_data/fixed_data/fuels/fuels_CIMS.csv      (flattened + energy prices + emission factors)
+    extracted/legacy/fixed-data/fuels/fuels_{region}.csv  (one per region, flattened as-is)
+    extracted/legacy/fixed-data/fuels/fuels_CIMS.csv      (flattened + energy prices + emission factors)
 
 Energy prices  (lcc_financial rows)
     source/energy_prices/energy_prices.py — generic production costs, labelled 2025_CAD/GJ.
@@ -51,7 +51,7 @@ from CIMS.data_processing.utils.collapse_constant_years import collapse_constant
 
 # ── configuration ──────────────────────────────────────────────────────────────
 FIXED_INPUT_DIR = paths.FIXED_DATA / 'fuels'
-OUTPUT_DIR      = paths.MODEL / 'fuels'
+OUTPUT_DIR      = paths.MODEL_SECTOR / 'fuels'
 
 OUTPUT_COLS = [
     'Branch', 'Type', 'Region', 'Sector', 'Service', 'Technology',
@@ -309,7 +309,7 @@ def main() -> dict[str, pl.DataFrame]:
             output = _apply_base_year_blend_shares(
                 output, base_shares.filter(pl.col('Region') == region))
 
-            out_path = OUTPUT_DIR / f'fuels_{region.lower()}.csv'
+            out_path = OUTPUT_DIR / f'fuels_{paths.region_file_code(region)}.csv'
             output = collapse_constant_years(output)
             write_model_csv(output, str(out_path))
             print(f'  Wrote {len(output):,} rows → {out_path.name}')

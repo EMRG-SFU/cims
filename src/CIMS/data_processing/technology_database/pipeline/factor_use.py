@@ -3,7 +3,7 @@ efficiency or assumption the bridge used) with the pooled rows that rest on it,
 and one row per reference source with the factors it backs.
 
 The reference sources -- physical constants, densities, process ratios -- are
-registered in data/raw_data/technology_database/source-details_reference.csv, apart from the
+registered in data/extracted/technology-database/source-details_reference.csv, apart from the
 technology sources in source-details_sources.csv: they are not evidence about a
 technology, only the means of putting one source's number on another's basis.
 """

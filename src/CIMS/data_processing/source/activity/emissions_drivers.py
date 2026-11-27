@@ -25,7 +25,7 @@ FORESTRY (per individual province/territory, excl. Canada totals):
 Unit conversion:  kt CO2eq  ->  tCO2e  =  value * 1,000
 
 Data availability: 1990-2024.  Years 2000+ are used directly.
-Region names are mapped from NIR to CIMS codes via region_map.csv.
+Region names are mapped from NIR to CIMS codes via config/mapping/region.csv.
 Extension to 2100 via CAGR over the full historical period (DATA_START–last
 year), giving a smoother structural trend. Percentage variables held flat.
 
@@ -50,9 +50,9 @@ from CIMS.data_processing.utils.controls_conversions import load_control_config
 
 
 # Configuration
-MAPPINGS_PATH    = paths.MAPPINGS
-REGION_MAP_FILE  = MAPPINGS_PATH / 'region_map.csv'
-GHG_FILE         = paths.RAW / 'eccc/nir/GHG_Econ_Can_Prov_Terr.csv'
+MAPPINGS_PATH    = paths.CONFIG / "mapping"
+REGION_MAP_FILE  = MAPPINGS_PATH / 'region.csv'
+GHG_FILE         = paths.EXTRACTED / 'gov-can/eccc/nir/GHG_Econ_Can_Prov_Terr.csv'
 OUTPUT_DIR       = paths.PROCESSED / 'activity'
 
 # Regions to exclude (national/territorial aggregates)
@@ -62,7 +62,7 @@ KT_TO_T = 1_000   # kt CO2eq -> tCO2e
 
 DATA_START = load_control_config()["pipeline"]["data_start"]
 
-ASSUMPTIONS_FILE = paths.ASSUMPTIONS / 'activity_cagr_projections.csv'
+ASSUMPTIONS_FILE = paths.ASSUMPTIONS / 'activity-cagr-projections.csv'
 CAGR_START, CAGR_END, CAGR_PERIODS = load_cagr_assumptions('Emissions Drivers', ASSUMPTIONS_FILE)
 
 # Per-region overrides — one explicit annual rate per period.
@@ -372,7 +372,7 @@ def main() -> pl.DataFrame:
     print(f"   Variables:           {sorted(combined['Variable'].unique().to_list())}")
     print(f"   Years covered:       {combined['Year'].min()} - {combined['Year'].max()}")
 
-    output_path = OUTPUT_DIR / 'emissions_drivers.csv'
+    output_path = OUTPUT_DIR / 'emissions-drivers.csv'
     output_path.parent.mkdir(parents=True, exist_ok=True)
     combined.write_csv(output_path)
     print(f"   Saved to:            {output_path}")

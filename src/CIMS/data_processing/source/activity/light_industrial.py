@@ -25,15 +25,15 @@ from CIMS.data_processing.common import paths
 from CIMS.data_processing.utils.controls_conversions import load_control_config
 
 # Configuration
-MAPPINGS_PATH       = paths.MAPPINGS
-REGION_MAP_FILE     = MAPPINGS_PATH / 'region_map.csv'
-LIGHT_INDUSTRY_FILE = paths.RAW / 'stats_can/activity/36100711.csv'
+MAPPINGS_PATH       = paths.CONFIG / 'mapping'
+REGION_MAP_FILE     = MAPPINGS_PATH / 'region.csv'
+LIGHT_INDUSTRY_FILE = paths.EXTRACTED / 'gov-can/statcan/activity/36100711.csv'
 OUTPUT_DIR          = paths.PROCESSED / 'activity'
 
 DATA_START     = 2000
 LAST_DATA_YEAR = load_control_config()["last_data_year"]
 
-ASSUMPTIONS_FILE = paths.ASSUMPTIONS / 'activity_cagr_projections.csv'
+ASSUMPTIONS_FILE = paths.ASSUMPTIONS / 'activity-cagr-projections.csv'
 CAGR_START, CAGR_END, CAGR_PERIODS = load_cagr_assumptions('Light Industrial', ASSUMPTIONS_FILE)
 
 # Per-region overrides — one explicit annual rate per period.
@@ -352,7 +352,7 @@ def main() -> pl.DataFrame:
     print(f'   Variables:           {sorted(combined["Variable"].unique().to_list())}')
     print(f'   Years covered:       {combined["Year"].min()} – {combined["Year"].max()}')
 
-    li_path = OUTPUT_DIR / 'light_industrial.csv'
+    li_path = OUTPUT_DIR / 'light-industrial.csv'
     li_path.parent.mkdir(parents=True, exist_ok=True)
     combined.write_csv(li_path)
     print(f'   Saved to:            {li_path}')

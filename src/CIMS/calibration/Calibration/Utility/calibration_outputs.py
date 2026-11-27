@@ -3,8 +3,8 @@ Where calibration outputs go, and a record of how well each fit did.
 
 Reference.py reads fitted values from one subfolder per sector:
 
-    data/model_inputs/calibration_outputs/<sector>/fitted_fics/
-    data/model_inputs/calibration_outputs/<sector>/fitted_lifetimes/
+    data/model/calibration/fitted/<sector>/fitted_fics/
+    data/model/calibration/fitted/<sector>/fitted_lifetimes/
 
 for every sector listed in its `calibration_output_sectors`. `sector_folder`
 maps a node to that subfolder name from its branch (`CIMS.CAN.<region>.<Sector>...`),
@@ -60,8 +60,13 @@ def group_by_sector(nodeNames):
 
 
 def log_file_for(output_root, nodeName, stage):
-    """Per-node solver log path, `<output_root>/<sector>/logs/<node>_<stage>.log`."""
-    log_dir = os.path.join(sector_output_dir(output_root, nodeName), "logs")
+    """Per-node solver log path, `results/logs/calibration/<sector>/<node>_<stage>.log`.
+
+    The logs sit outside data/ (gitignored, with the other run logs). `output_root`
+    is kept for the callers; the sector folder name is the same as under it.
+    """
+    from CIMS.data_processing.common import paths
+    log_dir = os.path.join(str(paths.LOGS / "calibration"), sector_folder(nodeName))
     os.makedirs(log_dir, exist_ok=True)
     return os.path.join(log_dir, re.sub(r"[^A-Za-z0-9]+", "_", nodeName) + f"_{stage}.log")
 

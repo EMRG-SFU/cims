@@ -3,7 +3,7 @@ Steam fuel shares by CIMS sector, region and year from the filled RESD table.
 
 Input
 -----
-raw_data/stats_can/resd/RESD_filled_2000-2024.xlsx
+extracted/gov-can/statcan/resd/RESD_filled_2000-2024.xlsx
     StatCan RESD (25-10-0029-01) with suppressed cells filled by resd_fill.py,
     in the CEEDC workbook layout ('Data' and 'Estimated' sheets, GJ).
 
@@ -17,7 +17,7 @@ dropped and the rest prorated to 100%. Region-sectors with no activity get
 the Canada mix. Biomass is off (INCLUDE_BIOMASS) until there is a provincial
 source for it.
 
-Output: processed_data/stats_can/resd_steam_fuel_shares.csv
+Output: processed/gov-can/statcan/resd-steam-fuel-shares.csv
     Columns: region, cims_sector, year, steam_fuel, share, gj, estimated, source, sector
 
 Pipeline use:
@@ -230,15 +230,15 @@ REGION_CODES = {
 
 def _paths():
     from CIMS.data_processing.common import paths
-    return (paths.RAW / "stats_can/resd/RESD_filled_2000-2024.xlsx",
-            paths.PROCESSED / "stats_can/resd_steam_fuel_shares.csv")
+    return (paths.EXTRACTED / "gov-can/statcan/resd/RESD_filled_2000-2024.xlsx",
+            paths.PROCESSED / "gov-can/statcan/resd-steam-fuel-shares.csv")
 
 
 @lru_cache(maxsize=1)
 def load_steam_fuel_shares():
     """Steam fuel shares as pandas, with CIMS region codes and CIMS sector nodes
     ('.Chemical Products', ...). Rebuilt from the RESD file on every new session
-    and saved to processed_data for reference."""
+    and saved to processed/ for reference."""
     src, dst = _paths()
     out = build(str(src))
     dst.parent.mkdir(parents=True, exist_ok=True)

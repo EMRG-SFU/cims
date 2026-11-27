@@ -7,7 +7,7 @@ to long format and writes one output CSV per input file.
 Sources
 -------
 Fixed DIC parameters
-    raw_data/fixed_data/dic/DIC_{region}.csv
+    extracted/legacy/fixed-data/dic/DIC_{region}.csv
     One file per Canadian province/territory.
 
 Output columns
@@ -31,13 +31,13 @@ from CIMS.data_processing.utils.techdb_steam import drop_replaced_steam_rows
 
 # ── configuration ─────────────────────────────────────────────────────────────
 FIXED_INPUT_DIR = paths.FIXED_DATA / 'dic'
-OUTPUT_DIR      = paths.MODEL / 'dic'
+OUTPUT_DIR      = paths.MODEL_COST / 'declining-intangible-cost'
 
 
 # ── main ──────────────────────────────────────────────────────────────────────
 
 def main() -> None:
-    """Flatten all DIC fixed CSVs and write outputs to model_inputs/model/dic."""
+    """Flatten all DIC fixed CSVs and write outputs to model/cost/declining-intangible-cost."""
     print('=' * 60)
     print('DIC MODEL INPUTS')
     print('=' * 60)
@@ -59,7 +59,7 @@ def main() -> None:
         output_files = sorted(tmp_path.rglob('*.csv'))
         total_rows = 0
         for f in output_files:
-            dest = OUTPUT_DIR / f.name
+            dest = OUTPUT_DIR / f"declining-intangible-cost_{paths.region_file_code(f.stem.split('_', 1)[1])}.csv"   # the model file name (conventions §1)
             df = drop_replaced_steam_rows(pl.read_csv(f, infer_schema_length=0))
             total_rows += len(df)
             write_model_csv(df, dest)

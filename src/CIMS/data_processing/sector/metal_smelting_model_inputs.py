@@ -7,7 +7,7 @@ CIMS-formatted CSVs (one per region).
 Sources
 -------
 Fixed structural parameters
-    raw_data/fixed_data/metal_smelting/metal_smelting_{region}.csv
+    extracted/legacy/fixed-data/metal_smelting/metal_smelting_{region}.csv
     Flattened from wide (2000–2050 year columns) to long format.
     Encodes the full Metal Smelting hierarchy:
       Metal Smelting (Sector)
@@ -92,7 +92,7 @@ from CIMS.data_processing.utils.drop_zero_activity import drop_zero_activity_reg
 
 # ── configuration ──────────────────────────────────────────────────────────────
 FIXED_INPUT_DIR = paths.FIXED_DATA / 'metal_smelting'
-OUTPUT_DIR      = paths.MODEL / 'metal_smelting'
+OUTPUT_DIR      = paths.MODEL_SECTOR / 'metal-smelting'
 
 OUTPUT_COLS = [
     'Branch', 'Type', 'Region', 'Sector', 'Service', 'Technology',
@@ -266,7 +266,7 @@ def main() -> pl.DataFrame:
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     for region in regions:
         region_df = output.filter(pl.col('Region') == region)
-        out_path = OUTPUT_DIR / f'metal_smelting_{region.lower()}.csv'
+        out_path = OUTPUT_DIR / f'metal-smelting_{paths.region_file_code(region)}.csv'
         region_df = collapse_constant_years(region_df)
         write_model_csv(region_df, out_path)
         print(f'  Wrote {len(region_df):,} rows → {out_path.name}')

@@ -104,11 +104,15 @@ def main(in_path, out_path):
         mode = job.get('mode', 'total')
         fit_kwargs = dict(job.get('fit_kwargs') or {})
 
-        log_dir = job.get('log_dir') or os.path.join(out_dir, 'logs')
-        os.makedirs(log_dir, exist_ok=True)
-        fit_kwargs.setdefault(
-            'logFile',
-            os.path.join(log_dir, re.sub(r'[^A-Za-z0-9]+', '_', node) + '_stage1.log'))
+        log_dir = job.get('log_dir')
+        if log_dir:
+            os.makedirs(log_dir, exist_ok=True)
+            log_file = os.path.join(log_dir, re.sub(r'[^A-Za-z0-9]+', '_', node) + '_stage1.log')
+        else:
+            # results/logs/calibration/<sector>/, like every other fit's log
+            from CIMS.calibration.Calibration.Utility.calibration_outputs import log_file_for
+            log_file = log_file_for(out_dir, node, 'stage1')
+        fit_kwargs.setdefault('logFile', log_file)
 
         model = _load_model(job)
         t0 = time.time()

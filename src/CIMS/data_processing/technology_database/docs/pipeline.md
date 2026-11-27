@@ -1,9 +1,9 @@
 # Pipeline
 
-> **Short paths.** `records/` stands for `data/technology_database/`, `output/` for
-> `data/processed_data/technology_database/`, and `pipeline/` for the package's
+> **Short paths.** `records/` stands for `data/config/technology-database/`, `output/` for
+> `data/processed/technology-database/`, and `pipeline/` for the package's
 > `pipeline/` folder (`src/CIMS/data_processing/technology_database/pipeline/`). The extractions are in
-> `data/raw_data/technology_database/` and the documents in `primary-sources/`.
+> `data/extracted/technology-database/` and the documents in `data/primary-sources/technology-database/`.
 
 One entry point, run from the repo root:
 
@@ -13,8 +13,8 @@ python -m CIMS.data_processing.technology_database.build --check      # stop aft
 python -m CIMS.data_processing.technology_database.build --quantified-only   # the wide view lists only archetypes with pooled numbers
 ```
 
-It reads `data/raw_data/technology_database/` and `data/technology_database/`. It writes
-`data/processed_data/technology_database/` and `data/processed_data/technology_database/vocabulary.md`, and it appends new examples to
+It reads `data/extracted/technology-database/` and `data/config/technology-database/`. It writes
+`data/processed/technology-database/` and `data/processed/technology-database/vocabulary.md`, and it appends new examples to
 `records/source-example.csv`. A broken rule stops it with a non-zero exit, so it can
 gate a commit.
 
@@ -45,7 +45,7 @@ gate a commit.
 | 8b | fill | `pipeline/fill.py` | Grades every summary `sourced`, then writes graded values (identity, estimated, proxy, guess) and `not-applicable` markers into empty cells by the rules in `records/fill/fill-rule.csv` (run in file order, then the judgements, then the rules again), the hosts in `records/fill/host-archetype.csv`, the equipment classes in `records/fill/equipment-class.csv`, the class constants in `records/fill/fill-assumption.csv` and the judgements in `records/fill/fill-judgement.csv`. Never overwrites a sourced value, except the post phase that makes variants consistent with their hosts (a variant's own sourced value moves to target `as-sourced`); a final phase writes the calculated levelized costs. The summaries before this step are written to `output/unfilled/`; `output/coverage.csv` reports each CIMS cell's grade. |
 | 8c | requests and chains | `pipeline/service_request.py`, `pipeline/chain_validation.py` | Writes `output/archetype-service-request.csv` from `records/reference/service-request.csv`, and `output/chain-validation.csv`: each reference whole plant beside the quantity-weighted sum of its unit chain (`records/reference/chain-validation.csv`). Both tables are checked at stage 6 (rules 2 and 3, 2026-11-05). |
 | 9 | views | `pipeline/views.py` | Writes `archetype.csv`, `archetype-application.csv`, `cims-hierarchy.csv`, `cims-hierarchy_technology.csv`, and `column-legend.csv`. It builds the wide views in memory for the workbook only; no wide CSVs are written (2026-11-06). Before summarise, `pipeline/roll_up.py` pools targets that restate their base parameter; after the fill step `pipeline/roll_in.py` applies the CHP, temperature and single-stream-efficiency roll-ins; `archetype-secondary-parameter.csv` holds the secondary parameters (`pipeline/placement.py`). |
-| 10 | reports | `pipeline/sources.py`, `pipeline/reports.py` | Writes `source-list.csv`, `citation-review.md`, `mapping-review.md` and `data/processed_data/technology_database/vocabulary.md`. |
+| 10 | reports | `pipeline/sources.py`, `pipeline/reports.py` | Writes `source-list.csv`, `citation-review.md`, `mapping-review.md` and `data/processed/technology-database/vocabulary.md`. |
 | 11 | workbook | `pipeline/workbook.py` | Writes `technology-database.xlsx`, last. It is never read back. |
 
 ## Records (edited by hand)
@@ -66,7 +66,7 @@ gate a commit.
 | `records/reference/energy-price.csv` | reference 2025 price per carrier (CAD per GJ, HHV) for the calculated levelized cost: kind sourced, derived (from an archetype's own levelized cost), internal (0) or pending | `carrier` |
 | `records/fill/equipment-class.csv` | each equipment term's lifetime class and variable-O&M class (material, minor, none) | `equipment` |
 | `records/fill/fill-assumption.csv` | a class constant from an outside catalogue (proxy grade): group, parameter, applies-to, value, low, high, source-id, rationale | `assumption-id` |
-| `data/raw_data/technology_database/source-details_reference.csv` | reference source behind a conversion factor or the currency conversion (kept apart from the technology sources; `used_for` says which, `file_on_disk` names a held table) | `source_id` |
+| `data/extracted/technology-database/source-details_reference.csv` | reference source behind a conversion factor or the currency conversion (kept apart from the technology sources; `used_for` says which, `file_on_disk` names a held table) | `source_id` |
 
 ## Outputs (generated)
 
@@ -102,16 +102,16 @@ gate a commit.
 
 **Add a source.** Steps 1, 2, and 8 happen in the technology-database repository, where the
 primary sources and the extractions' authoring copy live; copy the extractions into the CIMS
-worktree (`data/raw_data/technology_database/`) before step 3, and make steps 3 to 7 there,
+worktree (`data/extracted/technology-database/`) before step 3, and make steps 3 to 7 there,
 on a CIMS branch. Pick the source from `source-intake/to-get.csv` where it is listed there,
 and remove it from that list once it is held. If it cannot be obtained, move its row to
 `source-intake/unavailable.csv` with the reason and any substitute. If the
 document turns out to hold nothing usable, put it in `primary-sources/background-no-data-extracted/`
-and add a row to `data/raw_data/technology_database/background-register.csv` instead of registering it.
+and add a row to `data/extracted/technology-database/background-register.csv` instead of registering it.
 1. Put the document in its publisher folder under `primary-sources/` (new downloads arrive in
    `primary-sources/to-process/`), named `author_year_slug[_source]`.
 2. Extract it to a long CSV in the template format (`src/CIMS/data_processing/technology_database/extraction/input_template.py`),
-   in the same publisher folder under `data/raw_data/technology_database/`. A multi-context source also
+   in the same publisher folder under `data/extracted/technology-database/`. A multi-context source also
    gets a `_nodes.csv`, and every extraction a `_meta.csv` (licence, citation and extraction notes). A
    source that needs code (a workbook, a bulk download, a PDF table) gets a script
    beside its CSVs in the raw data (so it goes to FRDR with them), which reads the document
@@ -124,7 +124,7 @@ and add a row to `data/raw_data/technology_database/background-register.csv` ins
 6. Fill in each new example's `archetype` (or `(none)`), then build again.
 7. Give the source a row in `records/reference/source-priority.csv`.
 8. Run `check_manifest.py` and `check_names.py`. The new extraction goes to FRDR with the next
-   deposit of `data/raw_data/technology_database/` (its README).
+   deposit of `data/extracted/technology-database/` (its README).
 
 **Correct a figure a source prints wrongly.** Leave the extraction as printed. Add a row to `records/reference/source-correction.csv`: `add` (with `example-id` and the corrected parameter, value, unit and bases) for a value the extraction set aside, `replace` (with `record-id` and only the fields that change) for a loaded row, `mark` (with `record-id`) for a row the extraction already corrected. `as-printed`, `correction`, `evidence` and `decided` are required. Build.
 
@@ -140,7 +140,7 @@ and add a row to `data/raw_data/technology_database/background-register.csv` ins
 2. `mapping-review.md` lists the nodes added and removed.
 3. The build fails on any service link or annotation whose path has gone. Repoint those, then rebuild.
 
-**Refresh currency.** Replace the raw downloads in `data/raw_data/technology_database/currency/`
+**Refresh currency.** Replace the raw downloads in `data/extracted/technology-database/currency/`
 (the file names `deflator_exchange.py` expects) and build. The build turns them into
 `output/currency/currency_deflator.csv` and `currency_exchange.csv` with CIMS's
 deflator_exchange builder (`src/CIMS/data_processing/source/deflator_exchange/`).

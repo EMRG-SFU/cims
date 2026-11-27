@@ -4,7 +4,7 @@ replaced.
 
     python src/CIMS/data_processing/technology_database/extraction/register_source.py spec.json      (run from anywhere)
 
-spec.json: {"source_id", "folder" (the publisher folder, the same under data/raw_data/technology_database/ and primary-sources/), "stem", "doc_ext",
+spec.json: {"source_id", "folder" (the publisher folder, the same under data/extracted/technology-database/ and primary-sources/), "stem", "doc_ext",
             "original_name", "author", "institution", "title", "description",
             "year", "licence", "citation" (full), "doi", "url",
             "short_name", "breadth", "rank", "priority_note", "region",

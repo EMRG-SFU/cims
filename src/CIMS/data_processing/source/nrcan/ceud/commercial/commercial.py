@@ -9,7 +9,7 @@ Key behavioural notes
 - AT (Atlantic) groups NB + NS + PE + NL together.
 - BC groups BC + Territories together.
 - BC has Marine and Cold climate HVAC (75 % Marine / 25 % Cold floorspace split).
-- NG heating is split by efficiency tier using ng_eff_assumptions_commercial.csv.
+- NG heating is split by efficiency tier using config/assumption/ng-eff-assumptions-commercial.csv.
 - Hot water technologies are NOT split by building shell type.
 - All intermediate data is held as Polars DataFrames in long format:
       (region, variable, category, parameter, unit, year, value)
@@ -61,14 +61,14 @@ CONTROLS = load_control_config()
 
 FIXED_DATA_DIR   = paths.FIXED_DATA / 'commercial'
 CALIBRATION_DIR  = paths.CALIBRATION_TARGETS / 'commercial'
-SOURCE_DIR        = paths.RAW / 'nrcan/ceud/commercial'
-ASSUMPTIONS_CSV  = paths.ASSUMPTIONS / 'commercial_assumptions.csv'
-ACTIVITY_CAGR_CSV = paths.ASSUMPTIONS / 'activity_cagr_projections.csv'
-NG_EFFICIENCY_CSV = paths.ASSUMPTIONS / 'ng_eff_assumptions_commercial.csv'
-OUTPUT_DIR       = paths.PROCESSED / 'nrcan/ceud'
-CER_DEMAND_CSV = paths.RAW / 'cer/cer_demand_data_update/vDmd-CIMS.csv'
-POP_CSV        = paths.RAW / 'stats_can/population/1710000901.csv'
-EFFICIENCY_XLS = paths.RAW / 'nrcan/ceud/residential/res_ca_e_32.xls'
+SOURCE_DIR        = paths.EXTRACTED / 'gov-can/nrcan/ceud/commercial'
+ASSUMPTIONS_CSV  = paths.ASSUMPTIONS / 'commercial-assumptions.csv'
+ACTIVITY_CAGR_CSV = paths.ASSUMPTIONS / 'activity-cagr-projections.csv'
+NG_EFFICIENCY_CSV = paths.ASSUMPTIONS / 'ng-eff-assumptions-commercial.csv'
+OUTPUT_DIR       = paths.PROCESSED / 'gov-can/nrcan/ceud'
+CER_DEMAND_CSV = paths.EXTRACTED / 'gov-can/cer/demand-data-update/vDmd-CIMS.csv'
+POP_CSV        = paths.EXTRACTED / 'gov-can/statcan/population/1710000901.csv'
+EFFICIENCY_XLS = paths.EXTRACTED / 'gov-can/nrcan/ceud/residential/res_ca_e_32.xls'
 YEARS            = list(range(DATA_START, PROJECTION_END + 1))
 LAST_HIST_YEAR   = CONTROLS["last_data_year"]["ceud"]
 
@@ -121,7 +121,7 @@ FILE_NAME_MAP = {'BC': 'bct', 'AT': 'atl'}
 # The constants below convert those CEUD energy totals (PJ) into the
 # Buildings -> {Lighting, Hot Water, Refrigeration, Cooking, Plug Load}
 # service_request intensities (m2 or "unit" per m2 of floorspace) that
-# raw_data/fixed_data/commercial previously hardcoded. They come from the
+# extracted/legacy/fixed-data/commercial previously hardcoded. They come from the
 # technology-level service_request (GJ per unit/m2) and year-2000
 # market_share_total values already in that fixed data, which are identical
 # across all 13 regions for every end-use except Hot Water (whose technology
@@ -196,7 +196,7 @@ HOT_WATER_TECH_GJ_PER_UNIT: dict[str, float] = {
 # National split of "Auxiliary Equipment" energy across Refrigeration /
 # Cooking / Plug Load. Backed out from the ratios previously applied
 # identically (as a fixed, unit-level split) across 12 of the 13 regions in
-# raw_data/fixed_data/commercial -- BC's fixed file diverged from this shared
+# extracted/legacy/fixed-data/commercial -- BC's fixed file diverged from this shared
 # pattern. Cooking:Refrigeration is constant; Plug Load:Refrigeration grows
 # over time (plug load intensity was assumed to triple from 2000-2040, flat
 # after) and is interpolated between these checkpoint years.
@@ -278,10 +278,10 @@ def load_projection_params(assumptions_csv: Path = ASSUMPTIONS_CSV,
     """
     Load commercial projection parameters.
 
-    Floorspace uses the shared activity CAGR file (activity_cagr_projections.csv),
+    Floorspace uses the shared activity CAGR file (config/assumption/activity-cagr-projections.csv),
     sector 'Commercial': CAGR Period, dampener periods — same pattern as activity scripts.
 
-    Building shell uses commercial_assumptions.csv.
+    Building shell uses config/assumption/commercial-assumptions.csv.
 
     Returns
     -------
@@ -324,7 +324,7 @@ def load_projection_params(assumptions_csv: Path = ASSUMPTIONS_CSV,
 
     params = {}
 
-    # -- 1. Floorspace — activity-style CAGR (activity_cagr_projections.csv)
+    # -- 1. Floorspace — activity-style CAGR (config/assumption/activity-cagr-projections.csv)
     cagr_start, cagr_end, periods = load_cagr_assumptions('Commercial', activity_cagr_csv)
     params['floorspace'] = {
         'cagr_start': cagr_start,
@@ -991,7 +991,7 @@ def compute_enduse_service_requests(df: pl.DataFrame, region: str) -> pl.DataFra
     national technology energy factors (AUX_TECH_GJ_PER_UNIT) and this region's
     own hot_water_tech mix to back out the remaining Buildings -> {Hot Water,
     Refrigeration, Cooking, Plug Load} service_request intensities (m2 or
-    "unit" per m2 of floorspace) that raw_data/fixed_data/commercial
+    "unit" per m2 of floorspace) that extracted/legacy/fixed-data/commercial
     previously hardcoded as constants.
 
     Must be called on a region's FULLY DISAGGREGATED frame (i.e. after

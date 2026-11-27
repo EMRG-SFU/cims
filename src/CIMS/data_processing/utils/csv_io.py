@@ -1,7 +1,7 @@
 """
 BOM-tolerant CSV reading.
 
-Some hand-curated inputs under ``raw_data/fixed_data/`` carry more than one
+Some hand-curated inputs under ``extracted/legacy/fixed-data/`` carry more than one
 UTF-8 BOM -- a file re-saved by a tool that read it as plain UTF-8 (keeping the
 BOM as ordinary text) and then wrote it back with ``utf-8-sig`` gains a second
 one. Python's ``utf-8-sig`` codec strips exactly one, so the leftover shows up

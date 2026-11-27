@@ -7,7 +7,7 @@ CIMS-formatted CSVs (one per region).
 Sources
 -------
 Fixed structural parameters
-    raw_data/fixed_data/transportation_passenger/transportation_passenger_{region}.csv
+    extracted/legacy/fixed-data/transportation_passenger/transportation_passenger_{region}.csv
     Flattened from wide (2000–2050 year columns) to long format.
     Every region has its own fixed-data file.
 
@@ -16,7 +16,7 @@ Total k*pkm  (service_request rows, Region level)
     Placed before the Transportation Passenger sector block.
 
 Energy price multipliers  (multiplier_price rows)
-    processed_data/energy_prices/energy_price_multipliers.csv
+    processed/energy-prices/energy-price-multipliers.csv
     Inserted after the sector header (service_provide / competition).
 
 Mode service_request  (Urban / Intercity Land / Intercity Air / International Air fractions)
@@ -75,7 +75,7 @@ from CIMS.data_processing.utils.feedstock_demand import build_feedstock_rows
 
 # ── configuration ──────────────────────────────────────────────────────────────
 FIXED_INPUT_DIR = paths.FIXED_DATA / 'transportation_passenger'
-OUTPUT_DIR      = paths.MODEL / 'transportation_passenger'
+OUTPUT_DIR      = paths.MODEL_SECTOR / 'transportation-passenger'
 
 OUTPUT_COLS = [
     'Branch', 'Type', 'Region', 'Sector', 'Service', 'Technology',
@@ -866,7 +866,7 @@ def main() -> dict[str, pl.DataFrame]:
                 fixed, tp, multipliers, feedstock_demand, feedstock_last_hist_year, region,
             )
 
-            out_path = OUTPUT_DIR / f'transportation_passenger_{region.lower()}.csv'
+            out_path = OUTPUT_DIR / f'transportation-passenger_{paths.region_file_code(region)}.csv'
             output = collapse_constant_years(output)
             write_model_csv(output, str(out_path))
             print(f'  Wrote {len(output):,} rows → {out_path.name}')

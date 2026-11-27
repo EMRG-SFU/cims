@@ -1,8 +1,8 @@
 """
 CER source files: carbon-free end-use prices and history back to 2000.
 
-Reads the Canada's Energy Future (CEF) open-data files in raw_data/cer/ and
-writes the versions the rest of the pipeline reads to processed_data/cer/,
+Reads the Canada's Energy Future (CEF) open-data files in extracted/gov-can/cer/ and
+writes the versions the rest of the pipeline reads to processed/gov-can/cer/,
 under the same file names (for example end-use-prices-2026.csv):
 
   end-use-prices   Carbon costs removed, 2000-2004 back-cast, and reshaped to
@@ -22,10 +22,10 @@ cost of carbon). CIMS adds its own carbon prices through policy files, so the
 input prices must exclude carbon or it is counted twice.
 
 The method and every assumption are documented in README.md in this folder.
-The assumptions themselves sit in data/mappings_conversions/:
-  cer_carbon-prices.csv                carbon price by component, region, year
-  cer_emission-factors.csv             tCO2e per GJ by fuel and sector
-  cer_benchmark-prices_2000-2005.csv   EIA nominal spot prices
+The assumptions themselves sit in data/config/interim-source/:
+  cer_carbon-price.csv                carbon price by component, region, year
+  cer_emission-factor.csv             tCO2e per GJ by fuel and sector
+  cer_benchmark-price_2000-2005.csv   EIA nominal spot prices
 
 Run after deflator_exchange (it reads the deflator and exchange tables).
 
@@ -41,17 +41,17 @@ from CIMS.data_processing.common import paths
 from CIMS.data_processing.utils.extractors.cer import find_cer_file
 
 # ── paths ─────────────────────────────────────────────────────────────────────
-RAW_DIR       = paths.RAW / 'cer'
-OUT_DIR       = paths.PROCESSED / 'cer'
-MAPPINGS      = paths.MAPPINGS
-CARBON_FILE   = MAPPINGS / 'cer_carbon-prices.csv'
-EF_FILE       = MAPPINGS / 'cer_emission-factors.csv'
-BENCH_HISTORY = MAPPINGS / 'cer_benchmark-prices_2000-2005.csv'
-CPI_FILE      = paths.RAW / 'stats_can/cpi/18100005.xlsx'
-POP_FILE      = paths.RAW / 'stats_can/population/1710000901.csv'
-GDP_FILE      = paths.RAW / 'stats_can/gdp/36100222.csv'
-DEFLATOR_FILE = paths.PROCESSED / 'deflator_exchange/currency_deflator.csv'
-EXCHANGE_FILE = paths.PROCESSED / 'deflator_exchange/currency_exchange.csv'
+RAW_DIR       = paths.EXTRACTED / 'gov-can/cer'
+OUT_DIR       = paths.PROCESSED / 'gov-can/cer'
+MAPPINGS      = paths.CONFIG / 'mapping'
+CARBON_FILE   = paths.CONFIG / 'interim-source/cer_carbon-price.csv'
+EF_FILE       = paths.CONFIG / 'interim-source/cer_emission-factor.csv'
+BENCH_HISTORY = paths.CONFIG / 'interim-source/cer_benchmark-price_2000-2005.csv'
+CPI_FILE      = paths.EXTRACTED / 'gov-can/statcan/cpi/18100005.xlsx'
+POP_FILE      = paths.EXTRACTED / 'gov-can/statcan/population/1710000901.csv'
+GDP_FILE      = paths.EXTRACTED / 'gov-can/statcan/gdp/36100222.csv'
+DEFLATOR_FILE = paths.PROCESSED / 'currency/currency-deflator.csv'
+EXCHANGE_FILE = paths.PROCESSED / 'currency/currency-exchange.csv'
 
 FIRST_YEAR  = 2000          # extend every file back to this year
 CER_START   = 2005          # first year in the CER open data
@@ -220,7 +220,7 @@ def carbon_costs(prices: pd.DataFrame, defl: dict[str, pd.Series]) -> pd.DataFra
     carbon = _expand_sectors(pd.read_csv(CARBON_FILE))
     unknown = set(carbon['Scenario']) - set(prices['Scenario']) - {'All'}
     if unknown:
-        raise ValueError(f'Scenario in cer_carbon-prices.csv not in the price data: {sorted(unknown)}')
+        raise ValueError(f'Scenario in config/interim-source/cer_carbon-price.csv not in the price data: {sorted(unknown)}')
     ef = _expand_sectors(pd.read_csv(EF_FILE)).rename(
         columns={'Emission_factor_tCO2e_per_GJ': 'Emission factor (tCO2e/GJ)'})
 
@@ -246,7 +246,7 @@ def carbon_costs(prices: pd.DataFrame, defl: dict[str, pd.Series]) -> pd.DataFra
         for key in ('Area', 'Sector'):
             unknown = set(comp_df[key]) - set(out[key])
             if unknown:
-                raise ValueError(f'{key} in cer_carbon-prices.csv not in the price data: {sorted(unknown)}')
+                raise ValueError(f'{key} in config/interim-source/cer_carbon-price.csv not in the price data: {sorted(unknown)}')
         out[col] = out[col].fillna(0.0)
         total += out[col]
     out['Carbon price (C$2025/t)'] = total

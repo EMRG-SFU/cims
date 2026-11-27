@@ -4,7 +4,7 @@ Flatten transmission fixed data to CIMS-formatted CSV.
 Sources
 -------
 Fixed structural parameters
-    raw_data/fixed_data/transmission/transmission_CIMS.csv
+    extracted/legacy/fixed-data/transmission/transmission_CIMS.csv
     Flattened from wide (2000-2050 year columns) to long format via
     utils/flatten_fixed_data.
 
@@ -26,7 +26,7 @@ from CIMS.data_processing.utils.collapse_constant_years import collapse_constant
 
 # ── configuration ─────────────────────────────────────────────────────────────
 FIXED_INPUT_DIR = paths.FIXED_DATA / 'transmission'
-OUTPUT_DIR      = paths.MODEL / 'transmission'
+OUTPUT_DIR      = paths.MODEL_SECTOR / 'transmission'
 OUTPUT_FILE     = OUTPUT_DIR / 'transmission_cims.csv'
 
 OUTPUT_COLS = [

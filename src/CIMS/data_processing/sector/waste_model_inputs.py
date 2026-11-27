@@ -4,7 +4,7 @@ Extract Waste model input data and save to CIMS-formatted CSV.
 Sources
 -------
 Fixed structural parameters
-    raw_data/fixed_data/waste/*.csv
+    extracted/legacy/fixed-data/waste/*.csv
     Flattened from wide (2000–2050 year columns) to long format via
     utils/flatten_fixed_data.
     Encodes the full hierarchy:
@@ -30,7 +30,7 @@ Activity demand  (service_provide levels)
 
 Energy price multipliers
     pipeline/source/energy_prices/energy_price_multipliers.py  (called directly via main())
-    Waste is classified as Industrial in sector_map.csv and receives
+    Waste is classified as Industrial in config/mapping/sector.csv and receives
     multipliers accordingly.
 
 Output columns
@@ -54,7 +54,7 @@ from CIMS.data_processing.utils.output_builder import write_per_region_csvs
 
 # ── configuration ─────────────────────────────────────────────────────────────
 FIXED_INPUT_DIR = paths.FIXED_DATA / 'waste'
-OUTPUT_DIR      = paths.MODEL / 'waste'
+OUTPUT_DIR      = paths.MODEL_SECTOR / 'waste'
 
 OUTPUT_COLS = [
     'Branch', 'Type', 'Region', 'Sector', 'Service', 'Technology',

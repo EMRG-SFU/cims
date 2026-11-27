@@ -1,18 +1,26 @@
 """
-CIMS Base — Model Inputs
+CIMS root and regions — Model Inputs
 
-Flattens raw CIMS_base fixed-data CSVs from wide year-column format to long
+Writes the top of the model tree: the root node (CIMS) with its model-wide settings
+to model/root/, and the region nodes (CAN, RoW, and each province and territory)
+to model/region/. Flattens the JCIMS CIMS_base fixed-data CSVs from wide year-column format to long
 format, then appends Population and GDP attribute rows (from the pop_gdp
 pipeline) to each provincial/territorial file.
 
 CIMS, CAN, and RoW files are flattened only — no attribute rows added.
 
+The root's requests to CIMS.CAN and CIMS.RoW go in those regions' files, the way a
+region's file carries its parent's request to it (CIMS.CAN -> CIMS.CAN.BC in
+region_bc.csv). The model reads model/root/ as its base and model/region/ as scenario
+files, so the base holds the root alone and every request sits beside the node it asks
+for (which the excluded-region filter needs: readers/helpers.filter_model_data).
+
 Inputs:
-    raw_data/fixed_data/cims_base/CIMS_base_{suffix}.csv
-    processed_data/stats_can/pop_gdp.csv  (via pop_gdp.main())
+    extracted/legacy/fixed-data/cims_base/CIMS_base_{suffix}.csv
+    processed/gov-can/statcan/pop-gdp.csv  (via pop_gdp.main())
 
 Output:
-    model_inputs/model/cims_base/CIMS_base_{suffix}.csv
+    model/root/root_cims.csv, and model/region/region_{suffix}.csv
     Columns: Branch, Type, Region, Sector, Service, Technology,
              Parameter, Context, Sub_Context, Target, Source, Unit,
              Year, Value
@@ -35,7 +43,8 @@ from CIMS.data_processing.utils.collapse_constant_years import collapse_constant
 
 # ── configuration ───────────────────────────────────────────────────────────────
 FIXED_INPUT_DIR = paths.FIXED_DATA / 'cims_base'
-OUTPUT_DIR      = paths.MODEL / 'cims_base'
+ROOT_DIR        = paths.MODEL_ROOT     # the root node (CIMS) and its model-wide settings
+REGION_DIR      = paths.MODEL_REGION   # the region nodes: CAN, RoW, and the provinces and territories
 
 PROVINCES    = ['AB', 'BC', 'MB', 'NB', 'NL', 'NS', 'NT', 'NU', 'ON', 'PE', 'QC', 'SK', 'YT']
 FLATTEN_ONLY = ['CIMS', 'CAN', 'RoW']
@@ -142,15 +151,28 @@ def main() -> None:
     print("Running pop_gdp pipeline...")
     pop_gdp = pl.from_pandas(_pg_mod.main())
 
-    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    ROOT_DIR.mkdir(parents=True, exist_ok=True)
+    REGION_DIR.mkdir(parents=True, exist_ok=True)
 
     print("\nFlattening CIMS / CAN / RoW files...")
+    flat = {suffix: _flatten_fixed(f'cims_base_{suffix.lower()}').select(OUTPUT_COLS) for suffix in FLATTEN_ONLY}
+    is_region_request = (pl.col('Branch') == 'CIMS') & (pl.col('Parameter') == 'service_request')
+    root_requests = flat['CIMS'].filter(is_region_request)
+    flat['CIMS'] = flat['CIMS'].filter(~is_region_request)
     for suffix in FLATTEN_ONLY:
         stem = f'cims_base_{suffix.lower()}'
-        fixed = _flatten_fixed(stem)
-        fixed_out = collapse_constant_years(fixed.select(OUTPUT_COLS))
-        write_model_csv(fixed_out, OUTPUT_DIR / f'{stem}.csv')
+        fixed = flat[suffix]
+        if suffix != 'CIMS':
+            # the root's request to this region comes first, as in the provincial files
+            fixed = pl.concat([root_requests.filter(pl.col('Target') == f'CIMS.{suffix}'), fixed])
+        fixed_out = collapse_constant_years(fixed)
+        out = ROOT_DIR / 'root_cims.csv' if suffix == 'CIMS' else REGION_DIR / f'region_{paths.region_file_code(suffix)}.csv'
+        write_model_csv(fixed_out, out)
         print(f"  {stem}: {len(fixed_out)} rows")
+    moved = root_requests.filter(pl.col('Target').is_in([f'CIMS.{s}' for s in FLATTEN_ONLY if s != 'CIMS']))
+    if len(moved) != len(root_requests):
+        raise SystemExit(f'cims_base_cims.csv: a root service_request targets no CAN or RoW file: '
+                         f'{sorted(set(root_requests["Target"]) - set(moved["Target"]))}')
 
     print("\nAssembling provincial files...")
     for region in PROVINCES:
@@ -158,11 +180,11 @@ def main() -> None:
         df    = _assemble_region(region, pop_gdp)
         df    = collapse_constant_years(df)
         n_attr = len(df.filter(pl.col('Parameter') == 'attribute'))
-        write_model_csv(df, OUTPUT_DIR / f'{stem}.csv')
+        write_model_csv(df, REGION_DIR / f'region_{paths.region_file_code(region)}.csv')
         print(f"  {stem}: {len(df)} rows  ({n_attr} attribute)")
 
     total = len(FLATTEN_ONLY) + len(PROVINCES)
-    print(f"\nDone. {total} files written to {OUTPUT_DIR}")
+    print(f"\nDone. {total} files written to {ROOT_DIR} and {REGION_DIR}")
 
 
 if __name__ == "__main__":

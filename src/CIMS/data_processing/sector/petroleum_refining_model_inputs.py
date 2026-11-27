@@ -4,17 +4,17 @@ Extract Petroleum Refining model input data and save to CIMS-formatted CSV.
 Sources
 -------
 Fixed structural parameters
-    raw_data/fixed_data/petroleum_refining/*.csv
+    extracted/legacy/fixed-data/petroleum_refining/*.csv
     Flattened from wide (2000–2050 year columns) to long format via
     utils/flatten_fixed_data.
 
 Activity demand  (service_request)
-    processed_data/activity/petroleum_refining.csv
+    processed/activity/petroleum-refining.csv
     Produced by pipeline/source/activity/petroleum_refining.py.
     Variable: 'Petroleum Refining'  (m3 crude input, per province, 2000–2100)
 
 Energy price multipliers  (multiplier_price rows)
-    processed_data/energy_prices/energy_price_multipliers.csv
+    processed/energy-prices/energy-price-multipliers.csv
     Produced by pipeline/source/energy_prices/energy_price_multipliers.py.
 
 Output columns
@@ -52,7 +52,7 @@ from CIMS.data_processing.utils.feedstock_demand import build_feedstock_rows_all
 
 # ── configuration ──────────────────────────────────────────────────────────────
 FIXED_INPUT_DIR = paths.FIXED_DATA / 'petroleum_refining'
-OUTPUT_DIR      = paths.MODEL / 'petroleum_refining'
+OUTPUT_DIR      = paths.MODEL_SECTOR / 'petroleum-refining'
 
 OUTPUT_COLS = [
     'Branch', 'Type', 'Region', 'Sector', 'Service', 'Technology',
@@ -197,7 +197,7 @@ def main() -> pl.DataFrame:
     regions = activity_rows['Region'].unique().sort().to_list()
     for region in regions:
         region_df = output.filter(pl.col('Region') == region)
-        out_path = OUTPUT_DIR / f'petroleum_refining_{region.lower()}.csv'
+        out_path = OUTPUT_DIR / f'petroleum-refining_{paths.region_file_code(region)}.csv'
         region_df = collapse_constant_years(region_df)
         write_model_csv(region_df, out_path)
         print(f'  Wrote {len(region_df):,} rows → {out_path.name}')

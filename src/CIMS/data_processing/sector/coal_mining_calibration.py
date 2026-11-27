@@ -43,7 +43,7 @@ from CIMS.data_processing.utils.calibration_helpers import (
 from CIMS.data_processing.utils.output_builder import write_per_region_csvs
 
 # ── configuration ─────────────────────────────────────────────────────────────
-OUTPUT_DIR = paths.CALIBRATION_TARGETS / 'coal_mining'
+OUTPUT_DIR = paths.CALIBRATION_TARGETS / 'coal-mining'
 
 SECTOR_NAME = 'Coal Mining'
 
@@ -83,7 +83,7 @@ def main() -> pl.DataFrame:
         .select(OUTPUT_COLS)
     )
 
-    print('Filtering to regions with Coal Mining (see sector_region_map.csv)...')
+    print('Filtering to regions with Coal Mining (see config/mapping/sector-region.csv)...')
     allowed_regions = load_sector_regions().get(SECTOR_NAME)
     if allowed_regions:
         before_count = len(output)
@@ -94,7 +94,7 @@ def main() -> pl.DataFrame:
 
     output = filter_excluded_branches(output)
 
-    regions = write_per_region_csvs(output, OUTPUT_DIR, 'coal_mining', skip_if_all_zero=True)
+    regions = write_per_region_csvs(output, OUTPUT_DIR, 'coal-mining', skip_if_all_zero=True)
 
     print(f'\n✅ Coal mining calibration complete')
     print(f'   Total rows:  {len(output):,}')

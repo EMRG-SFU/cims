@@ -9,7 +9,7 @@ load_feedstock_demand()) exactly and projects future years from ratios held
 flat at their recent average.
 
 Structure written (mirrors Commercial -> Buildings' existing "Fixed Ratio"
-grouping node -- see raw_data/fixed_data/commercial/commercial_ab.csv lines
+grouping node -- see extracted/legacy/fixed-data/commercial/commercial_ab.csv lines
 5-10 -- and Buildings' own fan-out to Lighting/Refrigeration/etc., lines
 7-12: a Fixed-Ratio service requesting each of several targets directly,
 with no technology layer, since there's no real technology choice here --
@@ -35,7 +35,7 @@ use the average of their respective historical values over the last
 own projection while each fuel keeps roughly its recent share of the total.
 
 Deliberately generic: nothing here is Commercial- or floorspace-specific.
-Any sector's model_inputs.py can call build_feedstock_rows() with its own
+Any sector's model.py can call build_feedstock_rows() with its own
 sector Branch/name, its own natural scale driver (floorspace, activity,
 output...), and its own slice of load_feedstock_demand()'s output.
 """
@@ -243,13 +243,13 @@ def build_feedstock_rows_all_regions(
     """
     Call build_feedstock_rows() once per region, concatenating the results.
 
-    For sectors whose model_inputs.py has a single top-level
+    For sectors whose model.py has a single top-level
     `CIMS.CAN.{region}.<Sector>` branch and a pre-existing, already-
     CAGR-extended per-region scale driver (the common shape almost every
     sector besides Commercial has), this collapses the "loop over regions,
     build a scale_series, call build_feedstock_rows(), concat" boilerplate
     that would otherwise be repeated identically in every sector's
-    model_inputs.py.
+    model.py.
 
     Parameters
     ----------

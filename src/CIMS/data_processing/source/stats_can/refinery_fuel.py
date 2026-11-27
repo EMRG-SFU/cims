@@ -10,12 +10,12 @@ the CIMS Petroleum Refining energy demand counterfactual:
 
 Inputs
 ------
-raw_data/stats_can/resd/25100029.csv                [S1] StatCan RESD 25-10-0029
-processed_data/activity/petroleum_refining.csv     [S2] refinery crude input by
+extracted/gov-can/statcan/resd/25100029.csv                [S1] StatCan RESD 25-10-0029
+processed/activity/petroleum-refining.csv     [S2] refinery crude input by
                                                    province (activity/petroleum_refining.py,
                                                    from StatCan 25-10-0014 and 25-10-0063)
 
-Output: processed_data/stats_can/refinery_fuel.csv
+Output: processed/gov-can/statcan/refinery-fuel.csv
     Columns: region, year, fuel, kind (own/purchased), tj, method
 
 Pipeline use:
@@ -60,7 +60,7 @@ electricity 6% vs 7% (still gas vs coke split differs, likely FCC coke
 classification). A per-fuel MECS steam split gave totals within ~10%.
 
 Standalone:
-    python refinery_fuel.py <25100029.csv> <petroleum_refining.csv> <output.csv>
+    python refinery_fuel.py <25100029.csv> <processed/activity/petroleum-refining.csv> <output.csv>
 
 
 WHY
@@ -223,9 +223,9 @@ def replace_cer_refinery_fuel(cer_df):
 
 def _paths():
     from CIMS.data_processing.common import paths
-    return (paths.RAW / "stats_can/resd/25100029.csv",
-            paths.PROCESSED / "activity/petroleum_refining.csv",
-            paths.PROCESSED / "stats_can/refinery_fuel.csv")
+    return (paths.EXTRACTED / "gov-can/statcan/resd/25100029.csv",
+            paths.PROCESSED / "activity/petroleum-refining.csv",
+            paths.PROCESSED / "gov-can/statcan/refinery-fuel.csv")
 
 
 @lru_cache(maxsize=1)

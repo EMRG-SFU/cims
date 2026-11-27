@@ -19,12 +19,16 @@ The data processing step transforms data into **model input** files and **calibr
 ---
 
 ## Overview
-**Step 1 - Assemble Raw Data** (`data/raw_data/`):
-Raw data from various sources is gathered and placed in the External-CIMS sharepoint. Source data is documented in the source_detail.xlsx in `data/raw_data/`. The last historical year for the raw data is input into the control file `data/mappings_conversions/control.py`. This data is different by source and important to update as scripts will call on this year to begin projection assumptions in the following year. Any other important control information, such as which scenario to draw from the data, and currency country/years is also input into this control file. 
 
-**Step 2 — Source processing** (`src/CIMS/data_processing/source/`): Each script takes in raw data, manipulates it, and writes a CSV to `data/processed_data/` for user vetting. The data is often yearly, from 2000-2100, and covers all Canadian regions, depending on the data type. The processed_data csvs are not used elsewhere in the pipeline. The functions and data frames in the source processing scripts are called for the next step - sector assembly. 
+The data follows five layers, in the order the data flows (conventions §2). Each layer is written by one kind of process, and nothing reads a layer upstream of its own place.
 
-**Step 3 — Sector assembly** (`src/CIMS/data_processing/sector/`): One flat module per sector and stage, named `<sector>_model_inputs.py` and `<sector>_calibration.py`. Each sector's model_inputs script combines fixed structural parameters (`data/raw_data/fixed_data/`) with one or more processed data frames and writes final CIMS model input files to `model_inputs/model/{sector}/`. Each sector's calibration script combines processed historical energy demand, emissions, and technology market shares and writes final CIMS calibration files to `calibration/{sector}/`.
+**Step 1 — Assemble the sources** (`data/primary-sources/`, `data/extracted/`): documents as obtained go in `primary-sources/`, and the values the build reads go in `extracted/`, both in publisher folders (`gov-can/statcan/`, `gov-usa/eia/`, …). Neither is committed: get them from the External-CIMS SharePoint (and, for the technology database, FRDR). The last historical year for each source goes in the control file, `data/config/control.py`, with the scenario and currency settings. Scripts use it to start projections in the following year.
+
+**Step 2 — Source processing** (`src/CIMS/data_processing/source/`): each script reads `extracted/` and `config/`, and writes one table per source dataset to `data/processed/` for vetting. The data is usually yearly, 2000–2100, for every Canadian region the source covers. The functions and data frames in these scripts are also called by the next step.
+
+**Step 3 — Sector assembly** (`src/CIMS/data_processing/sector/`): one module per sector and stage, `<sector>_model_inputs.py` and `<sector>_calibration.py`. Each model-inputs module combines the JCIMS structural parameters (`data/extracted/legacy/fixed-data/`) with processed data, and writes the model files to `data/model/sector/<sector>/`. Each calibration module writes calibration targets to `data/model/calibration/target/<sector>/`.
+
+Every path comes from one module, `src/CIMS/data_processing/common/paths.py`. To move an existing data folder from the old layout (`raw_data/`, `processed_data/`, `model_inputs/`, …), run `uv run python tools/migrate_data_layout.py --apply`; its map is `tools/data-layout_renames.csv`.
 
 ---
 
@@ -32,62 +36,51 @@ Raw data from various sources is gathered and placed in the External-CIMS sharep
 
 ```
 <repo>/data/
-├── mappings_conversions/       # Master configuration
-│   ├── control.py              # Pipeline-wide settings (edit this to change data years, scenarios)
-│   ├── energy_map.csv          # Map for energy types across sources
-│   ├── region_map.csv          # Map for regions across sources
-│   ├── sector_map.csv          # Map for sectors across sources 
-│   ├── energy_conversions.csv  # Unit conversions (GJ ↔ TJ, L ↔ tonnes, …)
-│   ├── NIR_to_CIMS_map.csv     # Maps NIR rows to CIMS branch nodes
-│   └── README.md
+├── primary-sources/            # Documents as obtained, by publisher. Not committed; the build never reads them.
+│   └── technology-database/    # The technology database's documents, by publisher (its manifest's file paths)
 │
-├── technology_database/        # Technology database records (hand-edited, committed): archetypes, source-to-archetype mapping, reference tables
+├── extracted/                  # As-published values the build reads, by publisher. Not committed (SharePoint, FRDR).
+│   ├── gov-can/                # statcan/, cer/, eccc/nir/, nrcan/ceud/
+│   ├── gov-ab/  gov-bc/        # provincial data
+│   ├── gov-usa/                # eia/, epa/, doe/
+│   ├── ceedc/  ipcc/           # other publishers
+│   ├── currency/               # deflator and exchange-rate sources
+│   ├── legacy/                 # JCIMS-era inputs: fixed-data/ (structural parameters per sector,
+│   │                           #   retired in phase 13), clean-fuel-production/, energy-prices/
+│   └── technology-database/    # The technology database's extractions and manifest (the FRDR deposit)
 │
-├── raw_data/                   # Source files — gitignored, never committed
-│   ├── assumptions/            # Assumption parameters that extend model input data through the projection period
-│   ├── fixed_data/             # Structural parameters per sector from the JCIMS model (wide-format CSVs; should be updated over time)
-│   │   ├── Agriculture/
-│   │   ├── Biodiesel/
-│   │   ├── Chemical Products/
-│   │   ├── Commercial/
-│   │   └── Residential/
-│   ├── eccc/nir/               # NIR data
-│   ├── cer/                    # CER data
-│   ├── nrcan/ceud/             # CEUD data
-│   ├── stats_can/              # Stats Can data
-│   ├── ceedc/                  # CEEDC data
-│   ├── ipcc/                   # IPCC data
-│   ├── ab_gov/                 # Alberta government data
-│   ├── bc_gov/                 # BC government data
-│   └── technology_database/    # Technology database source extractions and manifest (the FRDR deposit)
+├── config/                     # Hand-edited records. Committed.
+│   ├── control.py              # Pipeline-wide settings (data years, scenarios, currency)
+│   ├── mapping/                # cer-to-cims, energy, region, sector, sector-region, nir-to-cims, nir-crosswalk, cims-node
+│   ├── conversion/             # energy-conversion.csv (GJ ↔ TJ, L ↔ tonnes, …)
+│   ├── assumption/             # Growth rates and shares that extend the data through the projection period
+│   ├── calibration/            # fic-proxy-map.csv and fic-decline-techs.csv
+│   ├── model-default/          # default-parameter.csv and default-list.csv, read by the model
+│   ├── interim-source/         # Hand-entered CER tables, until the primary sources replace CER
+│   ├── technology-database/    # The technology database's records: archetypes, mapping, reference tables
+│   ├── excluded-branch.csv
+│   └── results-general.txt, results-tech.txt   # Which results the model writes
 │
-├── processed_data/             # Stage 1 outputs — gitignored, auto-generated, for quick visualization of processed data
-│   ├── activity/
-│   ├── eccc/
-│   ├── energy_prices/
-│   ├── nrcan/ceud/
-│   └── technology_database/    # Technology database build outputs, incl. the workbook
+├── processed/                  # Written by the source stages. Not committed.
+│   ├── gov-can/  gov-usa/      # One table per source dataset
+│   ├── activity/  energy-prices/  emission-factors/  steam/
+│   ├── currency/               # currency-deflator.csv, currency-exchange.csv
+│   └── technology-database/    # The technology database's build outputs, incl. the workbook
 │
-├── model_inputs/               # Stage 2 outputs — gitignored, auto-generated
-│   ├── model/
-│   │   ├── agriculture/
-│   │   ├── commercial/
-│   │   ├── residential/
-│   │   ├── transportation passenger/
-│   │   ├── transportation freight/
-│   │   └── .../
-│   └── policies/               # One folder per policy, annual long format
-│       ├── carbon-tax_ref/     #   <policy>_<region>.csv, read by scenarios/Reference.py
-│       ├── obps_federal/       #   (built from raw_data/policies/ by utils/flatten_policies.py)
-│       └── .../
-│
-└── calibration/                # Calibration outputs — gitignored, auto-generated
-    ├── commercial/
-    ├── residential/
-    ├── transportation passenger/
-    ├── transportation freight/
-    └── .../
+└── model/                      # Everything CIMS reads. Written by the build, not committed (except its README).
+    ├── root/                   # root_cims.csv: the root node and model-wide settings (currency year, GWPs, ...). The model's base.
+    ├── region/                 # region_<region>.csv: the region nodes (CAN, rest-of-world, provinces and territories), with GDP
+    │                           #   and population. Loaded as scenario files, before the sectors.
+    ├── sector/<sector>/        # <sector>_<region>.csv, for example iron-and-steel/iron-and-steel_ab.csv
+    ├── cost/                   # declining-capital-cost/, declining-intangible-cost/, fixed-intangible-cost/
+    ├── exogenous/              # exogenous-price/, exogenous-demand/, market-share-limit/
+    ├── policy/<policy>/        # <policy>_<region>.csv. Made by hand until the policy stage exists.
+    └── calibration/
+        ├── target/<sector>/    # Calibration targets, written by the sector calibration modules
+        └── fitted/<sector>/    # Written by calibration: fitted_fics/, fitted_lifetimes/, extended_fics/
 ```
+
+Logs go to `results/logs/` (gitignored), outside the data folder.
 
 Pipeline **code** lives outside the data tree, inside the installed `CIMS` package:
 
@@ -96,7 +89,7 @@ Pipeline **code** lives outside the data tree, inside the installed `CIMS` packa
 ├── process_source_data.py      # Runs all Stage 1 source modules in dependency order
 ├── run_all_model_inputs.py     # Runs all Stage 2 model_inputs modules
 ├── run_all_calibration.py      # Runs all Stage 2 calibration modules
-├── source/                     # Stage 1 — raw → processed_data
+├── source/                     # Stage 1 — extracted → processed
 │   ├── activity/               # Activity for all sectors (res/com/trans from ceud source)
 │   ├── deflator_exchange/      # GDP deflators and exchange rates (currency conversion)
 │   ├── eccc/nir/               # National Inventory Report processing
@@ -108,7 +101,7 @@ Pipeline **code** lives outside the data tree, inside the installed `CIMS` packa
 │       ├── transportation_passenger/
 │       └── transportation_freight/
 ├── technology_database/        # Technology database build (python -m CIMS.data_processing.technology_database.build)
-├── sector/                     # Stage 2 — processed_data + fixed_data → model_inputs
+├── sector/                     # Stage 2 — processed + fixed data → model
 │   ├── agriculture_model_inputs.py
 │   ├── agriculture_calibration.py
 │   ├── biodiesel_model_inputs.py
@@ -135,8 +128,8 @@ Pipeline **code** lives outside the data tree, inside the installed `CIMS` packa
 ### Prerequisites
 
 1. Install Python dependencies (see [Dependencies](#dependencies)).
-2. Obtain raw data from the **External-CIMS SharePoint** and place it under `raw_data/` following the structure above.
-   - `raw_data/source_details.xlsx` documents every source.
+2. Obtain the sources from the **External-CIMS SharePoint** and place them under `extracted/` and `primary-sources/` following the structure above. If you have a data folder in the old layout, move it with `uv run python tools/migrate_data_layout.py --apply`.
+   - `primary-sources/source-details.xlsx` documents every source.
 
 ### Running the pipeline
 
@@ -175,13 +168,13 @@ python -m CIMS.data_processing.sector.commercial_calibration
 ...
 ```
 
-Model inputs land in `model_inputs/model/{sector}/` — one CSV per province/territory (13 files per sector). Calibration outputs land in `calibration/{sector}/`.
+Model inputs land in `model/sector/<sector>/`, one CSV per province or territory (13 files per sector). Calibration targets land in `model/calibration/target/<sector>/`.
 
 ---
 
 ## Configuration
 
-All pipeline-wide parameters are set in **`mappings_conversions/control.py`**. This file exports a `CONTROLS` dict that every script imports via `src/CIMS/data_processing/utils/controls_conversions.py`.
+All pipeline-wide parameters are set in **`config/control.py`**. This file exports a `CONTROLS` dict that every script imports via `src/CIMS/data_processing/utils/controls_conversions.py`.
 
 Key parameters:
 
@@ -203,10 +196,10 @@ Key parameters:
 
 When a new data vintage arrives:
 
-1. Download the file and replace it in its folder under `raw_data/`.
+1. Download the file and replace it in its folder under `extracted/` (or `primary-sources/`, for a document the build doesn't read).
 2. Open the `control.py` Marimo notebook:
    ```powershell
-   cd <repo>/data/mappings_conversions
+   cd <repo>/data/config
    marimo edit control.py
    ```
 3. Update the relevant `last_data_year_*` value (and currency year or scenario name if needed). The pipeline uses the year *after* the last data year as the start of its projection assumptions, so keeping this current is important.
@@ -312,7 +305,7 @@ Files are saved as CSVs.
 
 Some scripts document their own outputs in a README beside the script — for
 instance the currency deflator and exchange rate tables written to
-`data/processed_data/deflator_exchange/`, described in
+`data/processed/currency/`, described in
 [`src/CIMS/data_processing/source/deflator_exchange/README.md`](../src/CIMS/data_processing/source/deflator_exchange/README.md).
 
 ## Common Patterns
@@ -398,7 +391,7 @@ Install with:
 pip install polars pandas numpy scipy openpyxl marimo
 ```
 
-**Path convention**: The base path is derived automatically from the location of `controls_conversions.py` in `src/CIMS/data_processing/utils/`, so scripts work regardless of where the `cims/data` folder lives on disk. The internal directory layout under the data root (`raw_data/`, `processed_data/`, `model_inputs/`, `mappings_conversions/`) must be preserved as described above.
+**Path convention**: every layer's folder is a constant in `src/CIMS/data_processing/common/paths.py`. The data root is the `data/` folder beside the imported code, unless the `CIMS_DATA_ROOT` environment variable points somewhere else. The runners print the code and data roots first, and warn when the data root isn't inside the current folder (`--strict` makes that an error). Keep the layout under the data root as described above.
 
 ---
 
@@ -407,20 +400,20 @@ pip install polars pandas numpy scipy openpyxl marimo
 ### Committed (tracked in git)
 
 - All Python scripts in `src/CIMS/data_processing/`
-- Mapping and conversion files in `mappings_conversions/`
-- The technology database's hand-edited records in `technology_database/`. The build is
+- Everything in `config/`: the control file, mappings, conversions, assumptions, the FIC
+  lists, the model defaults, the interim CER tables, and the technology database's records.
+  The database build is
   [`src/CIMS/data_processing/technology_database/`](../src/CIMS/data_processing/technology_database/README.md);
-  it reads the source extractions from `raw_data/technology_database/` (from FRDR) and writes
-  `processed_data/technology_database/`.
-- `.gitkeep` files preserving empty output directory structure
-- This README and sub-READMEs
+  it reads the extractions from `extracted/technology-database/` (from FRDR) and writes
+  `processed/technology-database/`.
+- `model/README.md`, and this README and the sub-READMEs
 
 ### Not committed (gitignored)
 
 | Directory | Reason |
 |-----------|--------|
-| `raw_data/` | Large source files — obtain from SharePoint or FRDR |
-| `processed_data/` | Auto-generated by Stage 1 scripts |
-| `calibration/` | Auto-generated by sector calibration scripts |
-| `model_inputs/` | Auto-generated by Stage 2 sector assemblers |
+| `primary-sources/` | Documents as obtained: SharePoint |
+| `extracted/` | Values the build reads: SharePoint or FRDR |
+| `processed/` | Written by the source stages |
+| `model/` | Written by the sector stages (policies are made by hand until the policy stage exists) |
 | `__pycache__/` | Python bytecode |

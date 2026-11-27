@@ -71,7 +71,7 @@ from CIMS.data_processing.utils.calibration_helpers import (
 from CIMS.data_processing.utils.output_builder import write_per_region_csvs
 
 # ── configuration ─────────────────────────────────────────────────────────────
-OUTPUT_DIR = paths.CALIBRATION_TARGETS / 'transportation_passenger'
+OUTPUT_DIR = paths.CALIBRATION_TARGETS / 'transportation-passenger'
 
 SECTOR_NAME = 'Transportation Passenger'
 
@@ -84,7 +84,7 @@ STATCAN_MARKET_SHARE_SOURCE = 'StatCan/EPA'
 # are aligned to it (see _align_share_techs_to_fixed).
 FIXED_INPUT_DIR = paths.FIXED_DATA / 'transportation_passenger'
 
-EPA_FILE = paths.RAW / 'epa/table_export.csv'
+EPA_FILE = paths.EXTRACTED / 'gov-usa/epa/table_export.csv'
 
 
 # EPA engine-package mapping used to split gasoline into efficiency classes.
@@ -139,7 +139,7 @@ _TECH_SHARE_SERVICES: list[tuple[str, str, str, dict[str, str] | None, int | Non
 # ── helpers ───────────────────────────────────────────────────────────────────
 
 def _load_controls() -> dict:
-    """Read CONTROLS from data/mappings_conversions/control.py."""
+    """Read CONTROLS from data/config/control.py."""
     return load_control_config()
 
 
@@ -660,7 +660,7 @@ def main() -> pl.DataFrame:
         .select(OUTPUT_COLS)
     )
 
-    print('Filtering to regions with Transportation Passenger (see sector_region_map.csv)...')
+    print('Filtering to regions with Transportation Passenger (see config/mapping/sector-region.csv)...')
     allowed_regions = load_sector_regions().get(SECTOR_NAME)
     if allowed_regions:
         before_count = len(output)
@@ -685,7 +685,7 @@ def main() -> pl.DataFrame:
         .alias('Unit')
     )
 
-    regions = write_per_region_csvs(output, OUTPUT_DIR, 'transportation_passenger', skip_if_all_zero=True)
+    regions = write_per_region_csvs(output, OUTPUT_DIR, 'transportation-passenger', skip_if_all_zero=True)
 
     print(f'\n✅ Transportation Passenger calibration complete')
     print(f'   Total rows:  {len(output):,}')

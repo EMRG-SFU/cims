@@ -8,7 +8,7 @@ Usage:
     python -m CIMS.data_processing.process_source_data --strict
 
 --use-existing-technology-database skips the technology database build and
-uses the tables already in processed_data/technology_database/ (for example
+uses the tables already in processed/technology-database/ (for example
 one built from the tech_data repository's authoring copy). The run stops if
 those tables aren't there.
 """
@@ -47,7 +47,7 @@ MODULES = [
     # Emission factors
     f"{PACKAGE}.emission_factors.emission_factors",
     # Energy prices — multipliers imports prices directly, so run prices
-    # first to also produce the intermediate processed_data output.
+    # first to also produce the intermediate processed output.
     f"{PACKAGE}.energy_prices.energy_prices",
     f"{PACKAGE}.energy_prices.energy_price_multipliers",
     # NRCan CEUD
@@ -66,7 +66,7 @@ MODULES = [
     f"{PACKAGE}.stats_can.biomass_demand",
     # StatCan refinery fuel (own + purchased) for petroleum refining
     f"{PACKAGE}.stats_can.refinery_fuel",
-    # Technology database build (processed_data/technology_database/). The
+    # Technology database build (processed/technology-database/). The
     # steam code (techdb_steam) reads its archetype tables in the calibration
     # and model-input stages. It has its own currency tables, so it can run
     # anywhere in this list; it runs here, next to the steam stage it serves.

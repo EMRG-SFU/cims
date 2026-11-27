@@ -130,7 +130,7 @@ def compose(v: dict) -> str:
 # are decisions for the modeller, not edits this script should make silently.
 STRUCTURAL = [
     ("etsap_2013_002", "the web check reported the IEA-ETSAP/IRENA heat pump brief as E12. "
-     "The copy held in data/raw_data/technology_database/iea/etsap prints 'Technology Policy Brief E19 - January "
+     "The copy held in data/extracted/technology-database/iea/etsap prints 'Technology Policy Brief E19 - January "
      "2013' on page 1, and the modeller confirmed E19. The record follows the document; "
      "IRENA's website appears to post the same brief under E12."),
 ]

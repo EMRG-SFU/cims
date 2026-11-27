@@ -30,17 +30,17 @@ def find_project_root() -> Path:
 REPO_ROOT        = paths.REPO_ROOT
 BASE_PATH        = paths.DATA_ROOT
 PIPELINE_ROOT    = paths.PIPELINE_ROOT
-MAPPINGS_PATH    = paths.MAPPINGS
-CONTROL_FILE     = MAPPINGS_PATH / 'control.py'
-ENERGY_MAP_FILE  = MAPPINGS_PATH / 'energy_map.csv'
-REGION_MAP_FILE  = MAPPINGS_PATH / 'region_map.csv'
-SECTOR_MAP_FILE  = MAPPINGS_PATH / 'sector_map.csv'
-CONVERSIONS_FILE = MAPPINGS_PATH / 'energy_conversions.csv'
-SECTOR_REGION_MAP_FILE = MAPPINGS_PATH / 'sector_region_map.csv'
-EXCLUDED_BRANCHES_FILE = MAPPINGS_PATH / 'excluded_branches.csv'
+MAPPINGS_PATH    = paths.CONFIG / 'mapping'
+CONTROL_FILE     = paths.CONFIG / 'control.py'
+ENERGY_MAP_FILE  = MAPPINGS_PATH / 'energy.csv'
+REGION_MAP_FILE  = MAPPINGS_PATH / 'region.csv'
+SECTOR_MAP_FILE  = MAPPINGS_PATH / 'sector.csv'
+CONVERSIONS_FILE = paths.CONFIG / 'conversion/energy-conversion.csv'
+SECTOR_REGION_MAP_FILE = MAPPINGS_PATH / 'sector-region.csv'
+EXCLUDED_BRANCHES_FILE = paths.CONFIG / 'excluded-branch.csv'
 
 # calibration.py Parameter values considered "demand" or "emissions" data.
-# Used to scope excluded_branches.csv so it can't accidentally drop
+# Used to scope config/excluded-branch.csv so it can't accidentally drop
 # technology/market-share rows for a branch that's only bad for demand
 # or emissions purposes.
 DEMAND_EMISSIONS_PARAMS = {
@@ -128,7 +128,7 @@ def parse_cell(value) -> float:
 
 def load_all_conversions() -> pd.DataFrame:
     """
-    Load the full energy conversions table from energy_conversions.csv
+    Load the full energy conversions table from config/conversion/energy-conversion.csv
     as a clean, typed DataFrame.
 
     The CSV has four columns: Group, Energy, Unit, Equivalent to, Source.
@@ -179,7 +179,7 @@ def load_all_conversions() -> pd.DataFrame:
 
 def load_energy_conversions() -> Dict:
     """
-    Load energy conversion factors from energy_conversions.csv.
+    Load energy conversion factors from config/conversion/energy-conversion.csv.
 
     Builds a flat dictionary of conversion factors keyed by the names used
     throughout the pipeline. All GJ-per-m³ values come from the
@@ -259,7 +259,7 @@ def load_energy_conversions() -> Dict:
 
 def load_energy_mapping() -> pd.DataFrame:
     """
-    Load the CIMS↔JCIMS↔CER energy mapping from energy_map.csv.
+    Load the CIMS↔JCIMS↔CER energy mapping from config/mapping/energy.csv.
 
     Returns
     -------
@@ -292,7 +292,7 @@ def load_region_mapping() -> pd.DataFrame:
 
 def load_sector_regions() -> Dict[str, set]:
     """
-    Load allowed regions per sector from sector_region_map.csv.
+    Load allowed regions per sector from config/mapping/sector-region.csv.
 
     Sectors not present in the map are unrestricted (assumed present in
     every region). Used by sector calibration.py scripts to drop
@@ -316,7 +316,7 @@ def load_excluded_branches() -> set:
     """
     Load CIMS branches to exclude from demand/emissions calibration output.
 
-    Rows are flagged Active TRUE/FALSE in excluded_branches.csv rather than
+    Rows are flagged Active TRUE/FALSE in config/excluded-branch.csv rather than
     deleted, so re-including a branch later is a one-cell edit that keeps
     the row's Notes (why it was excluded) instead of relying on git history.
 
@@ -334,7 +334,7 @@ def load_excluded_branches() -> set:
 def filter_excluded_branches(df: pl.DataFrame) -> pl.DataFrame:
     """
     Drop demand/emissions calibration rows for branches flagged Active in
-    excluded_branches.csv. Rows for other Parameter types (e.g. technology
+    config/excluded-branch.csv. Rows for other Parameter types (e.g. technology
     market shares) are left untouched.
 
     Parameters
@@ -372,7 +372,7 @@ def force_single_technology_market_share(df: pl.DataFrame) -> pl.DataFrame:
     Parameters
     ----------
     df : pl.DataFrame
-        A flattened fixed_data DataFrame (or model_inputs `fixed`/`output`)
+        A flattened fixed_data DataFrame (or model `fixed`/`output`)
         with 'Branch', 'Parameter', 'Technology', 'Value' columns.
 
     Returns

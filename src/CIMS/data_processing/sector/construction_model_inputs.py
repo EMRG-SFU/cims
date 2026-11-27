@@ -4,7 +4,7 @@ Extract Construction model input data and save to CIMS-formatted CSV.
 Sources
 -------
 Fixed structural parameters
-    raw_data/fixed_data/construction/*.csv
+    extracted/legacy/fixed-data/construction/*.csv
     Flattened from wide (2000–2050 year columns) to long format via
     utils/flatten_fixed_data.
     Includes: service_provide, competition, technology, market_share_total,
@@ -45,7 +45,7 @@ from CIMS.data_processing.utils.feedstock_demand import build_feedstock_rows_all
 
 # ── configuration ─────────────────────────────────────────────────────────────
 FIXED_INPUT_DIR = paths.FIXED_DATA / 'construction'
-OUTPUT_DIR      = paths.MODEL / 'construction'
+OUTPUT_DIR      = paths.MODEL_SECTOR / 'construction'
 
 OUTPUT_COLS = [
     'Branch', 'Type', 'Region', 'Sector', 'Service', 'Technology',

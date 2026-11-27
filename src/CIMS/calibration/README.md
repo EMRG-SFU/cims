@@ -46,7 +46,7 @@ see [Calibration/Optimization/README.md](Calibration/Optimization/README.md).
 
 The notebooks are [marimo](https://marimo.io) apps (`uv sync --extra calibration`).
 Launch them **from the repo root**, because paths such as `results/Reference/...`
-and `data/model_inputs/...` are relative to it:
+and `data/model/...` are relative to it:
 
 ```bash
 marimo edit src/CIMS/calibration/batch_optimization.py
@@ -143,7 +143,7 @@ Fit options go in `fit_kwargs_stage1` and `fit_kwargs_refit`, e.g.
 
 The notebooks write through `write_calibration_outputs`, which puts each node
 in its own sector folder under `calibration_output_root`
-(`data/model_inputs/calibration_outputs`). Each folder gets one CSV per region:
+(`data/model/calibration/fitted`). Each folder gets one CSV per region:
 
 ```
 <calibration_output_root>/<sector>/fitted_fics/fitted_fics_<region>.csv
@@ -176,7 +176,7 @@ Unit, Year, Value`).
   the `sector_list` filter.
 
 Reference.py loads these from
-`data/model_inputs/calibration_outputs/<sector>/fitted_fics` and
+`data/model/calibration/fitted/<sector>/fitted_fics` and
 `.../<sector>/fitted_lifetimes` for every sector in
 `calibration_output_sectors` (currently `transportation_passenger`,
 `transportation_freight`, `residential`, `commercial` and `fuels`). To

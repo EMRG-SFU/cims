@@ -5,8 +5,8 @@ The pipeline and ``CIMS.Model`` convert money with the same
 ``CIMS.unit_conversion.CurrencyConverter`` and the same two tables, built by
 ``source/deflator_exchange/deflator_exchange.py``:
 
-    data/processed_data/deflator_exchange/currency_deflator.csv
-    data/processed_data/deflator_exchange/currency_exchange.csv
+    data/processed/currency/currency-deflator.csv
+    data/processed/currency/currency-exchange.csv
 
 Unit labels
 -----------
@@ -56,8 +56,8 @@ from CIMS.unit_conversion import MONETARY_PREFIX_RE, CurrencyConverter
 from CIMS.data_processing.common import paths
 from CIMS.data_processing.utils.controls_conversions import load_control_config
 
-DEFLATOR_TABLE = paths.PROCESSED / 'deflator_exchange' / 'currency_deflator.csv'
-EXCHANGE_TABLE = paths.PROCESSED / 'deflator_exchange' / 'currency_exchange.csv'
+DEFLATOR_TABLE = paths.PROCESSED / 'currency/currency-deflator.csv'
+EXCHANGE_TABLE = paths.PROCESSED / 'currency/currency-exchange.csv'
 
 _CONTROLS = load_control_config()
 UNTAGGED_YEAR = int(_CONTROLS.get('currency_year_untagged', 2020))

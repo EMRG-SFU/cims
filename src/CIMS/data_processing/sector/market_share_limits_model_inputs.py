@@ -4,7 +4,7 @@ Flatten market share limit fixed data to CIMS-formatted CSV.
 Sources
 -------
 Fixed structural parameters
-    raw_data/fixed_data/market_share_limits/*.csv
+    extracted/legacy/fixed-data/market_share_limits/*.csv
     Flattened from wide (2000–2050 year columns) to long format via
     utils/flatten_fixed_data.
 
@@ -26,7 +26,7 @@ from CIMS.data_processing.utils.techdb_steam import drop_replaced_steam_rows
 
 # ── configuration ─────────────────────────────────────────────────────────────
 FIXED_INPUT_DIR = paths.FIXED_DATA / 'market_share_limits'
-OUTPUT_DIR      = paths.MODEL / 'market_share_limits'
+OUTPUT_DIR      = paths.MODEL_EXOGENOUS / 'market-share-limit'
 
 OUTPUT_COLS = [
     'Branch', 'Type', 'Region', 'Sector', 'Service', 'Technology',
@@ -49,7 +49,7 @@ def main() -> pl.DataFrame:
 
     output = drop_replaced_steam_rows(fixed.cast(pl.String).select(OUTPUT_COLS))
 
-    regions = write_per_region_csvs(output, OUTPUT_DIR, 'market_share_limits', collapse_years=True, finalise_currency=True)
+    regions = write_per_region_csvs(output, OUTPUT_DIR, 'market-share-limit', collapse_years=True, finalise_currency=True)
 
     print(f'\nMarket share limits model inputs complete')
     print(f'   Total rows:  {len(output):,}')

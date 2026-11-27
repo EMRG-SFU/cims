@@ -7,12 +7,12 @@ CIMS-formatted CSVs (one per region).
 Sources
 -------
 Fixed structural parameters
-    raw_data/fixed_data/hydrogen/hydrogen_{region}.csv
+    extracted/legacy/fixed-data/hydrogen/hydrogen_{region}.csv
     Flattened from wide (2000–2050 year columns) to long format.
     Each region has its own file; FIXED_TEMPLATE maps 1:1.
 
 Energy price multipliers  (multiplier_price rows)
-    processed_data/energy_prices/energy_price_multipliers.csv
+    processed/energy-prices/energy-price-multipliers.csv
     Inserted after the Hydrogen sector is_supply row.
 
 Output columns
@@ -35,7 +35,7 @@ from CIMS.data_processing.utils.collapse_constant_years import collapse_constant
 
 # ── configuration ──────────────────────────────────────────────────────────────
 FIXED_INPUT_DIR = paths.FIXED_DATA / 'hydrogen'
-OUTPUT_DIR      = paths.MODEL / 'hydrogen'
+OUTPUT_DIR      = paths.MODEL_SECTOR / 'hydrogen'
 
 OUTPUT_COLS = [
     'Branch', 'Type', 'Region', 'Sector', 'Service', 'Technology',
@@ -158,7 +158,7 @@ def main() -> dict[str, pl.DataFrame]:
             print('  Assembling...')
             output = _assemble_region(fixed, multipliers, region)
 
-            out_path = OUTPUT_DIR / f'hydrogen_{region.lower()}.csv'
+            out_path = OUTPUT_DIR / f'hydrogen_{paths.region_file_code(region)}.csv'
             output = collapse_constant_years(output)
             write_model_csv(output, str(out_path))
             print(f'  Wrote {len(output):,} rows → {out_path.name}')

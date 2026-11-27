@@ -11,8 +11,8 @@ import pandas as pd
 
 from CIMS.data_processing.common import paths
 
-DEFAULT_STATCAN_FILE = paths.RAW / 'stats_can/market_shares/2010002501-eng.csv'
-DEFAULT_EPA_FILE = paths.RAW / 'epa/table_export.csv'
+DEFAULT_STATCAN_FILE = paths.EXTRACTED / 'gov-can/statcan/market-shares/2010002501-eng.csv'
+DEFAULT_EPA_FILE = paths.EXTRACTED / 'gov-usa/epa/table_export.csv'
 DEFAULT_OUTPUT_FILE = Path("passenger_transportation_market_shares.csv")
 
 HISTORICAL_START_YEAR = 2000
