@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.25.0"
+__generated_with = "0.26.0"
 app = marimo.App(width="medium")
 
 with app.setup:
@@ -17,7 +17,6 @@ def _():
     mo.md(r"""
     # Run all cells below to load, validate, and run the CIMS model
     """)
-    return
 
 
 @app.cell(hide_code=True)
@@ -25,7 +24,6 @@ def _():
     mo.md(r"""
     ## Set required file paths, models, and sectors
     """)
-    return
 
 
 @app.function
@@ -109,7 +107,6 @@ def _():
     mo.md(r"""
     ## Adjust scenario parameters and optional update files
     """)
-    return
 
 
 @app.cell(hide_code=True)
@@ -117,7 +114,6 @@ def _():
     mo.md(r"""
     ### Region, year, and sector selection
     """)
-    return
 
 
 @app.cell
@@ -203,9 +199,10 @@ def _():
     sector_list = [
         'Coal Mining',
         'Natural Gas',
-        # 'Natural Gas Market', # Routes each region's production through the national market; needs 'Natural Gas' and all regions.
-                                # Off: regions supply themselves and any subset of regions can run. Prices come from Generic Fuels either way.
-                                # Design note: docs/design/natural-gas-market.md.
+        # 'Natural Gas Market', # On: routes each region's production through the national market; needs 'Natural Gas' and 
+                                # all regions.
+                                # Off: regions supply themselves and any subset of regions can run. 
+                                # Prices come from Generic Fuels either way.
         'Petroleum Crude', # Must also run 'Natural Gas' sector since shared fuel blending
         'Petroleum Refining',
         'Electricity',
@@ -249,7 +246,6 @@ def _():
     mo.md(r"""
     ### Update file specifications
     """)
-    return
 
 
 @app.cell
@@ -354,7 +350,7 @@ def _(model_path, update_files):
     ]
 
     ### Calibration Outputs (fitted FICs / lifetimes from a prior calibration pass)
-    # One subfolder per sector, each with its own fitted_fics/ and fitted_lifetimes/
+    # One subfolder per sector, each with its own fitted_fics/, extended_fics/, and fitted_lifetimes/
     # (data/model/calibration/fitted/<sector>/fitted_fics, ...), so several
     # sectors' calibration outputs can be loaded together without overwriting each other.
     calibration_outputs_path = str(paths.CALIBRATION_OUTPUTS)
@@ -373,7 +369,7 @@ def _(model_path, update_files):
     calibration_outputs = [
         f'{_sector}/{_kind}'
         for _sector in calibration_output_sectors
-        for _kind in ('fitted_fics', 'fitted_lifetimes')
+        for _kind in ('fitted_fics', 'extended_fics', 'fitted_lifetimes')  # extended_fics after fitted_fics (extend_fics.py)
     ]
 
     # Each entry below is (folder, [file/subfolder names]); merging just means
@@ -386,7 +382,6 @@ def _(model_path, update_files):
     ]:
         if _files:
             update_files.setdefault(_path, []).extend(_files)
-    return
 
 
 @app.cell(hide_code=True)
@@ -394,7 +389,6 @@ def _():
     mo.md(r"""
     ### Scenario name
     """)
-    return
 
 
 @app.cell
@@ -410,7 +404,6 @@ def _():
     mo.md(r"""
     ## Instantiate the Model
     """)
-    return
 
 
 @app.cell
@@ -450,7 +443,6 @@ def _(
 def _(model):
     #################### Validate Files ####################
     model.validate_files()
-    return
 
 
 @app.cell
@@ -458,21 +450,18 @@ def _(model):
     #################### Show validator warnings ####################
     # change warning type as needed to view indicated nodes/techs
     model.validator.warnings['inconsistent_tech_refs']
-    return
 
 
 @app.cell
 def _(model):
     #################### Construct graph ####################
     model.construct_graph()
-    return
 
 
 @app.cell
 def _(model):
     #################### Validate Graph ####################
     model.validate_graph()
-    return
 
 
 @app.cell(hide_code=True)
@@ -480,7 +469,6 @@ def _():
     mo.md(r"""
     ## Run scenario and output results
     """)
-    return
 
 
 @app.cell
@@ -501,7 +489,6 @@ def _(model, results_path):
        parameter_file=str(paths.CONFIG / "results-general.txt"),
        ensure_dir=True
     )
-    return
 
 
 @app.cell
@@ -513,7 +500,6 @@ def _(model, results_path):
        parameter_file=str(paths.CONFIG / "results-tech.txt"),
        ensure_dir=True
     )
-    return
 
 
 @app.cell
@@ -523,7 +509,6 @@ def _(model, results_path):
 
     with gzip.open(f"{results_path}/model.pkl", "wb") as f:
         pickle.dump(model, f)
-    return
 
 
 @app.cell
@@ -541,7 +526,6 @@ def _(model):
     #################### Print service request loops after running model ####################
     import pprint
     pprint.pp(model.loops)
-    return
 
 
 if __name__ == "__main__":

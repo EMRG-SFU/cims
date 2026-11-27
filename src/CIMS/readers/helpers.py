@@ -1,5 +1,6 @@
 from collections import Counter
 from functools import lru_cache
+import os
 from pathlib import Path
 from typing import Iterable, Mapping, List, Tuple
 from tabulate import tabulate
@@ -113,20 +114,60 @@ def _build_rows(summary: dict) -> List[dict]:
 MAX_LISTED_UNREADABLE = 3
 
 
+def _display_names(dirs: List[str]) -> Tuple[str, dict]:
+    """Return (root, {dir: name to show}): each folder relative to the folders' common root,
+    in the platform's separators, so long absolute paths don't crowd the table. A single
+    folder is shown relative to its parent. Folders on different drives keep their full
+    paths, and root is ''."""
+    full = {d: str(Path(d)) for d in dirs}
+    try:
+        common = os.path.commonpath(list(full.values())) if full else ""
+    except ValueError:  # different drives
+        common = ""
+    if common in full.values():  # one folder holds the others: name it by its parent
+        common = os.path.dirname(common)
+    if not common:
+        return "", full
+    return common, {d: os.path.relpath(f, common) for d, f in full.items()}
+
+
+def _terse_group(row: dict, model_dir) -> Tuple[str, str]:
+    """(folder a row rolls up to, its name under that folder).
+
+    Entries in the model folder (the base model's parent) each get a row for their own
+    subfolder: region to <model>/region, sector/fuels to <model>/sector, cost/... to
+    <model>/cost. Entries in any other folder (policies, calibration outputs) roll up to
+    that folder, named in full under it (residential/fitted_fics).
+    """
+    d = row.get("dir")
+    if not d:
+        return row[COL_NAME], row[COL_NAME]
+    parts = Path(row[COL_NAME]).parts
+    if model_dir is not None and Path(d) == model_dir:
+        return str(Path(d) / parts[0]), str(Path(*parts[1:])) if len(parts) > 1 else parts[0]
+    return d, row[COL_NAME]
+
+
 def _print_terse_health(rows: List[dict]):
-    """Print one folder-level row per directory (found/unreadable counts), with a
-    capped list of unreadable filenames underneath any folder that has them."""
+    """Print one folder-level row per folder (found/unreadable counts), with each missing
+    entry named underneath, and a capped list of unreadable filenames underneath any
+    folder that has them."""
+    base = next((r for r in rows if not r.get("dir")), None)
+    model_dir = Path(base["path"]).parent if base else None
     by_dir = {}
     for row in rows:
-        d = row.get("dir") or row[COL_NAME]
+        d, name = _terse_group(row, model_dir)
         group = by_dir.setdefault(d, {"found": 0, "unreadable": 0, "missing": [], "paths": []})
         group["found"] += row[COL_FOUND]
         group["unreadable"] += row[COL_UNREADABLE]
         if row["missing"]:
-            group["missing"].append(row[COL_NAME])
+            group["missing"].append(name)
         group["paths"].extend(row["unreadable_paths"])
 
     ordered_dirs = list(by_dir)  # base model first, then update folders in the order provided
+    root, shown = _display_names(ordered_dirs)
+    if root:
+        print(f"      Folders under {root}\n")
 
     # A folder row carries the counts for everything collected under it; each entry that
     # was requested but does not exist gets its own indented row beneath it, so the name
@@ -135,7 +176,7 @@ def _print_terse_health(rows: List[dict]):
     table = []
     for d in ordered_dirs:
         group = by_dir[d]
-        table.append([d, group["found"], group["unreadable"], None])
+        table.append([shown[d], group["found"], group["unreadable"], None])
         for name in group["missing"]:
             table.append([NEST_INDENT + name, None, None, MISSING_MARK])
     lines = tabulate(
@@ -153,7 +194,7 @@ def _print_terse_health(rows: List[dict]):
         group = by_dir[d]
         if not group["unreadable"]:
             continue
-        print(f"\n      Unreadable under {d}:")
+        print(f"\n      Unreadable under {shown[d]}:")
         for p in group["paths"][:MAX_LISTED_UNREADABLE]:
             try:
                 p = p.relative_to(d)
@@ -173,11 +214,15 @@ def _print_verbose_health(rows: List[dict]):
     # header; the base model has no parent folder, so it stays flush left.
     # preserve_whitespace keeps the leading indent, which tabulate strips by default.
     indents = [NEST_INDENT if row.get("dir") else "" for row in rows]
+    # Folders, and the base model's row, are shown relative to their common root.
+    root, shown = _display_names(list(dict.fromkeys(r.get("dir") or r[COL_NAME] for r in rows)))
+    if root:
+        print(f"      Folders under {root}\n")
     # Blank for folders that were found, so a missing folder is the only thing in the 
     # column and reads at a glance.
     table = [
         [
-            ind + r[COL_NAME],
+            ind + (r[COL_NAME] if r.get("dir") else shown[r[COL_NAME]]),
             r[COL_FOUND],
             r[COL_UNREADABLE],
             MISSING_MARK if r.get("missing") else "",
@@ -202,7 +247,7 @@ def _print_verbose_health(rows: List[dict]):
 
     for d, indices in by_dir.items():
         if d:
-            print(f"      {d}/")
+            print(f"      {shown[d]}{os.sep}")
         for i in indices:
             print(f"      {data_lines[i]}")
             for p in rows[i]["unreadable_paths"]:
@@ -242,8 +287,8 @@ def collect_base_files(model_path: str, base_model: str) -> Tuple[List[str], Lis
     found_paths = _glob_csvs(base_dir)
     unreadable = [p for p in found_paths if not _scannable(str(p))]
 
-    summary = {base_dir.as_posix(): {
-        "found": len(found_paths), 
+    summary = {str(base_dir): {
+        "found": len(found_paths),
         "unreadable": unreadable,
         "missing": not base_dir.is_dir(),
         "path": base_dir.as_posix(),
@@ -287,7 +332,12 @@ def collect_update_files(update_files: Mapping[str, Iterable[str]]) -> Tuple[Lis
         d = key_to_dir.get(row[COL_NAME])
         row["dir"] = d
         if d:
-            row[COL_NAME] = Path(row[COL_NAME]).name
+            # The entry as requested, relative to its folder (e.g. commercial\fitted_fics),
+            # so entries that share a last folder name stay distinguishable.
+            try:
+                row[COL_NAME] = str(Path(row["path"]).relative_to(Path(d)))
+            except ValueError:
+                row[COL_NAME] = str(Path(row[COL_NAME]))
     return found, rows
 
 
